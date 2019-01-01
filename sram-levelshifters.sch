@@ -1,0 +1,175 @@
+EESchema Schematic File Version 2
+LIBS:power
+LIBS:device
+LIBS:transistors
+LIBS:conn
+LIBS:linear
+LIBS:regul
+LIBS:74xx
+LIBS:cmos4000
+LIBS:adc-dac
+LIBS:memory
+LIBS:xilinx
+LIBS:microcontrollers
+LIBS:dsp
+LIBS:microchip
+LIBS:analog_switches
+LIBS:motorola
+LIBS:texas
+LIBS:intel
+LIBS:audio
+LIBS:interface
+LIBS:digital-audio
+LIBS:philips
+LIBS:display
+LIBS:cypress
+LIBS:siliconi
+LIBS:opto
+LIBS:atmel
+LIBS:contrib
+LIBS:valves
+LIBS:AmigaComponents
+LIBS:atari23MTS_Upgrade-cache
+EELAYER 25 0
+EELAYER END
+$Descr A4 11693 8268
+encoding utf-8
+Sheet 2 2
+Title ""
+Date ""
+Rev ""
+Comp ""
+Comment1 ""
+Comment2 ""
+Comment3 ""
+Comment4 ""
+$EndDescr
+$Comp
+L ISSI61WV5128BL U5
+U 1 1 5C2B9006
+P 6300 2350
+F 0 "U5" H 6000 3400 50  0000 C CNN
+F 1 "ISSI61WV5128BL" H 6650 1300 50  0000 C CNN
+F 2 "SO32" H 6300 2350 50  0000 C CIN
+F 3 "" H 6300 2350 50  0000 C CNN
+	1    6300 2350
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR34
+U 1 1 5C2BB988
+P 7000 2750
+F 0 "#PWR34" H 7000 2500 50  0001 C CNN
+F 1 "GND" H 7000 2600 50  0000 C CNN
+F 2 "" H 7000 2750 50  0001 C CNN
+F 3 "" H 7000 2750 50  0001 C CNN
+	1    7000 2750
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR33
+U 1 1 5C2BB99F
+P 6300 3450
+F 0 "#PWR33" H 6300 3200 50  0001 C CNN
+F 1 "GND" H 6300 3300 50  0000 C CNN
+F 2 "" H 6300 3450 50  0001 C CNN
+F 3 "" H 6300 3450 50  0001 C CNN
+	1    6300 3450
+	1    0    0    -1  
+$EndComp
+Text GLabel 6300 1100 1    39   Input ~ 0
+VCC3V3
+Text GLabel 6800 2750 3    39   BiDi ~ 0
+~BSEL0
+Text GLabel 6900 3000 3    39   BiDi ~ 0
+mR/~W
+Wire Wire Line
+	6800 2550 6800 2750
+Wire Wire Line
+	6800 2400 6900 2400
+Wire Wire Line
+	6900 2400 6900 3000
+Wire Wire Line
+	6800 2300 7000 2300
+Wire Wire Line
+	7000 2300 7000 2750
+Wire Wire Line
+	6300 1100 6300 1250
+$Comp
+L C_Small C?
+U 1 1 5C2BF542
+P 6400 1250
+F 0 "C?" H 6410 1320 50  0000 L CNN
+F 1 "100n" V 6500 1050 50  0000 L CNN
+F 2 "" H 6400 1250 50  0000 C CNN
+F 3 "" H 6400 1250 50  0000 C CNN
+	1    6400 1250
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GND #PWR?
+U 1 1 5C2BF58F
+P 6500 1250
+F 0 "#PWR?" H 6500 1000 50  0001 C CNN
+F 1 "GND" H 6500 1100 50  0000 C CNN
+F 2 "" H 6500 1250 50  0001 C CNN
+F 3 "" H 6500 1250 50  0001 C CNN
+	1    6500 1250
+	0    -1   -1   0   
+$EndComp
+$Comp
+L TXB0108-PW U?
+U 1 1 5C2BF6B2
+P 1800 3900
+F 0 "U?" H 1600 4650 60  0000 L CNN
+F 1 "TXB0108-PW" H 1600 3150 60  0000 L CNN
+F 2 "" H 1600 3850 60  0000 C CNN
+F 3 "" H 1600 3850 60  0000 C CNN
+	1    1800 3900
+	1    0    0    -1  
+$EndComp
+$Comp
+L TXB0108-PW U?
+U 1 1 5C2BF846
+P 1800 2150
+F 0 "U?" H 1600 2900 60  0000 L CNN
+F 1 "TXB0108-PW" H 1600 1400 60  0000 L CNN
+F 2 "" H 1600 2100 60  0000 C CNN
+F 3 "" H 1600 2100 60  0000 C CNN
+	1    1800 2150
+	1    0    0    -1  
+$EndComp
+$Comp
+L TXB0108-PW U?
+U 1 1 5C2BF9CC
+P 1800 6000
+F 0 "U?" H 1600 6750 60  0000 L CNN
+F 1 "TXB0108-PW" H 1600 5250 60  0000 L CNN
+F 2 "" H 1600 5950 60  0000 C CNN
+F 3 "" H 1600 5950 60  0000 C CNN
+	1    1800 6000
+	1    0    0    -1  
+$EndComp
+$Comp
+L TXB0108-PW U?
+U 1 1 5C2BFA07
+P 4250 6000
+F 0 "U?" H 4050 6750 60  0000 L CNN
+F 1 "TXB0108-PW" H 4050 5250 60  0000 L CNN
+F 2 "" H 4050 5950 60  0000 C CNN
+F 3 "" H 4050 5950 60  0000 C CNN
+	1    4250 6000
+	1    0    0    -1  
+$EndComp
+$Comp
+L TXB0108-PW U?
+U 1 1 5C2BFAD5
+P 6200 5350
+F 0 "U?" H 6000 6100 60  0000 L CNN
+F 1 "TXB0108-PW" H 6000 4600 60  0000 L CNN
+F 2 "" H 6000 5300 60  0000 C CNN
+F 3 "" H 6000 5300 60  0000 C CNN
+	1    6200 5350
+	1    0    0    -1  
+$EndComp
+$EndSCHEMATC
