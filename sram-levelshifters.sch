@@ -38,7 +38,7 @@ Sheet 2 3
 Title "STATIC RAM 2 MBytes (512K x 8 x 4)"
 Date "2019-01-02"
 Rev ""
-Comp ""
+Comp "RetroBit Lab"
 Comment1 ""
 Comment2 ""
 Comment3 ""

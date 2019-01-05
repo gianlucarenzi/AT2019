@@ -35,10 +35,10 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 3 3
-Title ""
-Date ""
+Title "ATARI EXPANSION BUS PASS THRUGH"
+Date "2019-01-05"
 Rev ""
-Comp ""
+Comp "RetroBit Lab"
 Comment1 ""
 Comment2 ""
 Comment3 ""
