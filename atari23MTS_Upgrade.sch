@@ -35,7 +35,7 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 3
-Title "ATARI4MegExpansion"
+Title "ATARI XE 2/4 MegaRAM Expansion"
 Date "2018-12-31"
 Rev ""
 Comp "RetrobitLab"
@@ -1250,14 +1250,6 @@ NoConn ~ 10700 3950
 NoConn ~ 10700 4050
 NoConn ~ 10700 4150
 NoConn ~ 10700 4250
-Wire Wire Line
-	9700 4150 9700 4500
-Wire Wire Line
-	9700 4500 10200 4500
-Connection ~ 9700 4250
-Connection ~ 10200 4500
-Text GLabel 9700 4050 0    60   Input ~ 0
-VCC3V3
 Text GLabel 9700 3550 0    39   BiDi ~ 0
 PB5
 Text GLabel 9700 3650 0    39   BiDi ~ 0
@@ -1330,4 +1322,10 @@ Text GLabel 1200 6700 0    39   BiDi ~ 0
 ~S5
 Text GLabel 1200 6900 0    39   BiDi ~ 0
 RD5
+Text GLabel 9700 4150 0    39   BiDi ~ 0
+~ADDRSEL16K
+Text GLabel 9700 4250 0    39   BiDi ~ 0
+~ADDRSEL16K
+Text GLabel 9700 4050 0    39   Input ~ 0
+VCC3V3
 $EndSCHEMATC
