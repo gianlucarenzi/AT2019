@@ -34,7 +34,7 @@ EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 1 2
+Sheet 1 3
 Title "ATARI4MegExpansion"
 Date "2018-12-31"
 Rev ""
@@ -347,11 +347,6 @@ Connection ~ 7900 5600
 Wire Wire Line
 	7800 5450 7800 5600
 Connection ~ 7800 5600
-NoConn ~ 1200 5600
-NoConn ~ 1200 6700
-NoConn ~ 1200 6900
-NoConn ~ 3000 5600
-NoConn ~ 4350 6350
 Wire Wire Line
 	3000 5700 3250 5700
 Wire Notes Line
@@ -899,11 +894,6 @@ F 3 "" H 5250 5350 50  0000 C CNN
 	1    5250 6200
 	1    0    0    -1  
 $EndComp
-NoConn ~ 1200 5600
-NoConn ~ 1200 6700
-NoConn ~ 1200 6900
-NoConn ~ 3000 5600
-NoConn ~ 4350 6350
 Text GLabel 1200 6800 0    39   Input ~ 0
 +5VDC
 Text GLabel 4350 6550 0    39   Input ~ 0
@@ -1284,4 +1274,60 @@ Text GLabel 10700 3850 2    39   BiDi ~ 0
 ~BSEL3
 Text Notes 9750 4950 0    60   ~ 0
 ADDRESS DECODER 
+$Comp
+L CONN_01X04 EXTPWR1
+U 1 1 5C2F33D4
+P 2750 950
+F 0 "EXTPWR1" V 2950 950 50  0000 C CNN
+F 1 "CONN_01X04" V 2850 950 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Angled_1x04" H 2750 950 50  0001 C CNN
+F 3 "" H 2750 950 50  0000 C CNN
+	1    2750 950 
+	0    1    1    0   
+$EndComp
+$Comp
+L GND #PWR023
+U 1 1 5C2F34E0
+P 2800 750
+F 0 "#PWR023" H 2800 500 50  0001 C CNN
+F 1 "GND" H 2700 600 50  0000 C CNN
+F 2 "" H 2800 750 50  0001 C CNN
+F 3 "" H 2800 750 50  0001 C CNN
+	1    2800 750 
+	-1   0    0    1   
+$EndComp
+$Comp
+L GND #PWR024
+U 1 1 5C2F354E
+P 2700 750
+F 0 "#PWR024" H 2700 500 50  0001 C CNN
+F 1 "GND" H 2800 600 50  0000 C CNN
+F 2 "" H 2700 750 50  0001 C CNN
+F 3 "" H 2700 750 50  0001 C CNN
+	1    2700 750 
+	-1   0    0    1   
+$EndComp
+NoConn ~ 2600 750 
+Text GLabel 3000 750  2    39   BiDi ~ 0
++5VDC
+Wire Wire Line
+	3000 750  2900 750 
+$Sheet
+S 50   17500 11650 8350
+U 5C2FF215
+F0 "Expansion Slots pass through" 39
+F1 "expansionslotspt.sch" 39
+$EndSheet
+Text GLabel 6150 5950 2    39   BiDi ~ 0
+RSRVD
+Text GLabel 4350 6350 0    39   BiDi ~ 0
+AUDIO
+Text GLabel 3000 5600 2    39   BiDi ~ 0
+RD4
+Text GLabel 1200 5600 0    39   BiDi ~ 0
+~S4
+Text GLabel 1200 6700 0    39   BiDi ~ 0
+~S5
+Text GLabel 1200 6900 0    39   BiDi ~ 0
+RD5
 $EndSCHEMATC
