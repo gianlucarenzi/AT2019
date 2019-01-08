@@ -1,4 +1,4 @@
-EESchema Schematic File Version 2
+EESchema Schematic File Version 2  date Mon 07 Jan 2019 11:40:50 AM CET
 LIBS:power
 LIBS:device
 LIBS:transistors
@@ -30,13 +30,13 @@ LIBS:contrib
 LIBS:valves
 LIBS:AmigaComponents
 LIBS:atari23MTS_Upgrade-cache
-EELAYER 25 0
+EELAYER 25  0
 EELAYER END
-$Descr A4 11693 8268
+$Descr A4 11700 8267
 encoding utf-8
 Sheet 3 3
 Title "ATARI EXPANSION BUS PASS THRUGH"
-Date "2019-01-05"
+Date "7 jan 2019"
 Rev ""
 Comp "RetroBit Lab"
 Comment1 ""
@@ -51,7 +51,6 @@ P 3400 3600
 F 0 "CART2" H 3850 4450 50  0000 C CNN
 F 1 "ATARICARTRIDGE" H 3450 3700 50  0000 C CNN
 F 2 "RetroBitLab:TE_5530843-2_15X2_CART_EDGE_CONNECTOR" H 3450 2600 50  0000 C CNN
-F 3 "" H 3400 2750 50  0000 C CNN
 	1    3400 3600
 	1    0    0    -1  
 $EndComp
@@ -62,7 +61,6 @@ P 6500 3650
 F 0 "ECI2" H 6950 4100 50  0000 C CNN
 F 1 "ECIBUS" H 6550 3350 50  0000 C CNN
 F 2 "RetroBitLab:TE_5530843-2_7X2_EDGE_CONNECTOR" H 6500 3050 50  0000 C CNN
-F 3 "" H 6500 2800 50  0000 C CNN
 	1    6500 3650
 	1    0    0    -1  
 $EndComp
