@@ -97,10 +97,44 @@ static void led_toggle(void)
 
 #define BANKCTL 0xD311
 #define BANKSEL 0xD301
+#define BANKCTL_RAMEN      (1 << 0) /* BIT 0 */
+#define BANKCTL_ROMEN      (1 << 1) /* BIT 1 */
+#define BANKCTL_ROMSEL     (1 << 2) /* BIT 2..5 ROM SELECTOR */
+#define BANKCTL_NC00       (1 << 6) /* BIT 6 */
+#define BANKCTL_NC01       (1 << 7) /* BIT 7 */
 
+/*
+ *  -------------------------------------
+ *  NC01 NC00 SEL SEL SEL SEL ROMEN RAMEN
+ * --------------------------------------
+ *   X    X    X   X   X   X    X     0    -- EXTRA RAM DISABLE
+ * 
+ * TODO:
+ * 
+ *   X    X    X   X   X   X    X     1    -- EXTRA RAM ENABLE
+ *   X    X    X   X   X   X    0     X    -- ROM DISABLE
+ *   X    X    0   0   0   0    1     X    -- ROM ENABLE & SELECT ROM n.0
+ *   X    X    0   0   0   1    1     X    -- ROM ENABLE & SELECT ROM n.1
+ *   X    X    0   0   1   0    1     X    -- ROM ENABLE & SELECT ROM n.2
+ *   X    X    0   0   1   1    1     X    -- ROM ENABLE & SELECT ROM n.3
+ *   X    X    0   1   0   0    1     X    -- ROM ENABLE & SELECT ROM n.4
+ *   X    X    0   1   0   1    1     X    -- ROM ENABLE & SELECT ROM n.5
+ *   X    X    0   1   1   0    1     X    -- ROM ENABLE & SELECT ROM n.6
+ *   X    X    0   1   1   1    1     X    -- ROM ENABLE & SELECT ROM n.7
+ *   X    X    1   0   0   0    1     X    -- ROM ENABLE & SELECT ROM n.8
+ *   X    X    1   0   0   1    1     X    -- ROM ENABLE & SELECT ROM n.9
+ *   X    X    1   0   1   0    1     X    -- ROM ENABLE & SELECT ROM n.10
+ *   X    X    1   0   1   1    1     X    -- ROM ENABLE & SELECT ROM n.11
+ *   X    X    1   1   0   0    1     X    -- ROM ENABLE & SELECT ROM n.12
+ *   X    X    1   1   0   1    1     X    -- ROM ENABLE & SELECT ROM n.13
+ *   X    X    1   1   1   1    1     X    -- ROM ENABLE & SELECT ROM n.14
+ *   X    X    1   1   1   1    1     X    -- ROM ENABLE & SELECT ROM n.15
+ * 
+ */
 int main(void)
 {
 	bool enable_expansion;
+	bool rom_enable;
 
 	_write_ready(SYSCALL_NOTREADY, &huart2);
 
@@ -134,13 +168,17 @@ int main(void)
 	 * 
 	 * To disable/enable external memory the jumper can be used or
 	 * write at the address BANKCTL at D0
-	 * Other D1..D7 are currently unused
+	 * Other D1..D7 are currently unimplemented
 	 */
 
 	led_light(1); // Usually we start with memory expansion enabled...
 
-	DBG_I("Starting firmware...\r\n");
 	enable_expansion = true;
+	rom_enable = false;
+
+	DBG_I("Starting firmware: RAM ENABLE: %s - ROM ENABLE: %s...\r\n",
+			enable_expansion == true ? "YES" : "NO",
+			rom_enable == true ? "YES" : "NO");
 
 	for (;;)
 	{
@@ -149,6 +187,7 @@ int main(void)
 		{
 			uint16_t address = atari_get_addressbus();
 			uint8_t  data = atari_get_databus();
+			DBG_N("PC: $%04X - DATA: $%02X\r\n", address, data);
 
 			switch(address)
 			{
