@@ -1,3 +1,13 @@
+/RBL-XE-MegaRAM/build/syscall.o
+/RBL-XE-MegaRAM/build/syscall.lst
+/RBL-XE-MegaRAM/build/syscall.d
+/RBL-XE-MegaRAM/build/stm32f401-xe-megaram.map
+/RBL-XE-MegaRAM/build/stm32f401-xe-megaram.hex
+/RBL-XE-MegaRAM/build/stm32f401-xe-megaram.elf
+/RBL-XE-MegaRAM/build/stm32f401-xe-megaram.bin
+/RBL-XE-MegaRAM/build/atari.o
+/RBL-XE-MegaRAM/build/atari.lst
+/RBL-XE-MegaRAM/build/atari.d
 /atari23MTS_Upgrade-cache.bak
 /atari23MTS_Upgrade.kicad_pcb-bak
 /sram-levelshifters.bak
