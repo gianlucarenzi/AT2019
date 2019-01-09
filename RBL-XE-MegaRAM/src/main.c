@@ -58,8 +58,8 @@ static UART_HandleTypeDef huart2;
 
 static void banner(void)
 {
-	printf("\r\n\r\n" ANSI_BLUE "RETROBITLAB AMIGA USB KEYBOARD ADAPTER" ANSI_RESET "\r\n");
-	printf(ANSI_BLUE "-=* STM32F401 BASED BOARD HANDLER  *=-" ANSI_RESET "\r\n");
+	printf("\r\n\r\n" ANSI_BLUE "RETROBITLAB ATARI MEGA RAM EXPANSION BOARD" ANSI_RESET "\r\n");
+	printf(ANSI_BLUE "-=* STM32F401 BASED BOARD *=-" ANSI_RESET "\r\n");
 	printf(ANSI_YELLOW);
 	printf("FWVER: %s", fwBuild);
 	printf(ANSI_RESET "\r\n");
@@ -108,10 +108,10 @@ static void led_toggle(void)
  *  NC01 NC00 SEL SEL SEL SEL ROMEN RAMEN
  * --------------------------------------
  *   X    X    X   X   X   X    X     0    -- EXTRA RAM DISABLE
+ *   X    X    X   X   X   X    X     1    -- EXTRA RAM ENABLE
  * 
  * TODO:
  * 
- *   X    X    X   X   X   X    X     1    -- EXTRA RAM ENABLE
  *   X    X    X   X   X   X    0     X    -- ROM DISABLE
  *   X    X    0   0   0   0    1     X    -- ROM ENABLE & SELECT ROM n.0
  *   X    X    0   0   0   1    1     X    -- ROM ENABLE & SELECT ROM n.1
