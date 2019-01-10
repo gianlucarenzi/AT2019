@@ -44,6 +44,14 @@ uint16_t atari_get_addressbus(void)
 	return addr;
 }
 
+uint8_t atari_get_addressbus_low(void)
+{
+	/* ATARI ADDRESS BUS LOW BYTE IS CONNECTED TO Port PC0..PC7 */
+	uint8_t addr = (GPIOC->IDR & 0x000000ff);
+	DBG_N("Exit with 0x%02X\r\n", addr);
+	return addr;
+}
+
 void atari_set_expansion_memory(uint8_t exp)
 {
 	/* MEMORY EXPANSION DATA BUS ARE CONNECTED TO PA4..PA11 (A0..A7) */
@@ -80,4 +88,12 @@ int atari_has_write(void)
 	uint8_t rw = (GPIOA->IDR & (1 << 15)); // high = read  low = write
 	DBG_E("Exit with: %s\r\n", rw == 1 ? "READ" : "WRITE");
 	return rw == 0;
+}
+
+int atari_has_cctl(void)
+{
+	/* ATARI nCCTL means access to D5xx - D7xx */
+	uint8_t cctl = (GPIOA->IDR & (1 << 12)); // high = no D5xx low = D5xx access
+	DBG_E("Exit with: %s D5XX Access\r\n", cctl == 1 ? "NO " : "YES");
+	return cctl == 0;
 }

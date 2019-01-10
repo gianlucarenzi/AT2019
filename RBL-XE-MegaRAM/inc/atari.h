@@ -10,6 +10,7 @@ extern uint16_t atari_get_addressbus(void);
 extern void atari_set_expansion_memory(uint8_t exp);
 extern int atari_get_phi2(void);
 extern int atari_has_write(void);
-
+extern uint8_t atari_get_addressbus_low(void);
+extern int atari_has_cctl(void);
 
 #endif

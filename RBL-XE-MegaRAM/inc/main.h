@@ -7,7 +7,7 @@
   ******************************************************************************
   ** This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
-  * USER CODE END. Other portions of this file, whether 
+  * USER CODE END. Other portions of this file, whether
   * inserted by the user or by software development tools
   * are owned by their respective copyright owners.
   *
@@ -78,12 +78,8 @@ void Error_Handler(void);
 /* USER CODE END EFP */
 
 /* Private defines -----------------------------------------------------------*/
-#define mA13_Pin GPIO_PIN_13
-#define mA13_GPIO_Port GPIOC
-#define mA14_Pin GPIO_PIN_14
-#define mA14_GPIO_Port GPIOC
-#define mA15_Pin GPIO_PIN_15
-#define mA15_GPIO_Port GPIOC
+
+/* ADDRESS BUS */
 #define mA0_Pin GPIO_PIN_0
 #define mA0_GPIO_Port GPIOC
 #define mA1_Pin GPIO_PIN_1
@@ -92,14 +88,30 @@ void Error_Handler(void);
 #define mA2_GPIO_Port GPIOC
 #define mA3_Pin GPIO_PIN_3
 #define mA3_GPIO_Port GPIOC
+#define mA4_Pin GPIO_PIN_4
+#define mA4_GPIO_Port GPIOC
+#define mA5_Pin GPIO_PIN_5
+#define mA5_GPIO_Port GPIOC
+#define mA6_Pin GPIO_PIN_6
+#define mA6_GPIO_Port GPIOC
+#define mA7_Pin GPIO_PIN_7
+#define mA7_GPIO_Port GPIOC
+#define mA8_Pin GPIO_PIN_8
+#define mA8_GPIO_Port GPIOC
+
+/* TEST POINT AND LED */
 #define TP1_Pin GPIO_PIN_0
 #define TP1_GPIO_Port GPIOA
 #define ACT_Pin GPIO_PIN_1
 #define ACT_GPIO_Port GPIOA
+
+/* DEBUG UART */
 #define UART_TX_TTL_Pin GPIO_PIN_2
 #define UART_TX_TTL_GPIO_Port GPIOA
 #define UART_RX_TTL_Pin GPIO_PIN_3
 #define UART_RX_TTL_GPIO_Port GPIOA
+
+/* BANK SELECTION PINS */
 #define PB0_Pin GPIO_PIN_4
 #define PB0_GPIO_Port GPIOA
 #define PB1_Pin GPIO_PIN_5
@@ -108,34 +120,6 @@ void Error_Handler(void);
 #define PB2_GPIO_Port GPIOA
 #define PB3_Pin GPIO_PIN_7
 #define PB3_GPIO_Port GPIOA
-#define mA4_Pin GPIO_PIN_4
-#define mA4_GPIO_Port GPIOC
-#define mA5_Pin GPIO_PIN_5
-#define mA5_GPIO_Port GPIOC
-#define mD0_Pin GPIO_PIN_0
-#define mD0_GPIO_Port GPIOB
-#define mD1_Pin GPIO_PIN_1
-#define mD1_GPIO_Port GPIOB
-#define mD2_Pin GPIO_PIN_2
-#define mD2_GPIO_Port GPIOB
-#define mHALT_Pin GPIO_PIN_10
-#define mHALT_GPIO_Port GPIOB
-#define mMPD_Pin GPIO_PIN_12
-#define mMPD_GPIO_Port GPIOB
-#define mIRQ_Pin GPIO_PIN_13
-#define mIRQ_GPIO_Port GPIOB
-#define mREF_Pin GPIO_PIN_14
-#define mREF_GPIO_Port GPIOB
-#define mRST_Pin GPIO_PIN_15
-#define mRST_GPIO_Port GPIOB
-#define mA6_Pin GPIO_PIN_6
-#define mA6_GPIO_Port GPIOC
-#define mA7_Pin GPIO_PIN_7
-#define mA7_GPIO_Port GPIOC
-#define mA8_Pin GPIO_PIN_8
-#define mA8_GPIO_Port GPIOC
-#define mA9_Pin GPIO_PIN_9
-#define mA9_GPIO_Port GPIOC
 #define PB4_Pin GPIO_PIN_8
 #define PB4_GPIO_Port GPIOA
 #define PB5_Pin GPIO_PIN_9
@@ -144,22 +128,14 @@ void Error_Handler(void);
 #define PB6_GPIO_Port GPIOA
 #define PB7_Pin GPIO_PIN_11
 #define PB7_GPIO_Port GPIOA
-#define mCCTL_Pin GPIO_PIN_12
-#define mCCTL_GPIO_Port GPIOA
-#define SWDIO_Pin GPIO_PIN_13
-#define SWDIO_GPIO_Port GPIOA
-#define SWCLK_Pin GPIO_PIN_14
-#define SWCLK_GPIO_Port GPIOA
-#define mRW_Pin GPIO_PIN_15
-#define mRW_GPIO_Port GPIOA
-#define mA10_Pin GPIO_PIN_10
-#define mA10_GPIO_Port GPIOC
-#define mA11_Pin GPIO_PIN_11
-#define mA11_GPIO_Port GPIOC
-#define mA12_Pin GPIO_PIN_12
-#define mA12_GPIO_Port GPIOC
-#define PHI2_Pin GPIO_PIN_2
-#define PHI2_GPIO_Port GPIOD
+
+/* DATA BUS */
+#define mD0_Pin GPIO_PIN_0
+#define mD0_GPIO_Port GPIOB
+#define mD1_Pin GPIO_PIN_1
+#define mD1_GPIO_Port GPIOB
+#define mD2_Pin GPIO_PIN_2
+#define mD2_GPIO_Port GPIOB
 #define mD3_Pin GPIO_PIN_3
 #define mD3_GPIO_Port GPIOB
 #define mD4_Pin GPIO_PIN_4
@@ -170,13 +146,34 @@ void Error_Handler(void);
 #define mD6_GPIO_Port GPIOB
 #define mD7_Pin GPIO_PIN_7
 #define mD7_GPIO_Port GPIOB
+
+/* SIGNALS */
+#define mHALT_Pin GPIO_PIN_10
+#define mHALT_GPIO_Port GPIOB
+#define mMPD_Pin GPIO_PIN_12
+#define mMPD_GPIO_Port GPIOB
+#define mIRQ_Pin GPIO_PIN_13
+#define mIRQ_GPIO_Port GPIOB
+#define mREF_Pin GPIO_PIN_14
+#define mREF_GPIO_Port GPIOB
+#define mRST_Pin GPIO_PIN_15
+#define mRST_GPIO_Port GPIOB
+#define RAMEN_Pin GPIO_PIN_8
+#define RAMEN_GPIO_Port GPIOC
+#define mCCTL_Pin GPIO_PIN_12
+#define mCCTL_GPIO_Port GPIOA
+#define SWDIO_Pin GPIO_PIN_13
+#define SWDIO_GPIO_Port GPIOA
+#define SWCLK_Pin GPIO_PIN_14
+#define SWCLK_GPIO_Port GPIOA
+#define mRW_Pin GPIO_PIN_15
+#define mRW_GPIO_Port GPIOA
+#define PHI2_Pin GPIO_PIN_2
+#define PHI2_GPIO_Port GPIOD
 #define mEXSEL_Pin GPIO_PIN_8
 #define mEXSEL_GPIO_Port GPIOB
 #define mD1XX_Pin GPIO_PIN_9
 #define mD1XX_GPIO_Port GPIOB
-/* USER CODE BEGIN Private defines */
-
-/* USER CODE END Private defines */
 
 #ifdef __cplusplus
  extern "C" {

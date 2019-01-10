@@ -6,7 +6,7 @@
   ******************************************************************************
   ** This notice applies to any and all portions of this file
   * that are not between comment pairs USER CODE BEGIN and
-  * USER CODE END. Other portions of this file, whether 
+  * USER CODE END. Other portions of this file, whether
   * inserted by the user or by software development tools
   * are owned by their respective copyright owners.
   *
@@ -95,8 +95,18 @@ static void led_toggle(void)
 	led_light(ledval);
 }
 
-#define BANKCTL 0xD311
-#define BANKSEL 0xD301
+static void memory_expansion_enable(bool ena)
+{
+	HAL_GPIO_WritePin(RAMEN_GPIO_Port, RAMEN_Pin,
+		ena == true ? GPIO_PIN_SET : GPIO_PIN_RESET);
+}
+
+#define BANKSEL 0xD530
+#define BANKCTL 0xD531
+#define BANKSEL_L 0x30
+#define BANKSEL_H 0xD5
+#define BANKCTL_L 0x31
+#define BANKCTL_H 0xD5
 #define BANKCTL_RAMEN      (1 << 0) /* BIT 0 */
 #define BANKCTL_ROMEN      (1 << 1) /* BIT 1 */
 #define BANKCTL_ROMSEL     (1 << 2) /* BIT 2..5 ROM SELECTOR */
@@ -109,9 +119,9 @@ static void led_toggle(void)
  * --------------------------------------
  *   X    X    X   X   X   X    X     0    -- EXTRA RAM DISABLE
  *   X    X    X   X   X   X    X     1    -- EXTRA RAM ENABLE
- * 
+ *
  * TODO:
- * 
+ *
  *   X    X    X   X   X   X    0     X    -- ROM DISABLE
  *   X    X    0   0   0   0    1     X    -- ROM ENABLE & SELECT ROM n.0
  *   X    X    0   0   0   1    1     X    -- ROM ENABLE & SELECT ROM n.1
@@ -129,7 +139,7 @@ static void led_toggle(void)
  *   X    X    1   1   0   1    1     X    -- ROM ENABLE & SELECT ROM n.13
  *   X    X    1   1   1   1    1     X    -- ROM ENABLE & SELECT ROM n.14
  *   X    X    1   1   1   1    1     X    -- ROM ENABLE & SELECT ROM n.15
- * 
+ *
  */
 int main(void)
 {
@@ -165,7 +175,7 @@ int main(void)
 	 * - Writing to BANKSEL trigger the expansion to be used
 	 *   all 8-bit banked-memory (256 banks of 16K each mapped at
 	 *   the same window (0x4000 - 0x7FFF)).
-	 * 
+	 *
 	 * To disable/enable external memory the jumper can be used or
 	 * write at the address BANKCTL at D0
 	 * Other D1..D7 are currently unimplemented
@@ -185,38 +195,43 @@ int main(void)
 		/* Act only when PHI2 is high */
 		if (atari_get_phi2())
 		{
-			uint16_t address = atari_get_addressbus();
-			uint8_t  data = atari_get_databus();
-			DBG_N("PC: $%04X - DATA: $%02X\r\n", address, data);
-
-			switch(address)
+			if (atari_has_cctl()) /* $D5XX access nCCTL */
 			{
-				case BANKCTL:
-					if (atari_has_write())
-					{
-						if (data & 0x01) /* Only D0 is used */
-						{
-							led_light(1); /* LED ON WHEN RAM EXPANSION WORKS */
-							enable_expansion = true;
-						}
-						else
-						{
-							led_light(0);
-							enable_expansion = false;
-						}
-					}
-					break;
+				uint8_t  laddress = atari_get_addressbus_low();
+				uint8_t  data = atari_get_databus();
+				DBG_N("PC: $D5%02X - DATA: $%02X\r\n", laddress, data);
 
-				case BANKSEL:
-					if (atari_has_write())
-					{
-						if (enable_expansion == true)
-							atari_set_expansion_memory(data);
-					}
-					break;
+				switch(laddress)
+				{
+					case BANKCTL_L:
+						if (atari_has_write())
+						{
+							if (data & 0x01) /* Only D0 is used */
+							{
+								led_light(1); /* LED ON WHEN RAM EXPANSION WORKS */
+								memory_expansion_enable(true);
+								enable_expansion = true;
+							}
+							else
+							{
+								led_light(0);
+								memory_expansion_enable(false);
+								enable_expansion = false;
+							}
+						}
+						break;
 
-				default:
-					break;
+					case BANKSEL_L:
+						if (atari_has_write())
+						{
+							if (enable_expansion == true)
+								atari_set_expansion_memory(data);
+						}
+						break;
+
+					default:
+						break;
+				}
 			}
 		}
 
@@ -325,11 +340,11 @@ static void MX_GPIO_Init(void)
 	__HAL_RCC_GPIOB_CLK_ENABLE();
 	__HAL_RCC_GPIOD_CLK_ENABLE();
 
-  /* Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOA, TP1_Pin |
-	PB0_Pin| PB1_Pin| PB2_Pin |PB3_Pin |
-	PB4_Pin| PB5_Pin| PB6_Pin |PB7_Pin
-	, GPIO_PIN_RESET);
+	/* Configure GPIO pin Output Level */
+	HAL_GPIO_WritePin(GPIOA, TP1_Pin |
+		PB0_Pin| PB1_Pin| PB2_Pin |PB3_Pin |
+		PB4_Pin| PB5_Pin| PB6_Pin |PB7_Pin
+		, GPIO_PIN_RESET);
 
 	/* Configure GPIO pin Output Level */
 	HAL_GPIO_WritePin(ACT_GPIO_Port, ACT_Pin, GPIO_PIN_SET);
@@ -337,12 +352,14 @@ static void MX_GPIO_Init(void)
 	/* Configure GPIO pin Output Level */
 	HAL_GPIO_WritePin(GPIOB, mHALT_Pin | mRST_Pin, GPIO_PIN_RESET);
 
+	/* Configure GPIO pin Output Level */
+	HAL_GPIO_WritePin(RAMEN_GPIO_Port, RAMEN_Pin, GPIO_PIN_RESET);
+
 	/* Configure GPIO pins :
-		mA0_Pin mA1_Pin mA2_Pin  mA3_Pin  mA4_Pin  mA5_Pin  mA6_Pin  mA7_Pin
-		mA8_Pin mA9_Pin mA10_Pin mA11_Pin mA12_Pin mA13_Pin mA14_Pin mA15_Pin */
-	GPIO_InitStruct.Pin = 
-		mA0_Pin | mA1_Pin | mA2_Pin | mA3_Pin | mA4_Pin | mA5_Pin | mA6_Pin | mA7_Pin |
-		mA8_Pin | mA9_Pin | mA10_Pin| mA11_Pin| mA12_Pin| mA13_Pin| mA14_Pin| mA15_Pin;
+		mA0_Pin mA1_Pin mA2_Pin mA3_Pin
+		mA4_Pin mA5_Pin mA6_Pin mA7_Pin */
+	GPIO_InitStruct.Pin =
+		mA0_Pin | mA1_Pin | mA2_Pin | mA3_Pin | mA4_Pin | mA5_Pin | mA6_Pin | mA7_Pin;
 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
@@ -361,7 +378,8 @@ static void MX_GPIO_Init(void)
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 	/* Configure GPIO pins :
-		mD0_Pin mD1_Pin mD2_Pin mD3_Pin mD4_Pin mD5_Pin mD6_Pin mD7_Pin
+		mD0_Pin mD1_Pin mD2_Pin mD3_Pin
+		mD4_Pin mD5_Pin mD6_Pin mD7_Pin
 		mMPD_Pin
 		mIRQ_Pin
 		mREF_Pin
@@ -400,6 +418,12 @@ static void MX_GPIO_Init(void)
 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
 	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(PHI2_GPIO_Port, &GPIO_InitStruct);
+
+	/*Configure GPIO pin : RAMEN_Pin */
+	GPIO_InitStruct.Pin = RAMEN_Pin;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	HAL_GPIO_Init(RAMEN_GPIO_Port, &GPIO_InitStruct);
 }
 
 /**
