@@ -140,7 +140,7 @@
       (place P6 91440 -81280 front 0 (PN CONN_01X01))
     )
     (component "Symbols:Symbol_GNU-GPL_CopperTop_Small"
-      (place REF** 99060 -90170 front 0 (PN "Symbol_GNU-GPL_CopperTop_Small"))
+      (place REF** 101600 -80010 front 0 (PN "Symbol_GNU-GPL_CopperTop_Small"))
     )
     (component Pin_Headers:Pin_Header_Straight_1x02
       (place DISABLE.MODE.1 146050 -71120 front 90 (PN CONN_01X02))
@@ -1265,20 +1265,12 @@
     (class kicad_default "" +5VDC A0 A1 A10 A11 A12 A13 A14 A15 A2 A3 A4 A5
       A6 A7 A8 A9 AUDIO B02/PHI2 BOOT0 D0 D1 D2 D3 D4 D5 D6 D7 GND "Net-(C2-Pad1)"
       "Net-(C4-Pad1)" "Net-(C5-Pad1)" "Net-(D1-Pad2)" "Net-(D2-Pad2)" "Net-(D3-Pad1)"
-      "Net-(D3-Pad2)" "Net-(EXTPWR1-Pad4)" "Net-(P2-Pad1)" "Net-(P3-Pad1)"
-      "Net-(P4-Pad1)" "Net-(P5-Pad1)" "Net-(U2-Pad1)" "Net-(U2-Pad30)" "Net-(U3-Pad10)"
-      "Net-(U3-Pad11)" "Net-(U3-Pad7)" "Net-(U3-Pad9)" "Net-(U7-Pad10)" "Net-(U7-Pad11)"
-      "Net-(U7-Pad12)" "Net-(U7-Pad13)" "Net-(U7-Pad2)" "Net-(U7-Pad5)" "Net-(U7-Pad6)"
-      "Net-(U7-Pad8)" "Net-(U7-Pad9)" "Net-(U8-Pad12)" "Net-(U8-Pad13)" "Net-(U8-Pad14)"
-      "Net-(U8-Pad15)" "Net-(U8-Pad16)" "Net-(U8-Pad17)" "Net-(U8-Pad4)" "Net-(U8-Pad5)"
-      "Net-(U8-Pad6)" "Net-(U8-Pad7)" "Net-(U8-Pad8)" "Net-(U8-Pad9)" "Net-(U9-Pad10)"
-      "Net-(U9-Pad11)" "Net-(U9-Pad12)" "Net-(U9-Pad13)" "Net-(U9-Pad4)" "Net-(U9-Pad5)"
-      "Net-(U9-Pad6)" "Net-(U9-Pad8)" "Net-(U9-Pad9)" PB0 PB1 PB2 PB3 PB4
-      PB5 PB6 PB7 R/~W RD4 RD5 RSRVD SWDCLK SWDIO TP1 UART_RX_TTL UART_TX_TTL
-      VCC3V3 VCC5V mA0 mA1 mA10 mA11 mA12 mA13 mA14 mA15 mA2 mA3 mA4 mA5 mA6
-      mA7 mA8 mA9 mB02/PHI2 mD0 mD1 mD2 mD3 mD4 mD5 mD6 mD7 mR/~W nRESET ~ADDRSEL16K
-      ~BSEL0 ~BSEL1 ~BSEL2 ~BSEL3 ~CCTL ~D1XX ~EXSEL ~HALT ~IRQ ~MPD ~REF
-      ~RST ~S4 ~S5 ~mCCTL ~mD1XX ~mEXSEL ~mHALT ~mIRQ ~mMPD ~mOE ~mREF ~mRST
+      "Net-(D3-Pad2)" "Net-(U7-Pad2)" PB0 PB1 PB2 PB3 PB4 PB5 PB6 PB7 R/~W
+      RD4 RD5 RSRVD SWDCLK SWDIO TP1 UART_RX_TTL UART_TX_TTL VCC3V3 VCC5V
+      mA0 mA1 mA10 mA11 mA12 mA13 mA14 mA15 mA2 mA3 mA4 mA5 mA6 mA7 mA8 mA9
+      mB02/PHI2 mD0 mD1 mD2 mD3 mD4 mD5 mD6 mD7 mR/~W nRESET ~ADDRSEL16K ~BSEL0
+      ~BSEL1 ~BSEL2 ~BSEL3 ~CCTL ~D1XX ~EXSEL ~HALT ~IRQ ~MPD ~REF ~RST ~S4
+      ~S5 ~mCCTL ~mD1XX ~mEXSEL ~mHALT ~mIRQ ~mMPD ~mOE ~mREF ~mRST
       (circuit
         (use_via Via[0-1]_400:300_um)
       )
