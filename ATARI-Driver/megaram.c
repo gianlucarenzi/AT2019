@@ -9,6 +9,7 @@
 #include <atari.h>
 #include <cc65.h>
 #include <6502.h>
+#include <stdlib.h>
 
 #define PLP()	__asm__("plp")
 #define PHP()	__asm__("php")
@@ -24,6 +25,13 @@ static void poke(unsigned char *addr, unsigned char val)
 	*(addr) = val;
 }
 
+#define KB(a)	((a)*1024L)
+#define MB(a)	(KB(a)*1024L)
+
+#define MEMORY_SIZE KB(4096)
+
+static unsigned char memory_banks[256];
+
 int main(void)
 {
 	int reg;
@@ -34,10 +42,15 @@ int main(void)
 	unsigned char * osrom = (unsigned char *) 0xC000;
 	unsigned char * nmien = (unsigned char *) 0xD40E;
 	unsigned char * portb = (unsigned char *) 0xD301;
-	unsigned char * addr;
+	unsigned char * addr =  NULL;
+	unsigned char * bankctl = (unsigned char *) 0xD531;
+	unsigned char * banksel = (unsigned char *) 0xD530;
+
+	int numbanks = MEMORY_SIZE / KB(16);
+	int numbanks_good = 0;
 
 	clrscr();
-	printf("Mega2/4 RAM Enabler\n");
+	printf("Mega2/4 RAM Expansion Hardware\n");
 	/* 0xc000 - 0xcfff copy
 	 * 0xd800 - 0xffff copy
 	 */
@@ -73,17 +86,44 @@ int main(void)
 	addr = (unsigned char *) 710;
 	poke(addr, peek(addr) - 1);
 
-	printf("$D531 = RAM ENABLE\n");
-	addr = (unsigned char *) 0xD531;
-	poke( addr, 1);
+	poke (osram, 0xea);
+	poke (bankctl, 1);
+	printf("RAM EXPANSION Checking...\n");
 
-	addr = (unsigned char *) 0xD530;
-	for (reg = 0; reg < (1 << 5); reg++)
+	osram = (unsigned char *) 0x4000;
+	srand(0xfeedf00d);
+	for (reg = 0; reg < numbanks; reg++)
 	{
-		clrscr();
-		printf("$D530 = BANK RAM %02d\n", reg);
-		c = cgetc();
+		unsigned char r;
+		r = (unsigned char) rand() & 0xff;
+		/* Select BANK */
+		poke (banksel, reg);
+		/* Write a byte at the same address of each bank */
+		memory_banks[reg] = r;
+		//printf("BANK: %d - WR: 0x%02x\n", reg, r);
+		poke (osram, memory_banks[reg]);
+		//c = cgetc();
 	}
+
+	/* Now read them back */
+	for (reg = 0; reg < numbanks; reg++)
+	{
+		unsigned char rd;
+		/* Select BANK */
+		poke (banksel, reg);
+		rd = peek(osram);
+		//printf("BANK: %d - RD: 0x%02x\n", reg, rd);
+		if (rd != memory_banks[reg])
+		{
+			printf("MEMORY ERROR!\n");
+			break;
+		}
+		numbanks_good++;
+	}
+
+	printf("%dK GOOD\n", numbanks_good * 16);
+	poke (banksel, 0);
+	poke (bankctl, 0);
 
 	printf("Done! Press any key to exit...\n");
 	c = cgetc();

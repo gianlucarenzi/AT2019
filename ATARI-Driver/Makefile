@@ -7,6 +7,7 @@ EMULATOR ?= atari800
 EMUSWITCHES ?= -win-width 800 \
 -win-height 600 \
 -xlxe_rom ~/ATARI/ATARIXL.ROM \
+-retrobit 4096 \
 $(TARGET)
 
 C_SOURCES = \
