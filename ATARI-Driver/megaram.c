@@ -83,8 +83,6 @@ int main(void)
 	poke(nmien, reg); /* re-enalbe NMIs */
 	PLP();            /* restore processor status */
 
-	printf("0x4000: 0x%02x\n", peek(osram));
-
 	/* Change the 'A' and the background color to a darker one... */
 	osrom = (unsigned char *) (0xE000 + ('A' - 32) * 8);
 	for (reg = 0; reg < ArraySize(tab); reg++)
