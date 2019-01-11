@@ -1,0 +1,1 @@
+#define MEMSIZEK 4096
