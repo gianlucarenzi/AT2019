@@ -5,3 +5,10 @@ cl65 -t atari megaram.c -o megaram.sys
 Launch: (Emulator)
 -------
 atari800 -win-width 800 -win-height 600 -xlxe_rom ~/ATARI/ATARIXL.ROM megaram.sys
+
+It needs cc65 compiler. I built from sources and installed in PREFIX=$HOME. It works very good.
+The same for emulator atari800. I used the gitub sources and build them too. It works great!
+
+TODO:
+MegaRam Driver for Emulator, just to check if my hardware can be used in a real ATARI, before launching
+the PCB production. ;-)
