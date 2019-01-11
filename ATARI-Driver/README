@@ -1,0 +1,7 @@
+Compile:
+--------
+cl65 -t atari megaram.c -o megaram.sys
+
+Launch: (Emulator)
+-------
+atari800 -win-width 800 -win-height 600 -xlxe_rom ~/ATARI/ATARIXL.ROM megaram.sys
