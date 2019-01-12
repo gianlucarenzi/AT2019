@@ -125,7 +125,11 @@ int main(void)
 		numbanks_good++;
 	}
 
-	printf("%dK GOOD\n", numbanks_good * 16);
+	if (numbanks_good > 0)
+		printf("%dK GOOD\n", numbanks_good * 16);
+	else
+		printf("NO MEMORY EXPANSION FOUND\n");
+
 	printf("Done! Press any key to exit...\n");
 	c = cgetc();
 
