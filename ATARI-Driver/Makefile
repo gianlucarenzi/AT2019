@@ -4,17 +4,30 @@ MACH ?= atari
 TARGET ?= megaram.sys
 EMULATOR ?= atari800
 MEMSIZEK ?= 512
+DISABLE_EXPANSION ?= no
 
-EMUSWITCHES ?= -win-width 800 \
--win-height 600 \
--xlxe_rom ~/ATARI/ATARIXL.ROM \
--retrobit $(MEMSIZEK) \
-$(TARGET)
+# Usually this software can run on emulator and using the -retrobit switch
+# to enable to memory expansion driver.
+
+ifeq ($(DISABLE_EXPANSION),yes)
+	EMUSWITCHES = -win-width 800 \
+	-win-height 600 \
+	-xlxe_rom ~/ATARI/ATARIXL.ROM \
+	$(TARGET)
+else
+	EMUSWITCHES = -win-width 800 \
+	-win-height 600 \
+	-xlxe_rom ~/ATARI/ATARIXL.ROM \
+	-retrobit $(MEMSIZEK) \
+	$(TARGET)
+endif
 
 C_SOURCES = \
 	megaram.c \
 
+
 ASM_SOURCES =
+
 
 all: $(TARGET)
 
@@ -30,4 +43,5 @@ build: $(TARGET)
 
 clean:
 	rm *.o
+	rm version.h
 	rm $(TARGET)

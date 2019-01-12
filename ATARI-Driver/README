@@ -1,14 +1,82 @@
 Compile:
 --------
-cl65 -t atari megaram.c -o megaram.sys
+make clean && make all MEMSIZEK=512
+
+MEMSIZEK can be any size: 512, 1024, 2048, 4096
 
 Launch: (Emulator)
 -------
-atari800 -win-width 800 -win-height 600 -xlxe_rom ~/ATARI/ATARIXL.ROM megaram.sys
+make build
 
-It needs cc65 compiler. I built from sources and installed in PREFIX=$HOME. It works very good.
-The same for emulator atari800. I used the gitub sources and build them too. It works great!
+If you want to test the software without memory expansion (just to see it
+fails :-/ ) just add the DISABLE_EXPANSION=yes to makefile line.
 
-TODO:
-MegaRam Driver for Emulator, just to check if my hardware can be used in a real ATARI, before launching
-the PCB production. ;-)
+e.g.: make clean && make all MEMSIZEK=1024 DISABLE_EXPANSION=yes
+
+It needs cc65 compiler. I built from sources and installed in
+PREFIX=$HOME. It works very good. The same for emulator atari800.
+I used the gitub sources and build them too. It works great!
+In my github branch I just wrote the MegaRam Driver for Emulator,
+just to check if my hardware can be used in a real ATARI, before
+launching the PCB production. ;-)
+
+---------------------------------
+Application Programming Interface
+---------------------------------
+
+To enable memory expansion write 1 at bank control register @ D531:
+
+in C:
+	unsigned char * bankctl = (unsigned char *) 0xd531;
+	*(bankctl) = 1;
+
+in ASM:
+	lda #1
+	sta $d531
+
+To disable, simply write 0 at the same register.
+
+To select the bank (window will be at 0x4000-0x7fff address) write the
+correct bank number @ register bank select D530:
+
+in C:
+	unsigned char * banksel = (unsigned char *) 0xd530;
+	unsigned char * ramwindow = (unsigned char *) 0x4000;
+
+	*(bankctl) = 12;
+	/* Write at the window of bank 13 */
+	memcpy(ramwindow, data1, 0x4000); /* Max size will be 16K!!! */
+
+	*(bankctl) = 7;
+	/* Write at the window of bank 8 */
+	memcpy(ramwindow, data2, 0x4000); /* Max size will be 16K!!! */
+	...
+	...
+
+in ASM:
+	; BANK 13
+	lda #12
+	sta $d530
+;   Do some stuff at address $4000-$7fff
+	...
+	; BANK 8
+	lda #7
+	sta $d530
+;   Do other stuff ad address $4000-$7fff
+	...
+
+Pretty simple... ;-P
+
+We can have up to 256 memory banks available, so the register can have
+a number between 0 (bank #0) up to 255 (bank #256).
+
+In this way any other memory expansion can be used. In a plain 130XE computer
+the total amount of memory will be 4096K + 128K - 16K (for the addresses
+overlapped at the memory window): 4208k!!
+
+Basic/ANTIC/... other stuff can be co-exists in this way.
+
+Now, I can need some awesome software (MyDOS, SpartaDOS, demos, etc.,) which
+this expansion can be used.
+
+Enjoy!
