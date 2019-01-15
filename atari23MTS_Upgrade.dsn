@@ -1,4 +1,4 @@
-(pcb /home/debian/Progetti/ATARI/AT2019/atari23MTS_Upgrade.dsn
+(pcb /home/debian/Progetti/Atari/AT2019/atari23MTS_Upgrade.dsn
   (parser
     (string_quote ")
     (space_in_quoted_tokens on)
@@ -44,9 +44,6 @@
     )
     (component "RetroBitLab:TE_5530843-2_7X2_EDGE_CONNECTOR"
       (place ECI2 128270 -113030 front 0 (PN ECIBUS))
-    )
-    (component "RetroBitLab:ATARI-XE-ECI-SLOT"
-      (place ECI1 107950 -139700 front 0 (PN ECIBUS))
     )
     (component Capacitors_SMD:c_elec_5x5.3
       (place C1 214630 -106680 front 90 (PN 10u))
@@ -95,6 +92,17 @@
       (place R5 114300 -80010 front 270 (PN 220))
       (place R6 102870 -58420 front 270 (PN 10K))
       (place R7 102870 -67310 front 90 (PN 10K))
+      (place R8 173990 -101600 front 270 (PN 10K))
+      (place R9 180340 -101600 front 90 (PN 10K))
+      (place R10 93980 -90170 front 180 (PN 2.2k))
+      (place R11 102870 -90170 front 180 (PN 0))
+      (place R12 110490 -92710 front 0 (PN 0))
+      (place R13 95250 -107950 front 0 (PN 0))
+      (place R14 96520 -113030 front 180 (PN 0))
+      (place R15 129540 -104140 front 0 (PN 0))
+      (place R16 165100 -92710 front 270 (PN 0))
+      (place R18 160020 -76200 front 180 (PN 0))
+      (place R19 152400 -78740 front 90 (PN 0))
     )
     (component Buttons_Switches_SMD:SW_SPST_FSMSM
       (place SW1 92710 -73660 front 0 (PN SW_PUSH))
@@ -117,6 +125,8 @@
     )
     (component "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm"
       (place U9 158750 -86360 front 270 (PN 74LS32))
+      (place U15 118110 -68580 front 180 (PN 74LS08))
+      (place U16 158750 -55880 front 0 (PN 74LS08))
     )
     (component "RetroBitLab:SOP-32L-20.5x11.30-1.27mm"
       (place U11 205740 -66040 front 0 (PN ISSI61WV5128BL))
@@ -133,9 +143,6 @@
     (component "RetroBitLab:TE_5530843-2_15X2_CART_EDGE_CONNECTOR"
       (place CART2 167640 -113030 front 0 (PN ATARICARTRIDGE))
     )
-    (component "RetroBitLab:atari_fuji_SilkScreen_21.2x25-RevBack"
-      (place LOGO 153670 -86360 back 0 (PN LOGO))
-    )
     (component Pin_Headers:Pin_Header_Straight_1x01
       (place P6 91440 -81280 front 0 (PN CONN_01X01))
     )
@@ -144,6 +151,12 @@
     )
     (component Pin_Headers:Pin_Header_Straight_1x02
       (place DISABLE.MODE.1 146050 -71120 front 90 (PN CONN_01X02))
+    )
+    (component "RetroBitLab:atari_fuji_SilkScreen_21.2x25-Rev"
+      (place G*** 152400 -86360 back 0 (PN LOGO))
+    )
+    (component "RetroBitLab:ATARI-XE-ECI-SLOT"
+      (place ECI1 107950 -139700 front 0 (PN ECIBUS))
     )
   )
   (library
@@ -270,22 +283,6 @@
       (pin Round[A]Pad_1524_um B -5080 -2425.7)
       (pin Rect[A]Pad_1524x1524_um 1 -2540 2425.7)
       (pin Round[A]Pad_1524_um A -2540 -2425.7)
-    )
-    (image "RetroBitLab:ATARI-XE-ECI-SLOT"
-      (pin Rect[T]Pad_5588x1930.4_um (rotate 270) A 17272 3810)
-      (pin Rect[B]Pad_5588x1930.4_um (rotate 270) 1 17272 3810)
-      (pin Rect[B]Pad_5588x1930.4_um (rotate 270) 2 14732 3810)
-      (pin Rect[B]Pad_5588x1930.4_um (rotate 270) 3 12192 3810)
-      (pin Rect[B]Pad_5588x1930.4_um (rotate 270) 4 9652 3810)
-      (pin Rect[B]Pad_5588x1930.4_um (rotate 270) 5 7112 3810)
-      (pin Rect[B]Pad_5588x1930.4_um (rotate 270) 6 4572 3810)
-      (pin Rect[B]Pad_5588x1930.4_um (rotate 270) 7 2032 3810)
-      (pin Rect[T]Pad_5588x1930.4_um (rotate 270) B 14732 3810)
-      (pin Rect[T]Pad_5588x1930.4_um (rotate 270) C 12192 3810)
-      (pin Rect[T]Pad_5588x1930.4_um (rotate 270) D 9652 3810)
-      (pin Rect[T]Pad_5588x1930.4_um (rotate 270) E 7112 3810)
-      (pin Rect[T]Pad_5588x1930.4_um (rotate 270) F 4572 3810)
-      (pin Rect[T]Pad_5588x1930.4_um (rotate 270) H 2032 3810)
     )
     (image Capacitors_SMD:c_elec_5x5.3
       (outline (path signal 50  -3950 3000  3950 3000))
@@ -730,8 +727,6 @@
       (pin Rect[A]Pad_1524x1524_um 1 17780 2425.7)
       (pin Round[A]Pad_1524_um A 17780 -2425.7)
     )
-    (image "RetroBitLab:atari_fuji_SilkScreen_21.2x25-RevBack"
-    )
     (image Pin_Headers:Pin_Header_Straight_1x01
       (outline (path signal 150  1550 1550  1550 0))
       (outline (path signal 50  -1750 1750  -1750 -1750))
@@ -807,6 +802,24 @@
       (outline (path signal 150  -1270 -3810  1270 -3810))
       (pin Rect[A]Pad_2032x2032_um 1 0 0)
       (pin Oval[A]Pad_2032x2032_um 2 0 -2540)
+    )
+    (image "RetroBitLab:atari_fuji_SilkScreen_21.2x25-Rev"
+    )
+    (image "RetroBitLab:ATARI-XE-ECI-SLOT"
+      (pin Rect[T]Pad_5588x1930.4_um (rotate 270) A 17272 3810)
+      (pin Rect[B]Pad_5588x1930.4_um (rotate 270) 1 17272 3810)
+      (pin Rect[B]Pad_5588x1930.4_um (rotate 270) 2 14732 3810)
+      (pin Rect[B]Pad_5588x1930.4_um (rotate 270) 3 12192 3810)
+      (pin Rect[B]Pad_5588x1930.4_um (rotate 270) 4 9652 3810)
+      (pin Rect[B]Pad_5588x1930.4_um (rotate 270) 5 7112 3810)
+      (pin Rect[B]Pad_5588x1930.4_um (rotate 270) 6 4572 3810)
+      (pin Rect[B]Pad_5588x1930.4_um (rotate 270) 7 2032 3810)
+      (pin Rect[T]Pad_5588x1930.4_um (rotate 270) B 14732 3810)
+      (pin Rect[T]Pad_5588x1930.4_um (rotate 270) C 12192 3810)
+      (pin Rect[T]Pad_5588x1930.4_um (rotate 270) D 9652 3810)
+      (pin Rect[T]Pad_5588x1930.4_um (rotate 270) E 7112 3810)
+      (pin Rect[T]Pad_5588x1930.4_um (rotate 270) F 4572 3810)
+      (pin Rect[T]Pad_5588x1930.4_um (rotate 270) H 2032 3810)
     )
     (padstack Round[T]Pad_1524_um
       (shape (circle F.Cu 1524))
@@ -940,18 +953,20 @@
       (pins C1-1 L1-1 U4-19 U5-19 U6-19 U8-19 U10-19 U1-3)
     )
     (net GND
-      (pins CART1-B STLinkV2.1-1 ECI2-H ECI1-H C1-2 C3-2 C4-2 C5-2 C6-1 C7-1 C8-1
-        C9-1 C10-2 C11-2 C12-2 C13-2 D1-1 D2-1 FT232RPi.1-1 JP1-3 R4-2 SW1-1 U2-12
-        U2-18 U2-31 U2-47 U2-63 U3-8 U4-11 U5-11 U6-11 U7-7 U8-11 U9-7 U10-11 U11-16
-        U12-16 U13-16 U14-16 U1-1 C2-2 EXTPWR1-2 EXTPWR1-3 CART2-B P6-1 DISABLE.MODE.1-2)
+      (pins CART1-B STLinkV2.1-1 ECI2-H C1-2 C3-2 C4-2 C5-2 C6-1 C7-1 C8-1 C9-1 C10-2
+        C11-2 C12-2 C13-2 D1-1 D2-1 FT232RPi.1-1 JP1-3 R4-2 SW1-1 U2-12 U2-18 U2-31
+        U2-47 U2-63 U3-8 U4-11 U5-11 U6-11 U7-7 U8-11 U9-7 U10-11 U11-16 U12-16 U13-16
+        U14-16 U1-1 C2-2 EXTPWR1-2 EXTPWR1-3 CART2-B P6-1 DISABLE.MODE.1-2 ECI1-H
+        R10-2 R11-2 R12-2 R13-1 R14-2 R15-1 R16-2 R18-1 R19-2 U15-7 U16-7)
     )
     (net "Net-(C5-Pad1)"
       (pins C5-1 U2-6 XT1-2)
     )
     (net VCC3V3
       (pins STLinkV2.1-4 C6-2 C7-2 C8-2 C9-2 C10-1 C11-1 C12-1 C13-1 JP1-1 L2-1 R3-2
-        R5-1 R6-1 R7-1 U2-13 U2-19 U2-32 U2-48 U2-64 U3-6 U3-16 U4-2 U4-10 U5-2 U5-10
-        U6-2 U6-10 U7-14 U8-2 U8-10 U9-14 U10-2 U10-10 U11-32 U12-32 U13-32 U14-32)
+        R5-1 R6-1 R7-1 U2-13 U2-19 U2-32 U2-48 U2-64 U3-16 U4-2 U4-10 U5-2 U5-10 U6-2
+        U6-10 U7-14 U8-2 U8-10 U9-14 U10-2 U10-10 U11-32 U12-32 U13-32 U14-32 R8-1
+        R9-1 U15-14 U16-14)
     )
     (net A3
       (pins CART1-2 U5-16 CART2-2)
@@ -984,7 +999,7 @@
       (pins CART1-11 U10-13 CART2-11)
     )
     (net +5VDC
-      (pins CART1-13 ECI2-7 ECI1-7 L1-2 R1-1 EXTPWR1-1 CART2-13)
+      (pins CART1-13 ECI2-7 L1-2 R1-1 EXTPWR1-1 CART2-13 ECI1-7)
     )
     (net ~CCTL
       (pins CART1-15 U4-12 CART2-15)
@@ -1041,34 +1056,34 @@
       (pins D3-1 U2-15)
     )
     (net ~EXSEL
-      (pins ECI2-1 ECI1-1 U4-20)
+      (pins ECI2-1 U4-20 ECI1-1)
     )
     (net ~RST
-      (pins ECI2-2 ECI1-2 U4-14)
+      (pins ECI2-2 U4-14 ECI1-2)
     )
     (net ~D1XX
-      (pins ECI2-3 ECI1-3 U4-18)
+      (pins ECI2-3 U4-18 ECI1-3)
     )
     (net ~MPD
-      (pins ECI2-4 ECI1-4 U4-16)
+      (pins ECI2-4 U4-16 ECI1-4)
     )
     (net ~REF
-      (pins ECI2-6 ECI1-6 U4-13)
+      (pins ECI2-6 U4-13 ECI1-6)
     )
     (net ~IRQ
-      (pins ECI2-B ECI1-B U4-15)
+      (pins ECI2-B U4-15 ECI1-B)
     )
     (net ~HALT
-      (pins ECI2-C ECI1-C U4-17)
+      (pins ECI2-C U4-17 ECI1-C)
     )
     (net A13
-      (pins ECI2-D ECI1-D U6-14)
+      (pins ECI2-D U6-14 ECI1-D)
     )
     (net A14
-      (pins ECI2-E ECI1-E U6-13)
+      (pins ECI2-E U6-13 ECI1-E)
     )
     (net A15
-      (pins ECI2-F ECI1-F U6-12)
+      (pins ECI2-F U6-12 ECI1-F)
     )
     (net UART_RX_TTL
       (pins FT232RPi.1-2 R7-2 U2-17)
@@ -1083,7 +1098,7 @@
       (pins P1-1 U2-14)
     )
     (net ~mRST
-      (pins R4-1 U2-36 U4-7)
+      (pins U2-36 U4-7)
     )
     (net SWDIO
       (pins STLinkV2.1-2 U2-46)
@@ -1092,13 +1107,13 @@
       (pins STLinkV2.1-3 U2-49)
     )
     (net mA13
-      (pins U2-2 U6-7 U11-28 U12-28 U13-28 U14-28)
+      (pins U6-7 U7-13 U11-28 U12-28 U13-28 U14-28)
     )
     (net mA14
-      (pins U2-3 U6-8 U7-1)
+      (pins U6-8 U7-1)
     )
     (net mA15
-      (pins U2-4 U6-9 U9-2)
+      (pins U6-9 U9-2 U15-1 U15-2 U15-9 U15-10 U16-13)
     )
     (net nRESET
       (pins R3-1 SW1-2 U2-7 DISABLE.MODE.1-1)
@@ -1161,10 +1176,10 @@
       (pins U2-38 U5-9 U11-5 U12-5 U13-5 U14-5)
     )
     (net mA8
-      (pins U2-39 U6-1 U11-27 U12-27 U13-27 U14-27)
+      (pins U6-1 U11-27 U12-27 U13-27 U14-27)
     )
     (net mA9
-      (pins U2-40 U6-3 U11-26 U12-26 U13-26 U14-26)
+      (pins U6-3 U11-26 U12-26 U13-26 U14-26)
     )
     (net ~mIRQ
       (pins U2-34 U4-6)
@@ -1182,13 +1197,13 @@
       (pins U2-50 U7-3 U8-3 U11-29 U12-29 U13-29 U14-29)
     )
     (net mA10
-      (pins U2-51 U6-4 U11-23 U12-23 U13-23 U14-23)
+      (pins U6-4 U7-9 U11-23 U12-23 U13-23 U14-23)
     )
     (net mA11
-      (pins U2-52 U6-5 U11-25 U12-25 U13-25 U14-25)
+      (pins U6-5 U7-5 U11-25 U12-25 U13-25 U14-25)
     )
     (net mA12
-      (pins U2-53 U6-6 U11-4 U12-4 U13-4 U14-4)
+      (pins U6-6 U11-4 U12-4 U13-4 U14-4)
     )
     (net mD3
       (pins U2-55 U10-5 U11-17 U12-17 U13-17 U14-17)
@@ -1239,16 +1254,16 @@
       (pins U7-2 U9-1)
     )
     (net RD4
-      (pins CART1-A CART2-A)
+      (pins CART1-A U8-16 CART2-A)
     )
     (net ~S4
-      (pins CART1-1 CART2-1)
+      (pins CART1-1 U8-17 CART2-1)
     )
     (net ~S5
-      (pins CART1-12 CART2-12)
+      (pins CART1-12 U8-15 CART2-12)
     )
     (net RD5
-      (pins CART1-14 CART2-14)
+      (pins CART1-14 U8-14 CART2-14)
     )
     (net RSRVD
       (pins ECI2-A ECI1-A)
@@ -1262,15 +1277,175 @@
     (net ~mOE
       (pins U7-4 U11-24 U12-24 U13-24 U14-24)
     )
+    (net "Net-(EXTPWR1-Pad4)"
+      (pins EXTPWR1-4)
+    )
+    (net "Net-(P2-Pad1)"
+      (pins P2-1)
+    )
+    (net "Net-(P3-Pad1)"
+      (pins P3-1)
+    )
+    (net "Net-(P4-Pad1)"
+      (pins P4-1)
+    )
+    (net "Net-(P5-Pad1)"
+      (pins P5-1)
+    )
+    (net "Net-(R4-Pad1)"
+      (pins R4-1 R8-2)
+    )
+    (net RAMEN
+      (pins U2-39 U3-6 R9-2 R10-1)
+    )
+    (net "Net-(R11-Pad1)"
+      (pins R11-1 U15-12)
+    )
+    (net "Net-(R12-Pad1)"
+      (pins R12-1 U15-13)
+    )
+    (net "Net-(R13-Pad2)"
+      (pins U9-12 R13-2)
+    )
+    (net "Net-(R14-Pad1)"
+      (pins U9-13 R14-1)
+    )
+    (net "Net-(R15-Pad2)"
+      (pins U9-9 R15-2)
+    )
+    (net "Net-(R16-Pad1)"
+      (pins U9-10 R16-1)
+    )
+    (net "Net-(R18-Pad2)"
+      (pins U9-4 R18-2)
+    )
+    (net "Net-(R19-Pad1)"
+      (pins U9-5 R19-1)
+    )
+    (net "Net-(U2-Pad1)"
+      (pins U2-1)
+    )
+    (net "Net-(U2-Pad2)"
+      (pins U2-2)
+    )
+    (net "Net-(U2-Pad3)"
+      (pins U2-3)
+    )
+    (net "Net-(U2-Pad4)"
+      (pins U2-4)
+    )
+    (net "Net-(U2-Pad30)"
+      (pins U2-30)
+    )
+    (net ~mD3XX
+      (pins U2-40 U7-10)
+    )
+    (net "Net-(U2-Pad51)"
+      (pins U2-51)
+    )
+    (net "Net-(U2-Pad52)"
+      (pins U2-52)
+    )
+    (net "Net-(U2-Pad53)"
+      (pins U2-53)
+    )
+    (net "Net-(U3-Pad7)"
+      (pins U3-7)
+    )
+    (net "Net-(U3-Pad9)"
+      (pins U3-9)
+    )
+    (net "Net-(U3-Pad10)"
+      (pins U3-10)
+    )
+    (net "Net-(U3-Pad11)"
+      (pins U3-11)
+    )
+    (net ~mA11
+      (pins U7-6 U16-2)
+    )
+    (net ~mA10
+      (pins U7-8 U16-5)
+    )
+    (net mD3XX
+      (pins U7-11 U16-8)
+    )
+    (net ~mA13
+      (pins U7-12 U16-1)
+    )
+    (net ~mS4
+      (pins U8-4)
+    )
+    (net mRD4
+      (pins U8-5)
+    )
+    (net ~mS5
+      (pins U8-6)
+    )
+    (net mRD5
+      (pins U8-7)
+    )
+    (net "Net-(U8-Pad8)"
+      (pins U8-8)
+    )
+    (net "Net-(U8-Pad9)"
+      (pins U8-9)
+    )
+    (net "Net-(U8-Pad12)"
+      (pins U8-12)
+    )
+    (net "Net-(U8-Pad13)"
+      (pins U8-13)
+    )
+    (net "Net-(U9-Pad6)"
+      (pins U9-6)
+    )
+    (net "Net-(U9-Pad8)"
+      (pins U9-8)
+    )
+    (net "Net-(U9-Pad11)"
+      (pins U9-11)
+    )
+    (net "Net-(U15-Pad3)"
+      (pins U15-3 U15-4)
+    )
+    (net "Net-(U15-Pad5)"
+      (pins U15-5 U15-8)
+    )
+    (net "Net-(U15-Pad6)"
+      (pins U15-6 U16-12)
+    )
+    (net "Net-(U15-Pad11)"
+      (pins U15-11)
+    )
+    (net "Net-(U16-Pad3)"
+      (pins U16-3 U16-4)
+    )
+    (net "Net-(U16-Pad10)"
+      (pins U16-6 U16-10)
+    )
+    (net "Net-(U16-Pad11)"
+      (pins U16-9 U16-11)
+    )
     (class kicad_default "" +5VDC A0 A1 A10 A11 A12 A13 A14 A15 A2 A3 A4 A5
       A6 A7 A8 A9 AUDIO B02/PHI2 BOOT0 D0 D1 D2 D3 D4 D5 D6 D7 GND "Net-(C2-Pad1)"
       "Net-(C4-Pad1)" "Net-(C5-Pad1)" "Net-(D1-Pad2)" "Net-(D2-Pad2)" "Net-(D3-Pad1)"
-      "Net-(D3-Pad2)" "Net-(U7-Pad2)" PB0 PB1 PB2 PB3 PB4 PB5 PB6 PB7 R/~W
-      RD4 RD5 RSRVD SWDCLK SWDIO TP1 UART_RX_TTL UART_TX_TTL VCC3V3 VCC5V
-      mA0 mA1 mA10 mA11 mA12 mA13 mA14 mA15 mA2 mA3 mA4 mA5 mA6 mA7 mA8 mA9
-      mB02/PHI2 mD0 mD1 mD2 mD3 mD4 mD5 mD6 mD7 mR/~W nRESET ~ADDRSEL16K ~BSEL0
+      "Net-(D3-Pad2)" "Net-(EXTPWR1-Pad4)" "Net-(P2-Pad1)" "Net-(P3-Pad1)"
+      "Net-(P4-Pad1)" "Net-(P5-Pad1)" "Net-(R11-Pad1)" "Net-(R12-Pad1)" "Net-(R13-Pad2)"
+      "Net-(R14-Pad1)" "Net-(R15-Pad2)" "Net-(R16-Pad1)" "Net-(R18-Pad2)"
+      "Net-(R19-Pad1)" "Net-(R4-Pad1)" "Net-(U15-Pad11)" "Net-(U15-Pad3)"
+      "Net-(U15-Pad5)" "Net-(U15-Pad6)" "Net-(U16-Pad10)" "Net-(U16-Pad11)"
+      "Net-(U16-Pad3)" "Net-(U2-Pad1)" "Net-(U2-Pad2)" "Net-(U2-Pad3)" "Net-(U2-Pad30)"
+      "Net-(U2-Pad4)" "Net-(U2-Pad51)" "Net-(U2-Pad52)" "Net-(U2-Pad53)" "Net-(U3-Pad10)"
+      "Net-(U3-Pad11)" "Net-(U3-Pad7)" "Net-(U3-Pad9)" "Net-(U7-Pad2)" "Net-(U8-Pad12)"
+      "Net-(U8-Pad13)" "Net-(U8-Pad8)" "Net-(U8-Pad9)" "Net-(U9-Pad11)" "Net-(U9-Pad6)"
+      "Net-(U9-Pad8)" PB0 PB1 PB2 PB3 PB4 PB5 PB6 PB7 R/~W RAMEN RD4 RD5 RSRVD
+      SWDCLK SWDIO TP1 UART_RX_TTL UART_TX_TTL VCC3V3 VCC5V mA0 mA1 mA10 mA11
+      mA12 mA13 mA14 mA15 mA2 mA3 mA4 mA5 mA6 mA7 mA8 mA9 mB02/PHI2 mD0 mD1
+      mD2 mD3 mD3XX mD4 mD5 mD6 mD7 mR/~W mRD4 mRD5 nRESET ~ADDRSEL16K ~BSEL0
       ~BSEL1 ~BSEL2 ~BSEL3 ~CCTL ~D1XX ~EXSEL ~HALT ~IRQ ~MPD ~REF ~RST ~S4
-      ~S5 ~mCCTL ~mD1XX ~mEXSEL ~mHALT ~mIRQ ~mMPD ~mOE ~mREF ~mRST
+      ~S5 ~mA10 ~mA11 ~mA13 ~mCCTL ~mD1XX ~mD3XX ~mEXSEL ~mHALT ~mIRQ ~mMPD
+      ~mOE ~mREF ~mRST ~mS4 ~mS5
       (circuit
         (use_via Via[0-1]_400:300_um)
       )
@@ -1299,5 +1474,16 @@
     )
   )
   (wiring
+    (wire (path F.Cu 250  136987 -90038.6  136987 -90048.2  143049 -96110  144100 -96110)(net GND)(type protect))
+    (wire (path F.Cu 250  134053 -87104.5  138646 -82511.9)(net GND)(type protect))
+    (wire (path F.Cu 250  138608 -82575.4  138608 -82473.8)(net GND)(type protect))
+    (wire (path F.Cu 250  138646 -82537.3  138608 -82575.4)(net GND)(type protect))
+    (wire (path F.Cu 250  138646 -82511.9  138646 -82537.3)(net GND)(type protect))
+    (wire (path F.Cu 250  141584 -85442.4  141576 -85442.4  138608 -82473.8  135382 -79248)(net GND)(type protect))
+    (wire (path F.Cu 250  135382 -78986.8  136987 -77381.4)(net GND)(type protect))
+    (wire (path F.Cu 250  135382 -79248  135382 -78986.8)(net GND)(type protect))
+    (wire (path F.Cu 250  133210 -86271.1  133220 -86271.1  134053 -87104.5  136987 -90038.6)(net GND)(type protect))
+    (wire (path F.Cu 250  128926 -81977.6  128926 -81987.2  133210 -86271.1  133223 -86283.8
+            133223 -88216.9  132462 -88977.9)(net GND)(type protect))
   )
 )

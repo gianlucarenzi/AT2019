@@ -1404,15 +1404,14 @@ Wire Wire Line
 Wire Wire Line
 	6550 4500 6550 4600
 Connection ~ 6550 4550
-NoConn ~ 7200 4650
 NoConn ~ 7200 4750
 NoConn ~ 7200 4850
 NoConn ~ 7200 4950
 NoConn ~ 7200 5050
 NoConn ~ 7200 5150
 NoConn ~ 7200 5250
-Text Notes 4400 4600 0    60   ~ 12
-$D530 BANK SEL 0-255
-Text Notes 4400 4750 0    60   ~ 12
-$D531 BANK SEL ENABLE/DISABLE
+Text GLabel 7050 4650 0    39   BiDi ~ 0
+~mD3XX
+Wire Wire Line
+	7200 4650 7050 4650
 $EndSCHEMATC
