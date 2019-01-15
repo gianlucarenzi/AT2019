@@ -1,4 +1,4 @@
-(pcb /home/debian/Progetti/Atari/AT2019/atari23MTS_Upgrade.dsn
+(pcb /home/debian/Progetti/ATARI/AT2019/atari23MTS_Upgrade.dsn
   (parser
     (string_quote ")
     (space_in_quoted_tokens on)
@@ -26,7 +26,7 @@
             147500 -119000  127000 -119000  127000 -138500  108500 -138500
             108500 -119000  108500 -119000)
     )
-    (via "Via[0-1]_400:300_um" "Via[0-1]_800:400_um")
+    (via "Via[0-1]_400:300_um" "Via[0-1]_600:300_um")
     (rule
       (width 250)
       (clearance 200.1)
@@ -147,7 +147,7 @@
       (place P6 91440 -81280 front 0 (PN CONN_01X01))
     )
     (component "Symbols:Symbol_GNU-GPL_CopperTop_Small"
-      (place REF** 101600 -80010 front 0 (PN "Symbol_GNU-GPL_CopperTop_Small"))
+      (place REF** 103886 -76200 front 0 (PN "Symbol_GNU-GPL_CopperTop_Small"))
     )
     (component Pin_Headers:Pin_Header_Straight_1x02
       (place DISABLE.MODE.1 146050 -71120 front 90 (PN CONN_01X02))
@@ -942,9 +942,9 @@
       (shape (circle B.Cu 400))
       (attach off)
     )
-    (padstack "Via[0-1]_800:400_um"
-      (shape (circle F.Cu 800))
-      (shape (circle B.Cu 800))
+    (padstack "Via[0-1]_600:300_um"
+      (shape (circle F.Cu 600))
+      (shape (circle B.Cu 600))
       (attach off)
     )
   )
@@ -1454,9 +1454,18 @@
         (clearance 200.1)
       )
     )
+    (class +5VDC
+      (circuit
+        (use_via Via[0-1]_600:300_um)
+      )
+      (rule
+        (width 350)
+        (clearance 200.1)
+      )
+    )
     (class GND
       (circuit
-        (use_via Via[0-1]_800:400_um)
+        (use_via Via[0-1]_600:300_um)
       )
       (rule
         (width 500)
@@ -1465,7 +1474,7 @@
     )
     (class VCC5V
       (circuit
-        (use_via Via[0-1]_800:400_um)
+        (use_via Via[0-1]_600:300_um)
       )
       (rule
         (width 350)
@@ -1474,16 +1483,14 @@
     )
   )
   (wiring
-    (wire (path F.Cu 250  136987 -90038.6  136987 -90048.2  143049 -96110  144100 -96110)(net GND)(type protect))
-    (wire (path F.Cu 250  134053 -87104.5  138646 -82511.9)(net GND)(type protect))
-    (wire (path F.Cu 250  138608 -82575.4  138608 -82473.8)(net GND)(type protect))
-    (wire (path F.Cu 250  138646 -82537.3  138608 -82575.4)(net GND)(type protect))
-    (wire (path F.Cu 250  138646 -82511.9  138646 -82537.3)(net GND)(type protect))
-    (wire (path F.Cu 250  141584 -85442.4  141576 -85442.4  138608 -82473.8  135382 -79248)(net GND)(type protect))
-    (wire (path F.Cu 250  135382 -78986.8  136987 -77381.4)(net GND)(type protect))
-    (wire (path F.Cu 250  135382 -79248  135382 -78986.8)(net GND)(type protect))
-    (wire (path F.Cu 250  133210 -86271.1  133220 -86271.1  134053 -87104.5  136987 -90038.6)(net GND)(type protect))
-    (wire (path F.Cu 250  128926 -81977.6  128926 -81987.2  133210 -86271.1  133223 -86283.8
-            133223 -88216.9  132462 -88977.9)(net GND)(type protect))
+    (wire (path F.Cu 250  155800 -68315  151395 -68315  148590 -71120)(net GND)(type protect))
+    (wire (path F.Cu 250  144100 -96110  143059 -96110  136987 -90038.6)(net GND)(type protect))
+    (wire (path F.Cu 250  134099 -87312.5  134150 -87312.5  138824 -82638.9)(net GND)(type protect))
+    (wire (path F.Cu 250  141584 -85442.4  141584 -85398.8  138824 -82638.9  135293 -79108.3)(net GND)(type protect))
+    (wire (path F.Cu 250  136987 -77381.4  136987 -77414  135293 -79108.3  130670 -83731.1)(net GND)(type protect))
+    (wire (path F.Cu 250  141584 -85442.4  141576 -85442.4)(net GND)(type protect))
+    (wire (path F.Cu 250  132462 -88977.9  132462 -88949.9  134099 -87312.5  134176 -87236.3)(net GND)(type protect))
+    (wire (path F.Cu 250  128926 -81977.6  128926 -81987.2  130670 -83731.1  134176 -87236.3
+            136978 -90038.6  136987 -90038.6)(net GND)(type protect))
   )
 )
