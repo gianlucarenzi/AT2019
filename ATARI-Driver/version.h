@@ -1,1 +1,1 @@
-#define MEMSIZEK 4096
+#define MEMSIZEK 512

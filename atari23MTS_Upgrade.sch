@@ -30,12 +30,196 @@ LIBS:atmel
 LIBS:contrib
 LIBS:valves
 LIBS:AmigaComponents
+LIBS:4xxx
+LIBS:4xxx_IEEE
+LIBS:74xGxx
+LIBS:74xx_IEEE
+LIBS:Amplifier_Audio
+LIBS:Amplifier_Buffer
+LIBS:Amplifier_Current
+LIBS:Amplifier_Difference
+LIBS:Amplifier_Instrumentation
+LIBS:Amplifier_Operational
+LIBS:Amplifier_Video
+LIBS:Analog
+LIBS:Analog_ADC
+LIBS:Analog_DAC
+LIBS:Analog_Switch
+LIBS:Audio
+LIBS:Battery_Management
+LIBS:Comparator
+LIBS:Connector
+LIBS:Connector_Generic
+LIBS:Connector_Generic_MountingPin
+LIBS:Connector_Generic_Shielded
+LIBS:Converter_ACDC
+LIBS:Converter_DCDC
+LIBS:CPLD_Altera
+LIBS:CPLD_Xilinx
+LIBS:CPU
+LIBS:CPU_NXP_6800
+LIBS:CPU_NXP_68000
+LIBS:CPU_PowerPC
+LIBS:Device
+LIBS:Diode
+LIBS:Diode_Bridge
+LIBS:Diode_Laser
+LIBS:Display_Character
+LIBS:Display_Graphic
+LIBS:Driver_Display
+LIBS:Driver_FET
+LIBS:Driver_LED
+LIBS:Driver_Motor
+LIBS:Driver_Relay
+LIBS:DSP_AnalogDevices
+LIBS:DSP_Freescale
+LIBS:DSP_Microchip_DSPIC33
+LIBS:DSP_Motorola
+LIBS:DSP_Texas
+LIBS:Fiber_Optic
+LIBS:Filter
+LIBS:FPGA_Lattice
+LIBS:FPGA_Microsemi
+LIBS:FPGA_Xilinx
+LIBS:FPGA_Xilinx_Artix7
+LIBS:FPGA_Xilinx_Kintex7
+LIBS:FPGA_Xilinx_Spartan6
+LIBS:FPGA_Xilinx_Virtex5
+LIBS:FPGA_Xilinx_Virtex6
+LIBS:FPGA_Xilinx_Virtex7
+LIBS:GPU
+LIBS:Graphic
+LIBS:Interface
+LIBS:Interface_CAN_LIN
+LIBS:Interface_CurrentLoop
+LIBS:Interface_Ethernet
+LIBS:Interface_Expansion
+LIBS:Interface_HID
+LIBS:Interface_LineDriver
+LIBS:Interface_Optical
+LIBS:Interface_Telecom
+LIBS:Interface_UART
+LIBS:Interface_USB
+LIBS:Isolator
+LIBS:Isolator_Analog
+LIBS:Jumper
+LIBS:LED
+LIBS:Logic_LevelTranslator
+LIBS:Logic_Programmable
+LIBS:MCU_AnalogDevices
+LIBS:MCU_Cypress
+LIBS:MCU_Espressif
+LIBS:MCU_Intel
+LIBS:MCU_Microchip_8051
+LIBS:MCU_Microchip_ATmega
+LIBS:MCU_Microchip_ATtiny
+LIBS:MCU_Microchip_AVR
+LIBS:MCU_Microchip_PIC10
+LIBS:MCU_Microchip_PIC12
+LIBS:MCU_Microchip_PIC16
+LIBS:MCU_Microchip_PIC18
+LIBS:MCU_Microchip_PIC24
+LIBS:MCU_Microchip_PIC32
+LIBS:MCU_Microchip_SAMD
+LIBS:MCU_Microchip_SAME
+LIBS:MCU_Microchip_SAML
+LIBS:MCU_Module
+LIBS:MCU_Nordic
+LIBS:MCU_NXP_ColdFire
+LIBS:MCU_NXP_HC11
+LIBS:MCU_NXP_HC12
+LIBS:MCU_NXP_HCS12
+LIBS:MCU_NXP_Kinetis
+LIBS:MCU_NXP_LPC
+LIBS:MCU_NXP_MAC7100
+LIBS:MCU_NXP_MCore
+LIBS:MCU_NXP_S08
+LIBS:MCU_Parallax
+LIBS:MCU_SiFive
+LIBS:MCU_SiliconLabs
+LIBS:MCU_ST_STM8
+LIBS:MCU_ST_STM32F0
+LIBS:MCU_ST_STM32F1
+LIBS:MCU_ST_STM32F2
+LIBS:MCU_ST_STM32F3
+LIBS:MCU_ST_STM32F4
+LIBS:MCU_ST_STM32F7
+LIBS:MCU_ST_STM32H7
+LIBS:MCU_ST_STM32L0
+LIBS:MCU_ST_STM32L1
+LIBS:MCU_ST_STM32L4
+LIBS:MCU_ST_STM32L4+
+LIBS:MCU_Texas
+LIBS:MCU_Texas_MSP430
+LIBS:Mechanical
+LIBS:Memory_Controller
+LIBS:Memory_EEPROM
+LIBS:Memory_EPROM
+LIBS:Memory_Flash
+LIBS:Memory_NVRAM
+LIBS:Memory_RAM
+LIBS:Memory_ROM
+LIBS:Memory_UniqueID
+LIBS:Motor
+LIBS:Oscillator
+LIBS:Potentiometer_Digital
+LIBS:Power_Management
+LIBS:Power_Protection
+LIBS:Power_Supervisor
+LIBS:pspice
+LIBS:Reference_Current
+LIBS:Reference_Voltage
+LIBS:Regulator_Controller
+LIBS:Regulator_Current
+LIBS:Regulator_Linear
+LIBS:Regulator_SwitchedCapacitor
+LIBS:Regulator_Switching
+LIBS:Relay
+LIBS:Relay_SolidState
+LIBS:RF
+LIBS:RF_AM_FM
+LIBS:RF_Amplifier
+LIBS:RF_Bluetooth
+LIBS:RF_GPS
+LIBS:RF_GSM
+LIBS:RF_Mixer
+LIBS:RF_Module
+LIBS:RF_RFID
+LIBS:RF_Switch
+LIBS:RF_WiFi
+LIBS:RF_ZigBee
+LIBS:Security
+LIBS:Sensor
+LIBS:Sensor_Audio
+LIBS:Sensor_Current
+LIBS:Sensor_Gas
+LIBS:Sensor_Humidity
+LIBS:Sensor_Magnetic
+LIBS:Sensor_Motion
+LIBS:Sensor_Optical
+LIBS:Sensor_Pressure
+LIBS:Sensor_Proximity
+LIBS:Sensor_Temperature
+LIBS:Sensor_Touch
+LIBS:Sensor_Voltage
+LIBS:Switch
+LIBS:Timer
+LIBS:Timer_PLL
+LIBS:Timer_RTC
+LIBS:Transformer
+LIBS:Transistor_Array
+LIBS:Transistor_BJT
+LIBS:Transistor_FET
+LIBS:Transistor_IGBT
+LIBS:Triac_Thyristor
+LIBS:Valve
+LIBS:Video
 LIBS:atari23MTS_Upgrade-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
-Sheet 1 3
+Sheet 1 4
 Title "ATARI XE 2/4 MegaRAM Expansion"
 Date "7 jan 2019"
 Rev ""
@@ -45,21 +229,6 @@ Comment2 "2048K + 64K RAM EXPANSION"
 Comment3 ""
 Comment4 ""
 $EndDescr
-Text GLabel 9600 5050 1    39   Input ~ 0
-VCC3V3
-$Comp
-L R_Small R8
-U 1 1 5C33288C
-P 9600 5150
-F 0 "R8" H 9450 5150 50  0000 L CNN
-F 1 "10K" H 9630 5110 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 9600 5150 50  0001 C CNN
-F 3 "" H 9600 5150 60  0001 C CNN
-	1    9600 5150
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	9850 5250 8500 5250
 Wire Wire Line
 	5550 1200 5550 1050
 Connection ~ 5550 1700
@@ -69,28 +238,6 @@ Wire Wire Line
 	1400 850  1250 850 
 Wire Wire Line
 	3000 750  2900 750 
-Wire Wire Line
-	8500 2650 8700 2650
-Wire Wire Line
-	8700 2750 8500 2750
-Wire Wire Line
-	8500 2850 8700 2850
-Wire Wire Line
-	8500 2950 8700 2950
-Wire Wire Line
-	8500 3050 8700 3050
-Wire Wire Line
-	7000 3550 7200 3550
-Wire Wire Line
-	8500 3250 8700 3250
-Wire Wire Line
-	8500 3350 8700 3350
-Wire Wire Line
-	8500 3650 8700 3650
-Wire Wire Line
-	8500 3550 8700 3550
-Wire Wire Line
-	8500 3450 8700 3450
 Wire Wire Line
 	5800 1950 5800 2000
 Connection ~ 5800 1700
@@ -138,83 +285,6 @@ Wire Notes Line
 	6500 5100 800  5100
 Wire Wire Line
 	3000 5700 3250 5700
-Connection ~ 7800 5600
-Wire Wire Line
-	7800 5450 7800 5600
-Connection ~ 7900 5600
-Wire Wire Line
-	7900 5450 7900 5750
-Connection ~ 8000 5600
-Wire Wire Line
-	8000 5450 8000 5600
-Wire Wire Line
-	8100 5600 8100 5450
-Wire Wire Line
-	7700 5600 8100 5600
-Wire Wire Line
-	7700 5600 7700 5450
-Wire Wire Line
-	8500 5150 9050 5150
-Wire Wire Line
-	8500 5050 9050 5050
-Wire Wire Line
-	8500 4950 9050 4950
-Wire Wire Line
-	8500 4850 9050 4850
-Wire Wire Line
-	8500 4750 9050 4750
-Wire Wire Line
-	8500 4650 9050 4650
-Wire Wire Line
-	7000 4450 7200 4450
-Wire Wire Line
-	7000 4350 7200 4350
-Wire Wire Line
-	7000 4250 7200 4250
-Wire Wire Line
-	7000 4150 7200 4150
-Wire Wire Line
-	7000 4050 7200 4050
-Wire Wire Line
-	7000 3950 7200 3950
-Wire Wire Line
-	7200 3850 7000 3850
-Wire Wire Line
-	7000 3750 7200 3750
-Wire Wire Line
-	8500 3150 8700 3150
-Wire Wire Line
-	8500 2550 8700 2550
-Wire Wire Line
-	8750 4550 8500 4550
-Wire Wire Line
-	8500 4450 8750 4450
-Wire Wire Line
-	8750 4350 8500 4350
-Wire Wire Line
-	8750 4250 8500 4250
-Wire Wire Line
-	8500 4150 8750 4150
-Wire Wire Line
-	8750 4050 8500 4050
-Wire Wire Line
-	8500 3950 8750 3950
-Wire Wire Line
-	8500 3850 8750 3850
-Connection ~ 9900 2450
-Wire Wire Line
-	9900 2250 9900 2450
-Connection ~ 9650 2350
-Wire Wire Line
-	9650 2250 9650 2350
-Wire Wire Line
-	9900 1950 9900 2050
-Wire Wire Line
-	9650 1950 9650 2050
-Wire Wire Line
-	8500 2450 10100 2450
-Wire Wire Line
-	8500 2350 10100 2350
 Wire Notes Line
 	650  4650 650  3050
 Wire Notes Line
@@ -223,90 +293,6 @@ Wire Notes Line
 	3150 4650 3150 3050
 Wire Notes Line
 	3150 3050 650  3050
-Connection ~ 8350 1550
-Connection ~ 8100 1550
-Connection ~ 7800 1550
-Connection ~ 7550 1550
-Wire Wire Line
-	7250 1550 8350 1550
-Connection ~ 8100 900 
-Wire Wire Line
-	8100 900  8100 1200
-Connection ~ 7800 900 
-Wire Wire Line
-	7800 900  7800 1200
-Connection ~ 7550 900 
-Wire Wire Line
-	7550 1200 7550 900 
-Wire Wire Line
-	7350 900  8350 900 
-Wire Wire Line
-	8350 900  8350 1200
-Wire Wire Line
-	8350 1400 8350 1800
-Wire Wire Line
-	8100 1400 8100 1700
-Wire Wire Line
-	8100 1950 8100 1800
-Wire Wire Line
-	8100 1800 8350 1800
-Wire Wire Line
-	8000 1950 8000 1700
-Wire Wire Line
-	8000 1700 8100 1700
-Wire Wire Line
-	7900 1950 7900 1700
-Wire Wire Line
-	7900 1700 7800 1700
-Wire Wire Line
-	7800 1700 7800 1400
-Wire Wire Line
-	7800 1950 7800 1800
-Wire Wire Line
-	7800 1800 7550 1800
-Wire Wire Line
-	7550 1800 7550 1400
-Wire Wire Line
-	8500 2150 8750 2150
-Wire Wire Line
-	9150 2200 9150 2250
-Wire Wire Line
-	9150 2250 8500 2250
-Wire Wire Line
-	9150 1700 9150 1800
-Connection ~ 5550 3300
-Wire Wire Line
-	5550 3300 5400 3300
-Connection ~ 6200 3500
-Wire Wire Line
-	6500 3500 6500 3350
-Wire Wire Line
-	6500 3350 7200 3350
-Connection ~ 6200 3100
-Wire Wire Line
-	6500 3100 6500 3250
-Wire Wire Line
-	6500 3250 7200 3250
-Wire Wire Line
-	5900 3100 6500 3100
-Wire Wire Line
-	6200 3200 6200 3100
-Wire Wire Line
-	6200 3500 6200 3400
-Wire Wire Line
-	5900 3500 6500 3500
-Wire Wire Line
-	5550 3500 5700 3500
-Wire Wire Line
-	5550 3100 5550 3500
-Wire Wire Line
-	5550 3100 5700 3100
-Wire Wire Line
-	7100 2650 7200 2650
-Wire Wire Line
-	7100 2350 7200 2350
-Wire Wire Line
-	7100 2150 7200 2150
 Wire Wire Line
 	1400 4100 2150 4100
 Wire Wire Line
@@ -360,10 +346,10 @@ Wire Wire Line
 Wire Wire Line
 	2650 1600 3400 1600
 $Comp
-L GND #PWR01
+L GND #PWR6
 U 1 1 5C2A61A8
 P 2350 2100
-F 0 "#PWR01" H 2350 1850 50  0001 C CNN
+F 0 "#PWR6" H 2350 1850 50  0001 C CNN
 F 1 "GND" H 2350 1950 50  0000 C CNN
 F 2 "" H 2350 2100 60  0001 C CNN
 F 3 "" H 2350 2100 60  0001 C CNN
@@ -382,10 +368,10 @@ F 3 "" H 2800 1850 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR02
+L GND #PWR11
 U 1 1 5C2A6632
 P 3250 2100
-F 0 "#PWR02" H 3250 1850 50  0001 C CNN
+F 0 "#PWR11" H 3250 1850 50  0001 C CNN
 F 1 "GND" H 3250 1950 50  0000 C CNN
 F 2 "" H 3250 2100 60  0001 C CNN
 F 3 "" H 3250 2100 60  0001 C CNN
@@ -393,10 +379,10 @@ F 3 "" H 3250 2100 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L VCC #PWR03
+L VCC #PWR1
 U 1 1 5C2A6795
 P 1100 1400
-F 0 "#PWR03" H 1100 1250 50  0001 C CNN
+F 0 "#PWR1" H 1100 1250 50  0001 C CNN
 F 1 "VCC" H 1100 1550 50  0000 C CNN
 F 2 "" H 1100 1400 60  0001 C CNN
 F 3 "" H 1100 1400 60  0001 C CNN
@@ -407,17 +393,6 @@ Text Notes 3700 2350 0    60   ~ 12
 POWER SECTION
 Text Notes 1650 4600 0    60   ~ 12
 DEBUG/PROGRAMMING SECTION
-$Comp
-L GND #PWR04
-U 1 1 5C2AE0B0
-P 9600 5450
-F 0 "#PWR04" H 9600 5200 50  0001 C CNN
-F 1 "GND" H 9600 5300 50  0000 C CNN
-F 2 "" H 9600 5450 60  0001 C CNN
-F 3 "" H 9600 5450 60  0001 C CNN
-	1    9600 5450
-	1    0    0    -1  
-$EndComp
 Text Notes 800  5250 0    60   ~ 12
 ATARI CONNECTIONS
 Text Notes 3700 3200 0    60   ~ 12
@@ -432,17 +407,6 @@ NoConn ~ 9450 5900
 NoConn ~ 9700 5900
 Text Notes 8950 6350 0    60   ~ 12
 MOUNTING HOLES
-$Comp
-L STM32F401RCTx U2
-U 1 1 5C2B6EFB
-P 7900 3650
-F 0 "U2" H 7300 5300 50  0000 L CNN
-F 1 "STM32F401RCTx" H 8200 5300 50  0000 L CNN
-F 2 "Housings_QFP:LQFP-64_10x10mm_Pitch0.5mm" H 7300 1950 50  0001 R CNN
-F 3 "" H 7900 3650 60  0001 C CNN
-	1    7900 3650
-	1    0    0    -1  
-$EndComp
 $Comp
 L NCP1117ST33T3G-RESCUE-atari23MTS_Upgrade U1
 U 1 1 5C2B6EFC
@@ -477,10 +441,10 @@ F 3 "" H 3650 1600 60  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L GND #PWR05
+L GND #PWR7
 U 1 1 5C2B6EFF
 P 2350 2100
-F 0 "#PWR05" H 2350 1850 50  0001 C CNN
+F 0 "#PWR7" H 2350 1850 50  0001 C CNN
 F 1 "GND" H 2350 1950 50  0000 C CNN
 F 2 "" H 2350 2100 60  0001 C CNN
 F 3 "" H 2350 2100 60  0001 C CNN
@@ -532,10 +496,10 @@ F 3 "" H 3250 2000 60  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L GND #PWR06
+L GND #PWR12
 U 1 1 5C2B6F05
 P 3250 2100
-F 0 "#PWR06" H 3250 1850 50  0001 C CNN
+F 0 "#PWR12" H 3250 1850 50  0001 C CNN
 F 1 "GND" H 3250 1950 50  0000 C CNN
 F 2 "" H 3250 2100 60  0001 C CNN
 F 3 "" H 3250 2100 60  0001 C CNN
@@ -543,10 +507,10 @@ F 3 "" H 3250 2100 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR07
+L GND #PWR3
 U 1 1 5C2B6F06
 P 1100 2050
-F 0 "#PWR07" H 1100 1800 50  0001 C CNN
+F 0 "#PWR3" H 1100 1800 50  0001 C CNN
 F 1 "GND" H 1100 1900 50  0000 C CNN
 F 2 "" H 1100 2050 60  0001 C CNN
 F 3 "" H 1100 2050 60  0001 C CNN
@@ -576,10 +540,10 @@ F 3 "" H 3250 1800 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L VCC #PWR08
+L VCC #PWR2
 U 1 1 5C2B6F09
 P 1100 1400
-F 0 "#PWR08" H 1100 1250 50  0001 C CNN
+F 0 "#PWR2" H 1100 1250 50  0001 C CNN
 F 1 "VCC" H 1100 1550 50  0000 C CNN
 F 2 "" H 1100 1400 60  0001 C CNN
 F 3 "" H 1100 1400 60  0001 C CNN
@@ -587,10 +551,10 @@ F 3 "" H 1100 1400 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L VCC #PWR09
+L VCC #PWR14
 U 1 1 5C2B6F0A
 P 3750 850
-F 0 "#PWR09" H 3750 700 50  0001 C CNN
+F 0 "#PWR14" H 3750 700 50  0001 C CNN
 F 1 "VCC" H 3750 1000 50  0000 C CNN
 F 2 "" H 3750 850 60  0001 C CNN
 F 3 "" H 3750 850 60  0001 C CNN
@@ -598,10 +562,10 @@ F 3 "" H 3750 850 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L PWR_FLAG #FLG010
+L PWR_FLAG #FLG1
 U 1 1 5C2B6F0B
 P 3750 950
-F 0 "#FLG010" H 3750 1025 50  0001 C CNN
+F 0 "#FLG1" H 3750 1025 50  0001 C CNN
 F 1 "PWR_FLAG" H 3750 1100 50  0000 C CNN
 F 2 "" H 3750 950 60  0001 C CNN
 F 3 "" H 3750 950 60  0001 C CNN
@@ -613,10 +577,10 @@ Text GLabel 1000 1600 0    60   Input ~ 0
 Text GLabel 1900 1350 1    60   Input ~ 0
 VCC5V
 $Comp
-L GND #PWR011
+L GND #PWR15
 U 1 1 5C2B6F0C
 P 4000 850
-F 0 "#PWR011" H 4000 600 50  0001 C CNN
+F 0 "#PWR15" H 4000 600 50  0001 C CNN
 F 1 "GND" H 4000 700 50  0000 C CNN
 F 2 "" H 4000 850 60  0001 C CNN
 F 3 "" H 4000 850 60  0001 C CNN
@@ -624,10 +588,10 @@ F 3 "" H 4000 850 60  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L PWR_FLAG #FLG012
+L PWR_FLAG #FLG2
 U 1 1 5C2B6F0D
 P 4050 950
-F 0 "#FLG012" H 4050 1025 50  0001 C CNN
+F 0 "#FLG2" H 4050 1025 50  0001 C CNN
 F 1 "PWR_FLAG" H 4050 1100 50  0000 C CNN
 F 2 "" H 4050 950 60  0001 C CNN
 F 3 "" H 4050 950 60  0001 C CNN
@@ -650,10 +614,10 @@ F 3 "" H 2700 3550 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR013
+L GND #PWR8
 U 1 1 5C2B6F0F
 P 2500 3400
-F 0 "#PWR013" H 2500 3150 50  0001 C CNN
+F 0 "#PWR8" H 2500 3150 50  0001 C CNN
 F 1 "GND" H 2500 3250 50  0000 C CNN
 F 2 "" H 2500 3400 60  0001 C CNN
 F 3 "" H 2500 3400 60  0001 C CNN
@@ -682,165 +646,18 @@ UART_TX_TTL
 Text GLabel 2150 4100 2    60   Output ~ 0
 UART_RX_TTL
 $Comp
-L GND #PWR014
+L GND #PWR5
 U 1 1 5C2B6F11
 P 1400 4200
-F 0 "#PWR014" H 1400 3950 50  0001 C CNN
+F 0 "#PWR5" H 1400 3950 50  0001 C CNN
 F 1 "GND" H 1400 4050 50  0000 C CNN
 F 2 "" H 1400 4200 60  0001 C CNN
 F 3 "" H 1400 4200 60  0001 C CNN
 	1    1400 4200
 	1    0    0    -1  
 $EndComp
-Text GLabel 7100 2150 0    60   Input ~ 0
-nRESET
-Text GLabel 7100 2350 0    60   Input ~ 0
-BOOT0
-Text GLabel 7100 2650 0    60   Input ~ 0
-VCC3V3
-$Comp
-L Crystal_Small XT1
-U 1 1 5C2B6F12
-P 6200 3300
-F 0 "XT1" H 6200 3400 50  0000 C CNN
-F 1 "8Mhz" H 6200 3200 50  0000 C CNN
-F 2 "Crystals:Crystal_SMD_0603_4Pads" H 6200 3300 50  0001 C CNN
-F 3 "" H 6200 3300 60  0001 C CNN
-	1    6200 3300
-	0    1    1    0   
-$EndComp
-$Comp
-L C_Small C4
-U 1 1 5C2B6F13
-P 5800 3100
-F 0 "C4" H 5810 3170 50  0000 L CNN
-F 1 "C_Small" H 5810 3020 50  0000 L CNN
-F 2 "Capacitors_SMD:C_1206_HandSoldering" H 5800 3100 50  0001 C CNN
-F 3 "" H 5800 3100 60  0001 C CNN
-	1    5800 3100
-	0    1    1    0   
-$EndComp
-$Comp
-L C_Small C5
-U 1 1 5C2B6F14
-P 5800 3500
-F 0 "C5" H 5810 3570 50  0000 L CNN
-F 1 "C_Small" H 5810 3420 50  0000 L CNN
-F 2 "Capacitors_SMD:C_1206_HandSoldering" H 5800 3500 50  0001 C CNN
-F 3 "" H 5800 3500 60  0001 C CNN
-	1    5800 3500
-	0    1    1    0   
-$EndComp
-Text GLabel 9150 1700 1    60   Input ~ 0
-VCC3V3
-NoConn ~ 7700 1950
-Text GLabel 7250 1550 0    60   Input ~ 0
-VCC3V3
-$Comp
-L GND #PWR015
-U 1 1 5C2B6F19
-P 7350 900
-F 0 "#PWR015" H 7350 650 50  0001 C CNN
-F 1 "GND" H 7350 750 50  0000 C CNN
-F 2 "" H 7350 900 60  0001 C CNN
-F 3 "" H 7350 900 60  0001 C CNN
-	1    7350 900 
-	-1   0    0    1   
-$EndComp
-$Comp
-L C_Small C7
-U 1 1 5C2B6F1A
-P 7800 1300
-F 0 "C7" H 7810 1370 50  0000 L CNN
-F 1 "100n" H 7810 1220 50  0000 L CNN
-F 2 "Capacitors_SMD:C_1206_HandSoldering" H 7800 1300 50  0001 C CNN
-F 3 "" H 7800 1300 60  0001 C CNN
-	1    7800 1300
-	1    0    0    -1  
-$EndComp
-$Comp
-L C_Small C8
-U 1 1 5C2B6F1B
-P 8100 1300
-F 0 "C8" H 8110 1370 50  0000 L CNN
-F 1 "100n" H 8110 1220 50  0000 L CNN
-F 2 "Capacitors_SMD:C_1206_HandSoldering" H 8100 1300 50  0001 C CNN
-F 3 "" H 8100 1300 60  0001 C CNN
-	1    8100 1300
-	1    0    0    -1  
-$EndComp
-$Comp
-L C_Small C9
-U 1 1 5C2B6F1C
-P 8350 1300
-F 0 "C9" H 8360 1370 50  0000 L CNN
-F 1 "100n" H 8360 1220 50  0000 L CNN
-F 2 "Capacitors_SMD:C_1206_HandSoldering" H 8350 1300 50  0001 C CNN
-F 3 "" H 8350 1300 60  0001 C CNN
-	1    8350 1300
-	1    0    0    -1  
-$EndComp
 Text Notes 1650 4600 0    60   ~ 12
 DEBUG/PROGRAMMING SECTION
-Text GLabel 10100 2350 2    39   Input ~ 0
-UART_TX_TTL
-Text GLabel 10100 2450 2    39   Output ~ 0
-UART_RX_TTL
-$Comp
-L R_Small R6
-U 1 1 5C2B6F1D
-P 9650 2150
-F 0 "R6" H 9680 2170 50  0000 L CNN
-F 1 "10K" H 9680 2110 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 9650 2150 50  0001 C CNN
-F 3 "" H 9650 2150 60  0001 C CNN
-	1    9650 2150
-	1    0    0    -1  
-$EndComp
-Text GLabel 9650 1950 1    60   Input ~ 0
-VCC3V3
-$Comp
-L R_Small R7
-U 1 1 5C2B6F1E
-P 9900 2150
-F 0 "R7" H 9930 2170 50  0000 L CNN
-F 1 "10K" H 9930 2110 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 9900 2150 50  0001 C CNN
-F 3 "" H 9900 2150 60  0001 C CNN
-	1    9900 2150
-	1    0    0    -1  
-$EndComp
-Text GLabel 8750 4150 2    39   BiDi ~ 0
-mD3
-Text GLabel 8750 4250 2    39   BiDi ~ 0
-mD4
-Text GLabel 8750 4350 2    39   BiDi ~ 0
-mD5
-Text GLabel 8750 4450 2    39   BiDi ~ 0
-mD6
-Text GLabel 8750 4550 2    39   BiDi ~ 0
-mD7
-$Comp
-L R_Small R4
-U 1 1 5C2B6F1F
-P 9600 5350
-F 0 "R4" H 9450 5350 50  0000 L CNN
-F 1 "2.2k" H 9630 5310 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 9600 5350 50  0001 C CNN
-F 3 "" H 9600 5350 60  0001 C CNN
-	1    9600 5350
-	1    0    0    -1  
-$EndComp
-Text GLabel 9050 4650 2    39   BiDi ~ 0
-~mEXSEL
-Text GLabel 9050 4950 2    39   BiDi ~ 0
-~mMPD
-Text GLabel 9050 5150 2    39   BiDi ~ 0
-~mREF
-Text GLabel 8700 3350 2    39   BiDi ~ 0
-~mCCTL
-Text GLabel 7000 3550 0    39   BiDi ~ 0
-mB02/PHI2
 $Comp
 L CONN_01X01 P1
 U 1 1 5C2B6F21
@@ -854,41 +671,6 @@ F 3 "" H 900 3300 60  0001 C CNN
 $EndComp
 Text GLabel 1100 3300 2    60   Output ~ 0
 TP1
-Text GLabel 7000 3850 0    39   BiDi ~ 0
-mA1
-Text GLabel 7000 3950 0    39   BiDi ~ 0
-mA2
-Text GLabel 7000 4050 0    39   BiDi ~ 0
-mA3
-Text GLabel 7000 4150 0    39   BiDi ~ 0
-mA4
-Text GLabel 7000 4250 0    39   BiDi ~ 0
-mA5
-Text GLabel 7000 4450 0    39   BiDi ~ 0
-mA7
-Text GLabel 8700 2550 2    39   BiDi ~ 0
-PB0
-Text GLabel 8700 2650 2    39   BiDi ~ 0
-PB1
-Text GLabel 8700 2850 2    39   BiDi ~ 0
-PB3
-Text GLabel 8700 2950 2    39   BiDi ~ 0
-PB4
-Text GLabel 8700 3050 2    39   BiDi ~ 0
-PB5
-Text GLabel 8700 3150 2    39   BiDi ~ 0
-PB6
-$Comp
-L GND #PWR016
-U 1 1 5C2B6F22
-P 7900 5750
-F 0 "#PWR016" H 7900 5500 50  0001 C CNN
-F 1 "GND" H 7900 5600 50  0000 C CNN
-F 2 "" H 7900 5750 60  0001 C CNN
-F 3 "" H 7900 5750 60  0001 C CNN
-	1    7900 5750
-	1    0    0    -1  
-$EndComp
 $Comp
 L ATARICARTRIDGE CART1
 U 1 1 5C2B6F23
@@ -916,10 +698,10 @@ Text GLabel 1200 6800 0    39   Input ~ 0
 Text GLabel 4350 6550 0    39   Input ~ 0
 +5VDC
 $Comp
-L GND #PWR017
+L GND #PWR13
 U 1 1 5C2B6F25
 P 3250 5700
-F 0 "#PWR017" H 3250 5450 50  0001 C CNN
+F 0 "#PWR13" H 3250 5450 50  0001 C CNN
 F 1 "GND" H 3250 5550 50  0000 C CNN
 F 2 "" H 3250 5700 60  0001 C CNN
 F 3 "" H 3250 5700 60  0001 C CNN
@@ -927,10 +709,10 @@ F 3 "" H 3250 5700 60  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L GND #PWR018
+L GND #PWR19
 U 1 1 5C2B6F26
 P 6150 6550
-F 0 "#PWR018" H 6150 6300 50  0001 C CNN
+F 0 "#PWR19" H 6150 6300 50  0001 C CNN
 F 1 "GND" H 6150 6400 50  0000 C CNN
 F 2 "" H 6150 6550 60  0001 C CNN
 F 3 "" H 6150 6550 60  0001 C CNN
@@ -1021,10 +803,10 @@ F 3 "" H 4400 3450 60  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L GND #PWR019
+L GND #PWR16
 U 1 1 5C2B6F28
 P 4500 3650
-F 0 "#PWR019" H 4500 3400 50  0001 C CNN
+F 0 "#PWR16" H 4500 3400 50  0001 C CNN
 F 1 "GND" H 4500 3500 50  0000 C CNN
 F 2 "" H 4500 3650 60  0001 C CNN
 F 3 "" H 4500 3650 60  0001 C CNN
@@ -1047,10 +829,10 @@ F 3 "" H 5800 1350 60  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L GND #PWR020
+L GND #PWR18
 U 1 1 5C2B6F2A
 P 5800 1050
-F 0 "#PWR020" H 5800 800 50  0001 C CNN
+F 0 "#PWR18" H 5800 800 50  0001 C CNN
 F 1 "GND" H 5800 900 50  0000 C CNN
 F 2 "" H 5800 1050 60  0001 C CNN
 F 3 "" H 5800 1050 60  0001 C CNN
@@ -1122,135 +904,54 @@ $EndComp
 NoConn ~ 9700 5900
 Text Notes 8950 6350 0    60   ~ 12
 MOUNTING HOLES
-Text GLabel 7000 4350 0    39   BiDi ~ 0
-mA6
 $Sheet
 S 0    8850 11700 8250
 U 5C2B74C3
 F0 "SRAM  & Level Shifters" 60
 F1 "sram-levelshifters.sch" 60
 $EndSheet
-Text GLabel 8700 3450 2    39   BiDi ~ 0
-SWDIO
-Text GLabel 8700 3550 2    39   BiDi ~ 0
-SWDCLK
-Text GLabel 8700 3650 2    39   BiDi ~ 0
-mR/~W
-Text GLabel 8750 3850 2    39   BiDi ~ 0
-mD0
-$Comp
-L C_Small C6
-U 1 1 5C2B6F18
-P 7550 1300
-F 0 "C6" H 7560 1370 50  0000 L CNN
-F 1 "100n" H 7560 1220 50  0000 L CNN
-F 2 "Capacitors_SMD:C_1206_HandSoldering" H 7550 1300 50  0001 C CNN
-F 3 "" H 7550 1300 60  0001 C CNN
-	1    7550 1300
-	1    0    0    -1  
-$EndComp
-$Comp
-L Led_Small D3
-U 1 1 5C2B6F16
-P 9150 2100
-F 0 "D3" H 9100 2225 50  0000 L CNN
-F 1 "ACT" H 9100 2000 50  0000 L CNN
-F 2 "LEDs:LED_1206" V 9150 2100 50  0001 C CNN
-F 3 "" H 9150 2100 60  0001 C CNN
-	1    9150 2100
-	0    -1   -1   0   
-$EndComp
-$Comp
-L R_Small R5
-U 1 1 5C2B6F17
-P 9150 1900
-F 0 "R5" H 9180 1920 50  0000 L CNN
-F 1 "220" H 9180 1860 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 9150 1900 50  0001 C CNN
-F 3 "" H 9150 1900 60  0001 C CNN
-	1    9150 1900
-	1    0    0    -1  
-$EndComp
-Text GLabel 8750 3950 2    39   BiDi ~ 0
-mD1
-Text GLabel 8750 4050 2    39   BiDi ~ 0
-mD2
-Text GLabel 8700 2750 2    39   BiDi ~ 0
-PB2
-Text GLabel 7000 3750 0    39   BiDi ~ 0
-mA0
-Text GLabel 9900 1950 1    60   Input ~ 0
-VCC3V3
-Text Notes 9000 2950 0    60   ~ 0
-16K BANK SELECTORS
-Text GLabel 8700 3250 2    39   BiDi ~ 0
-PB7
-Text GLabel 9050 4750 2    39   BiDi ~ 0
-~mD1XX
-Text GLabel 9050 4850 2    39   BiDi ~ 0
-~mHALT
-Text GLabel 9050 5050 2    39   BiDi ~ 0
-~mIRQ
-Text GLabel 9850 5250 2    39   BiDi ~ 0
-~mRST
-NoConn ~ 7200 2550
-Text GLabel 8750 2150 2    60   Output ~ 0
-TP1
-$Comp
-L GND #PWR021
-U 1 1 5C2B6F15
-P 5400 3300
-F 0 "#PWR021" H 5400 3050 50  0001 C CNN
-F 1 "GND" H 5400 3150 50  0000 C CNN
-F 2 "" H 5400 3300 60  0001 C CNN
-F 3 "" H 5400 3300 60  0001 C CNN
-	1    5400 3300
-	0    1    1    0   
-$EndComp
-Text GLabel 10200 3250 1    60   Input ~ 0
+Text GLabel 8450 3300 1    60   Input ~ 0
 VCC3V3
 $Comp
-L GND #PWR022
+L GND #PWR20
 U 1 1 5C2F7351
-P 10200 4550
-F 0 "#PWR022" H 10200 4300 50  0001 C CNN
-F 1 "GND" H 10200 4400 50  0000 C CNN
-F 2 "" H 10200 4550 60  0001 C CNN
-F 3 "" H 10200 4550 60  0001 C CNN
-	1    10200 4550
+P 8450 4600
+F 0 "#PWR20" H 8450 4350 50  0001 C CNN
+F 1 "GND" H 8450 4450 50  0000 C CNN
+F 2 "" H 8450 4600 60  0001 C CNN
+F 3 "" H 8450 4600 60  0001 C CNN
+	1    8450 4600
 	1    0    0    -1  
 $EndComp
 $Comp
 L 74LS138 U3
 U 1 1 5C2F63E8
-P 10200 3850
-F 0 "U3" H 9900 4300 50  0000 C CNN
-F 1 "74LS138" H 9900 3300 50  0000 C CNN
-F 2 "Housings_SSOP:TSSOP-16_4.4x5mm_Pitch0.65mm" H 10200 3850 50  0001 C CNN
-F 3 "" H 10200 3850 60  0001 C CNN
-	1    10200 3850
+P 8450 3900
+F 0 "U3" H 8150 4350 50  0000 C CNN
+F 1 "74LS138" H 8150 3350 50  0000 C CNN
+F 2 "Housings_SSOP:TSSOP-16_4.4x5mm_Pitch0.65mm" H 8450 3900 50  0001 C CNN
+F 3 "" H 8450 3900 60  0001 C CNN
+	1    8450 3900
 	1    0    0    -1  
 $EndComp
-NoConn ~ 10700 3950
-NoConn ~ 10700 4050
-NoConn ~ 10700 4150
-NoConn ~ 10700 4250
-Text GLabel 9700 3550 0    39   BiDi ~ 0
-PB5
-Text GLabel 9700 3650 0    39   BiDi ~ 0
-PB6
-Text GLabel 9700 3750 0    39   BiDi ~ 0
-PB7
-Text GLabel 10700 3550 2    39   BiDi ~ 0
+NoConn ~ 8950 4000
+NoConn ~ 8950 4100
+NoConn ~ 8950 4200
+NoConn ~ 8950 4300
+Text GLabel 7950 3600 0    39   BiDi ~ 0
+mA19
+Text GLabel 7950 3700 0    39   BiDi ~ 0
+mA20
+Text GLabel 7950 3800 0    39   BiDi ~ 0
+mA21
+Text GLabel 8950 3600 2    39   BiDi ~ 0
 ~BSEL0
-Text GLabel 10700 3650 2    39   BiDi ~ 0
+Text GLabel 8950 3700 2    39   BiDi ~ 0
 ~BSEL1
-Text GLabel 10700 3750 2    39   BiDi ~ 0
+Text GLabel 8950 3800 2    39   BiDi ~ 0
 ~BSEL2
-Text GLabel 10700 3850 2    39   BiDi ~ 0
+Text GLabel 8950 3900 2    39   BiDi ~ 0
 ~BSEL3
-Text Notes 9750 4950 0    60   ~ 0
-ADDRESS DECODER 
 $Comp
 L CONN_01X04 EXTPWR1
 U 1 1 5C2F33D4
@@ -1263,10 +964,10 @@ F 3 "" H 2750 950 60  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L GND #PWR023
+L GND #PWR10
 U 1 1 5C2F34E0
 P 2800 750
-F 0 "#PWR023" H 2800 500 50  0001 C CNN
+F 0 "#PWR10" H 2800 500 50  0001 C CNN
 F 1 "GND" H 2700 600 50  0000 C CNN
 F 2 "" H 2800 750 60  0001 C CNN
 F 3 "" H 2800 750 60  0001 C CNN
@@ -1274,10 +975,10 @@ F 3 "" H 2800 750 60  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L GND #PWR024
+L GND #PWR9
 U 1 1 5C2F354E
 P 2700 750
-F 0 "#PWR024" H 2700 500 50  0001 C CNN
+F 0 "#PWR9" H 2700 500 50  0001 C CNN
 F 1 "GND" H 2800 600 50  0000 C CNN
 F 2 "" H 2700 750 60  0001 C CNN
 F 3 "" H 2700 750 60  0001 C CNN
@@ -1305,10 +1006,6 @@ Text GLabel 1200 6700 0    39   BiDi ~ 0
 ~S5
 Text GLabel 1200 6900 0    39   BiDi ~ 0
 RD5
-Text GLabel 9700 4150 0    39   BiDi ~ 0
-~ADDRSEL16K
-Text GLabel 9700 4250 0    39   BiDi ~ 0
-~ADDRSEL16K
 $Comp
 L CONN_01X01 P6
 U 1 1 5C326A2F
@@ -1323,10 +1020,10 @@ $EndComp
 Text GLabel 1400 850  2    60   Output ~ 0
 GND
 $Comp
-L GND #PWR025
+L GND #PWR4
 U 1 1 5C3272A9
 P 1250 850
-F 0 "#PWR025" H 1250 600 50  0001 C CNN
+F 0 "#PWR4" H 1250 600 50  0001 C CNN
 F 1 "GND" H 1250 700 50  0000 C CNN
 F 2 "" H 1250 850 60  0001 C CNN
 F 3 "" H 1250 850 60  0001 C CNN
@@ -1334,10 +1031,10 @@ F 3 "" H 1250 850 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR026
+L GND #PWR17
 U 1 1 5C32789C
 P 5550 1050
-F 0 "#PWR026" H 5550 800 50  0001 C CNN
+F 0 "#PWR17" H 5550 800 50  0001 C CNN
 F 1 "GND" H 5550 900 50  0000 C CNN
 F 2 "" H 5550 1050 60  0001 C CNN
 F 3 "" H 5550 1050 60  0001 C CNN
@@ -1360,58 +1057,24 @@ Wire Wire Line
 Wire Wire Line
 	1900 1350 1900 1750
 Connection ~ 1900 1600
-Text GLabel 6400 4550 0    39   BiDi ~ 0
+Text GLabel 7950 4100 0    39   BiDi ~ 0
 RAMEN
-Text GLabel 9700 4050 0    39   BiDi ~ 0
-RAMEN
-$Comp
-L R_Small R10
-U 1 1 5C36A378
-P 6550 4700
-F 0 "R10" H 6350 4700 50  0000 L CNN
-F 1 "2.2k" H 6580 4660 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 6550 4700 50  0001 C CNN
-F 3 "" H 6550 4700 60  0001 C CNN
-	1    6550 4700
-	1    0    0    -1  
-$EndComp
-$Comp
-L GND #PWR027
-U 1 1 5C36A459
-P 6550 4800
-F 0 "#PWR027" H 6550 4550 50  0001 C CNN
-F 1 "GND" H 6550 4650 50  0000 C CNN
-F 2 "" H 6550 4800 60  0001 C CNN
-F 3 "" H 6550 4800 60  0001 C CNN
-	1    6550 4800
-	1    0    0    -1  
-$EndComp
-$Comp
-L R_Small R9
-U 1 1 5C36A4D3
-P 6550 4400
-F 0 "R9" H 6400 4400 50  0000 L CNN
-F 1 "10K" H 6580 4360 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 6550 4400 50  0001 C CNN
-F 3 "" H 6550 4400 60  0001 C CNN
-	1    6550 4400
-	1    0    0    -1  
-$EndComp
-Text GLabel 6550 4300 1    39   Input ~ 0
-VCC3V3
-Wire Wire Line
-	6400 4550 7200 4550
-Wire Wire Line
-	6550 4500 6550 4600
-Connection ~ 6550 4550
-NoConn ~ 7200 4750
-NoConn ~ 7200 4850
-NoConn ~ 7200 4950
-NoConn ~ 7200 5050
-NoConn ~ 7200 5150
-NoConn ~ 7200 5250
-Text GLabel 7050 4650 0    39   BiDi ~ 0
-~mD3XX
-Wire Wire Line
-	7200 4650 7050 4650
+Wire Notes Line
+	6750 2450 10350 2450
+Wire Notes Line
+	10350 2450 10350 4950
+Wire Notes Line
+	10350 4950 6700 4950
+Wire Notes Line
+	6700 4950 6700 2450
+Wire Notes Line
+	6700 2450 6800 2450
+Text Notes 6750 2650 0    60   ~ 12
+EXTRA BIT ADDRESS DECODER
+$Sheet
+S 100  26250 11600 8950
+U 5C421880
+F0 "MCU" 39
+F1 "mcu.sch" 39
+$EndSheet
 $EndSCHEMATC
