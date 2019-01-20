@@ -150,10 +150,10 @@
       (place U10 175260 -99060 front 270 (PN "TXB0108-PW"))
     )
     (component "RetroBitLab:SOP-32L-20.5x11.30-1.27mm"
-      (place U11 180340 -78740 front 0 (PN ISSI61WV5128BL))
-      (place U12 180340 -58420 front 0 (PN ISSI61WV5128BL))
-      (place U13 215900 -58420 front 0 (PN ISSI61WV5128BL))
-      (place U14 215900 -78740 front 0 (PN ISSI61WV5128BL))
+      (place U11 180000 -83000 front 0 (PN ISSI61WV5128BL))
+      (place U12 180000 -57000 front 0 (PN ISSI61WV5128BL))
+      (place U13 216000 -57000 front 0 (PN ISSI61WV5128BL))
+      (place U14 216000 -83000 front 0 (PN ISSI61WV5128BL))
     )
     (component "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm"
       (place U15 78740 -91440 front 0 (PN 74LS08))
