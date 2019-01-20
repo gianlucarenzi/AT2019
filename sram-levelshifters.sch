@@ -1,38 +1,9 @@
 EESchema Schematic File Version 2
-LIBS:atari23MTS_Upgrade-rescue
-LIBS:power
-LIBS:device
-LIBS:transistors
-LIBS:conn
-LIBS:linear
-LIBS:regul
-LIBS:74xx
-LIBS:cmos4000
-LIBS:adc-dac
-LIBS:memory
-LIBS:xilinx
-LIBS:microcontrollers
-LIBS:dsp
-LIBS:microchip
-LIBS:analog_switches
-LIBS:motorola
-LIBS:texas
-LIBS:intel
-LIBS:audio
-LIBS:interface
-LIBS:digital-audio
-LIBS:philips
-LIBS:display
-LIBS:cypress
-LIBS:siliconi
-LIBS:opto
-LIBS:atmel
-LIBS:contrib
-LIBS:valves
 LIBS:AmigaComponents
 LIBS:4xxx
 LIBS:4xxx_IEEE
 LIBS:74xGxx
+LIBS:74xx
 LIBS:74xx_IEEE
 LIBS:Amplifier_Audio
 LIBS:Amplifier_Buffer
@@ -87,6 +58,7 @@ LIBS:FPGA_Xilinx_Spartan6
 LIBS:FPGA_Xilinx_Virtex5
 LIBS:FPGA_Xilinx_Virtex6
 LIBS:FPGA_Xilinx_Virtex7
+LIBS:ft232rl
 LIBS:GPU
 LIBS:Graphic
 LIBS:Interface
@@ -163,6 +135,7 @@ LIBS:Memory_UniqueID
 LIBS:Motor
 LIBS:Oscillator
 LIBS:Potentiometer_Digital
+LIBS:power
 LIBS:Power_Management
 LIBS:Power_Protection
 LIBS:Power_Supervisor
@@ -241,10 +214,10 @@ F 3 "" H 7650 2250 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR27
+L GND #PWR023
 U 1 1 5C2BB99F
 P 7650 3350
-F 0 "#PWR27" H 7650 3100 50  0001 C CNN
+F 0 "#PWR023" H 7650 3100 50  0001 C CNN
 F 1 "GND" H 7650 3200 50  0000 C CNN
 F 2 "" H 7650 3350 60  0001 C CNN
 F 3 "" H 7650 3350 60  0001 C CNN
@@ -281,10 +254,10 @@ F 3 "" H 7800 1100 60  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L GND #PWR29
+L GND #PWR024
 U 1 1 5C2BF58F
 P 7900 1100
-F 0 "#PWR29" H 7900 850 50  0001 C CNN
+F 0 "#PWR024" H 7900 850 50  0001 C CNN
 F 1 "GND" H 7900 950 50  0000 C CNN
 F 2 "" H 7900 1100 60  0001 C CNN
 F 3 "" H 7900 1100 60  0001 C CNN
@@ -327,12 +300,12 @@ $EndComp
 $Comp
 L TXB0108-PW U10
 U 1 1 5C2BFAD5
-P 4350 2000
-F 0 "U10" H 4150 2750 60  0000 L CNN
-F 1 "TXB0108-PW" H 4150 1250 60  0000 L CNN
-F 2 "Housings_SSOP:SSOP-20_4.4x6.5mm_Pitch0.65mm" H 4150 1950 60  0001 C CNN
-F 3 "" H 4350 2000 60  0001 C CNN
-	1    4350 2000
+P 4600 1600
+F 0 "U10" H 4400 2350 60  0000 L CNN
+F 1 "TXB0108-PW" H 4400 850 60  0000 L CNN
+F 2 "Housings_SSOP:SSOP-20_4.4x6.5mm_Pitch0.65mm" H 4400 1550 60  0001 C CNN
+F 3 "" H 4600 1600 60  0001 C CNN
+	1    4600 1600
 	1    0    0    -1  
 $EndComp
 Text GLabel 1850 1350 2    39   BiDi ~ 0
@@ -357,13 +330,13 @@ Text GLabel 2100 5200 2    39   BiDi ~ 0
 VCC5V
 Text GLabel 4550 5200 2    39   BiDi ~ 0
 VCC5V
-Text GLabel 4850 1400 2    39   BiDi ~ 0
+Text GLabel 5100 1000 2    39   BiDi ~ 0
 VCC5V
 $Comp
-L GND #PWR21
+L GND #PWR025
 U 1 1 5C2D99D7
 P 950 2250
-F 0 "#PWR21" H 950 2000 50  0001 C CNN
+F 0 "#PWR025" H 950 2000 50  0001 C CNN
 F 1 "GND" H 950 2100 50  0000 C CNN
 F 2 "" H 950 2250 60  0001 C CNN
 F 3 "" H 950 2250 60  0001 C CNN
@@ -371,10 +344,10 @@ F 3 "" H 950 2250 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR22
+L GND #PWR026
 U 1 1 5C2D9EC5
 P 1200 6400
-F 0 "#PWR22" H 1200 6150 50  0001 C CNN
+F 0 "#PWR026" H 1200 6150 50  0001 C CNN
 F 1 "GND" H 1200 6250 50  0000 C CNN
 F 2 "" H 1200 6400 60  0001 C CNN
 F 3 "" H 1200 6400 60  0001 C CNN
@@ -382,10 +355,10 @@ F 3 "" H 1200 6400 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR24
+L GND #PWR027
 U 1 1 5C2D9EE5
 P 3650 6400
-F 0 "#PWR24" H 3650 6150 50  0001 C CNN
+F 0 "#PWR027" H 3650 6150 50  0001 C CNN
 F 1 "GND" H 3650 6250 50  0000 C CNN
 F 2 "" H 3650 6400 60  0001 C CNN
 F 3 "" H 3650 6400 60  0001 C CNN
@@ -393,14 +366,14 @@ F 3 "" H 3650 6400 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR25
+L GND #PWR028
 U 1 1 5C2D9F05
-P 3950 2600
-F 0 "#PWR25" H 3950 2350 50  0001 C CNN
-F 1 "GND" H 3950 2450 50  0000 C CNN
-F 2 "" H 3950 2600 60  0001 C CNN
-F 3 "" H 3950 2600 60  0001 C CNN
-	1    3950 2600
+P 4200 2200
+F 0 "#PWR028" H 4200 1950 50  0001 C CNN
+F 1 "GND" H 4200 2050 50  0000 C CNN
+F 2 "" H 4200 2200 60  0001 C CNN
+F 3 "" H 4200 2200 60  0001 C CNN
+	1    4200 2200
 	1    0    0    -1  
 $EndComp
 Text GLabel 950  1050 0    39   BiDi ~ 0
@@ -409,7 +382,7 @@ Text GLabel 1200 5200 0    39   BiDi ~ 0
 VCC3V3
 Text GLabel 3650 5200 0    39   BiDi ~ 0
 VCC3V3
-Text GLabel 3950 1400 0    39   BiDi ~ 0
+Text GLabel 4200 1000 0    39   BiDi ~ 0
 VCC3V3
 Text GLabel 950  1250 0    39   BiDi ~ 0
 VCC3V3
@@ -417,7 +390,7 @@ Text GLabel 1200 5400 0    39   BiDi ~ 0
 VCC3V3
 Text GLabel 3650 5400 0    39   BiDi ~ 0
 VCC3V3
-Text GLabel 3950 1600 0    39   BiDi ~ 0
+Text GLabel 4200 1200 0    39   BiDi ~ 0
 VCC3V3
 Text GLabel 950  1350 0    39   BiDi ~ 0
 mA0
@@ -437,7 +410,7 @@ Text GLabel 950  2050 0    39   BiDi ~ 0
 mA7
 Wire Notes Line
 	600  650  3050 650 
-Text Notes 1650 800  0    59   ~ 12
+Text Notes 1750 2650 0    59   ~ 12
 ADDRESS BUS SECTION
 Text GLabel 7150 1350 0    39   BiDi ~ 0
 mA0
@@ -455,53 +428,41 @@ Text GLabel 7150 1950 0    39   BiDi ~ 0
 mA6
 Text GLabel 7150 2050 0    39   BiDi ~ 0
 mA7
-Text GLabel 7150 2150 0    39   BiDi ~ 0
-mA8
-Text GLabel 7150 2250 0    39   BiDi ~ 0
-mA9
-Text GLabel 7150 2350 0    39   BiDi ~ 0
-mA10
-Text GLabel 7150 2450 0    39   BiDi ~ 0
-mA11
-Text GLabel 7150 2550 0    39   BiDi ~ 0
-mA12
-Text GLabel 7150 2650 0    39   BiDi ~ 0
-mA13
-Text GLabel 4850 1700 2    39   BiDi ~ 0
+Text GLabel 5100 1300 2    39   BiDi ~ 0
 D0
-Text GLabel 4850 1800 2    39   BiDi ~ 0
+Text GLabel 5100 1400 2    39   BiDi ~ 0
 D1
-Text GLabel 4850 1900 2    39   BiDi ~ 0
+Text GLabel 5100 1500 2    39   BiDi ~ 0
 D2
-Text GLabel 4850 2000 2    39   BiDi ~ 0
+Text GLabel 5100 1600 2    39   BiDi ~ 0
 D3
-Text GLabel 4850 2100 2    39   BiDi ~ 0
+Text GLabel 5100 1700 2    39   BiDi ~ 0
 D4
-Text GLabel 4850 2200 2    39   BiDi ~ 0
+Text GLabel 5100 1800 2    39   BiDi ~ 0
 D5
-Text GLabel 4850 2300 2    39   BiDi ~ 0
+Text GLabel 5100 1900 2    39   BiDi ~ 0
 D6
-Text GLabel 4850 2400 2    39   BiDi ~ 0
+Text GLabel 5100 2000 2    39   BiDi ~ 0
 D7
-Text GLabel 3950 2400 0    39   BiDi ~ 0
+Text GLabel 4200 2000 0    39   BiDi ~ 0
 mD7
-Text GLabel 3950 2300 0    39   BiDi ~ 0
+Text GLabel 4200 1900 0    39   BiDi ~ 0
 mD6
-Text GLabel 3950 2200 0    39   BiDi ~ 0
+Text GLabel 4200 1800 0    39   BiDi ~ 0
 mD5
-Text GLabel 3950 2100 0    39   BiDi ~ 0
+Text GLabel 4200 1700 0    39   BiDi ~ 0
 mD4
-Text GLabel 3950 2000 0    39   BiDi ~ 0
+Text GLabel 4200 1600 0    39   BiDi ~ 0
 mD3
-Text GLabel 3950 1900 0    39   BiDi ~ 0
+Text GLabel 4200 1500 0    39   BiDi ~ 0
 mD2
-Text GLabel 3950 1800 0    39   BiDi ~ 0
+Text GLabel 4200 1400 0    39   BiDi ~ 0
 mD1
-Text GLabel 3950 1700 0    39   BiDi ~ 0
+Text GLabel 4200 1300 0    39   BiDi ~ 0
 mD0
 Wire Notes Line
-	3150 650  5150 650 
-Text Notes 4000 1100 0    59   ~ 12
+	3150 650  5450 650 
+Text Notes 4200 2650 0    59   ~ 12
 DATA BUS SECTION
 Text GLabel 8150 1350 2    39   BiDi ~ 0
 mD0
@@ -531,10 +492,10 @@ F 3 "" H 9300 2250 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR31
+L GND #PWR029
 U 1 1 5C2DCB90
 P 9300 3350
-F 0 "#PWR31" H 9300 3100 50  0001 C CNN
+F 0 "#PWR029" H 9300 3100 50  0001 C CNN
 F 1 "GND" H 9300 3200 50  0000 C CNN
 F 2 "" H 9300 3350 60  0001 C CNN
 F 3 "" H 9300 3350 60  0001 C CNN
@@ -571,10 +532,10 @@ F 3 "" H 9450 1100 60  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L GND #PWR33
+L GND #PWR030
 U 1 1 5C2DCBA5
 P 9550 1100
-F 0 "#PWR33" H 9550 850 50  0001 C CNN
+F 0 "#PWR030" H 9550 850 50  0001 C CNN
 F 1 "GND" H 9550 950 50  0000 C CNN
 F 2 "" H 9550 1100 60  0001 C CNN
 F 3 "" H 9550 1100 60  0001 C CNN
@@ -597,18 +558,6 @@ Text GLabel 8800 1950 0    39   BiDi ~ 0
 mA6
 Text GLabel 8800 2050 0    39   BiDi ~ 0
 mA7
-Text GLabel 8800 2150 0    39   BiDi ~ 0
-mA8
-Text GLabel 8800 2250 0    39   BiDi ~ 0
-mA9
-Text GLabel 8800 2350 0    39   BiDi ~ 0
-mA10
-Text GLabel 8800 2450 0    39   BiDi ~ 0
-mA11
-Text GLabel 8800 2550 0    39   BiDi ~ 0
-mA12
-Text GLabel 8800 2650 0    39   BiDi ~ 0
-mA13
 Text GLabel 9800 1350 2    39   BiDi ~ 0
 mD0
 Text GLabel 9800 1450 2    39   BiDi ~ 0
@@ -637,10 +586,10 @@ F 3 "" H 7650 5150 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR28
+L GND #PWR031
 U 1 1 5C2DCF05
 P 7650 6250
-F 0 "#PWR28" H 7650 6000 50  0001 C CNN
+F 0 "#PWR031" H 7650 6000 50  0001 C CNN
 F 1 "GND" H 7650 6100 50  0000 C CNN
 F 2 "" H 7650 6250 60  0001 C CNN
 F 3 "" H 7650 6250 60  0001 C CNN
@@ -677,10 +626,10 @@ F 3 "" H 7850 4000 60  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L GND #PWR30
+L GND #PWR032
 U 1 1 5C2DCF1A
 P 7950 4000
-F 0 "#PWR30" H 7950 3750 50  0001 C CNN
+F 0 "#PWR032" H 7950 3750 50  0001 C CNN
 F 1 "GND" H 7950 3850 50  0000 C CNN
 F 2 "" H 7950 4000 60  0001 C CNN
 F 3 "" H 7950 4000 60  0001 C CNN
@@ -703,18 +652,6 @@ Text GLabel 7150 4850 0    39   BiDi ~ 0
 mA6
 Text GLabel 7150 4950 0    39   BiDi ~ 0
 mA7
-Text GLabel 7150 5050 0    39   BiDi ~ 0
-mA8
-Text GLabel 7150 5150 0    39   BiDi ~ 0
-mA9
-Text GLabel 7150 5250 0    39   BiDi ~ 0
-mA10
-Text GLabel 7150 5350 0    39   BiDi ~ 0
-mA11
-Text GLabel 7150 5450 0    39   BiDi ~ 0
-mA12
-Text GLabel 7150 5550 0    39   BiDi ~ 0
-mA13
 Text GLabel 8150 4250 2    39   BiDi ~ 0
 mD0
 Text GLabel 8150 4350 2    39   BiDi ~ 0
@@ -743,10 +680,10 @@ F 3 "" H 9300 5150 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR32
+L GND #PWR033
 U 1 1 5C2DCF47
 P 9300 6250
-F 0 "#PWR32" H 9300 6000 50  0001 C CNN
+F 0 "#PWR033" H 9300 6000 50  0001 C CNN
 F 1 "GND" H 9300 6100 50  0000 C CNN
 F 2 "" H 9300 6250 60  0001 C CNN
 F 3 "" H 9300 6250 60  0001 C CNN
@@ -783,10 +720,10 @@ F 3 "" H 9500 4000 60  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L GND #PWR34
+L GND #PWR034
 U 1 1 5C2DCF5C
 P 9600 4000
-F 0 "#PWR34" H 9600 3750 50  0001 C CNN
+F 0 "#PWR034" H 9600 3750 50  0001 C CNN
 F 1 "GND" H 9600 3850 50  0000 C CNN
 F 2 "" H 9600 4000 60  0001 C CNN
 F 3 "" H 9600 4000 60  0001 C CNN
@@ -809,18 +746,6 @@ Text GLabel 8800 4850 0    39   BiDi ~ 0
 mA6
 Text GLabel 8800 4950 0    39   BiDi ~ 0
 mA7
-Text GLabel 8800 5050 0    39   BiDi ~ 0
-mA8
-Text GLabel 8800 5150 0    39   BiDi ~ 0
-mA9
-Text GLabel 8800 5250 0    39   BiDi ~ 0
-mA10
-Text GLabel 8800 5350 0    39   BiDi ~ 0
-mA11
-Text GLabel 8800 5450 0    39   BiDi ~ 0
-mA12
-Text GLabel 8800 5550 0    39   BiDi ~ 0
-mA13
 Text GLabel 9800 4250 2    39   BiDi ~ 0
 mD0
 Text GLabel 9800 4350 2    39   BiDi ~ 0
@@ -955,15 +880,15 @@ $EndComp
 $Comp
 L 74HC04 U7
 U 7 1 5C2E0C9C
-P 5750 1400
-F 0 "U7" H 5750 1450 50  0000 C CNN
-F 1 "74HC04" H 5750 1350 50  0000 C CNN
-F 2 "Housings_SSOP:TSSOP-14_4.4x5mm_Pitch0.65mm" H 5750 1400 50  0001 C CNN
-F 3 "" H 5750 1400 60  0001 C CNN
-	7    5750 1400
+P 5750 3550
+F 0 "U7" H 5750 3600 50  0000 C CNN
+F 1 "74HC04" H 5750 3500 50  0000 C CNN
+F 2 "Housings_SSOP:TSSOP-14_4.4x5mm_Pitch0.65mm" H 5750 3550 50  0001 C CNN
+F 3 "" H 5750 3550 60  0001 C CNN
+	7    5750 3550
 	1    0    0    -1  
 $EndComp
-Text GLabel 5750 900  1    39   BiDi ~ 0
+Text GLabel 5750 3050 1    39   BiDi ~ 0
 VCC3V3
 Text GLabel 2100 5500 2    39   BiDi ~ 0
 ~EXSEL
@@ -980,58 +905,18 @@ Wire Wire Line
 	7700 1100 7650 1100
 Connection ~ 7650 1100
 $Comp
-L GND #PWR26
+L GND #PWR035
 U 1 1 5C2E9245
-P 5650 1900
-F 0 "#PWR26" H 5650 1650 50  0001 C CNN
-F 1 "GND" H 5650 1750 50  0000 C CNN
-F 2 "" H 5650 1900 60  0001 C CNN
-F 3 "" H 5650 1900 60  0001 C CNN
-	1    5650 1900
+P 5650 4050
+F 0 "#PWR035" H 5650 3800 50  0001 C CNN
+F 1 "GND" H 5650 3900 50  0000 C CNN
+F 2 "" H 5650 4050 60  0001 C CNN
+F 3 "" H 5650 4050 60  0001 C CNN
+	1    5650 4050
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	5650 1900 5750 1900
-Text GLabel 7150 2750 0    39   BiDi ~ 0
-PB0
-Text GLabel 7150 2850 0    39   BiDi ~ 0
-PB1
-Text GLabel 7150 2950 0    39   BiDi ~ 0
-PB2
-Text GLabel 7150 3050 0    39   BiDi ~ 0
-PB3
-Text GLabel 7150 3150 0    39   BiDi ~ 0
-PB4
-Text GLabel 8800 2750 0    39   BiDi ~ 0
-PB0
-Text GLabel 8800 2850 0    39   BiDi ~ 0
-PB1
-Text GLabel 8800 2950 0    39   BiDi ~ 0
-PB2
-Text GLabel 8800 3050 0    39   BiDi ~ 0
-PB3
-Text GLabel 8800 3150 0    39   BiDi ~ 0
-PB4
-Text GLabel 8800 5650 0    39   BiDi ~ 0
-PB0
-Text GLabel 7150 5650 0    39   BiDi ~ 0
-PB0
-Text GLabel 8800 5750 0    39   BiDi ~ 0
-PB1
-Text GLabel 7150 5750 0    39   BiDi ~ 0
-PB1
-Text GLabel 7150 5850 0    39   BiDi ~ 0
-PB2
-Text GLabel 8800 5850 0    39   BiDi ~ 0
-PB2
-Text GLabel 8800 5950 0    39   BiDi ~ 0
-PB3
-Text GLabel 8800 6050 0    39   BiDi ~ 0
-PB4
-Text GLabel 7150 5950 0    39   BiDi ~ 0
-PB3
-Text GLabel 7150 6050 0    39   BiDi ~ 0
-PB4
+	5650 4050 5750 4050
 Text GLabel 2750 3250 0    39   BiDi ~ 0
 mR/~W
 Text GLabel 3350 3250 2    39   BiDi ~ 0
@@ -1074,10 +959,10 @@ $EndComp
 Text GLabel 3400 1000 2    39   BiDi ~ 0
 VCC5V
 $Comp
-L GND #PWR23
+L GND #PWR036
 U 1 1 5C374058
 P 2500 2200
-F 0 "#PWR23" H 2500 1950 50  0001 C CNN
+F 0 "#PWR036" H 2500 1950 50  0001 C CNN
 F 1 "GND" H 2500 2050 50  0000 C CNN
 F 2 "" H 2500 2200 60  0001 C CNN
 F 3 "" H 2500 2200 60  0001 C CNN
@@ -1123,9 +1008,7 @@ A8
 Wire Notes Line
 	3000 650  3200 650 
 Wire Notes Line
-	5150 650  5150 2950
-Wire Notes Line
-	5150 2950 600  2950
+	600  2950 5450 2950
 Wire Notes Line
 	600  2950 600  650 
 NoConn ~ 4550 6100
@@ -1164,17 +1047,17 @@ Text GLabel 1600 4050 2    39   BiDi ~ 0
 $Comp
 L 74HC04 U2
 U 7 1 5C420D5D
-P 5750 2400
-F 0 "U2" H 5750 2450 50  0000 C CNN
-F 1 "74HC04" H 5750 2350 50  0000 C CNN
-F 2 "Housings_SSOP:TSSOP-14_4.4x5mm_Pitch0.65mm" H 5750 2400 50  0001 C CNN
-F 3 "" H 5750 2400 60  0001 C CNN
-	7    5750 2400
+P 5750 4550
+F 0 "U2" H 5750 4600 50  0000 C CNN
+F 1 "74HC04" H 5750 4500 50  0000 C CNN
+F 2 "Housings_SSOP:TSSOP-14_4.4x5mm_Pitch0.65mm" H 5750 4550 50  0001 C CNN
+F 3 "" H 5750 4550 60  0001 C CNN
+	7    5750 4550
 	-1   0    0    1   
 $EndComp
-Text GLabel 5750 2900 3    39   BiDi ~ 0
+Text GLabel 5750 5050 3    39   BiDi ~ 0
 VCC3V3
-Connection ~ 5750 1900
+Connection ~ 5750 4050
 Text GLabel 2750 3750 0    39   BiDi ~ 0
 mD6XX
 Text GLabel 3350 3750 2    39   BiDi ~ 0
@@ -1198,4 +1081,94 @@ Wire Notes Line
 	3750 4750 600  4750
 Wire Notes Line
 	600  4750 600  3050
+Wire Notes Line
+	5450 2950 5450 650 
+Text GLabel 7150 2150 0    39   BiDi ~ 0
+mD1E0_A8
+Text GLabel 7150 2250 0    39   BiDi ~ 0
+mD1E0_A9
+Text GLabel 7150 2350 0    39   BiDi ~ 0
+mD1E0_A10
+Text GLabel 7150 2450 0    39   BiDi ~ 0
+mD1E0_A11
+Text GLabel 7150 2550 0    39   BiDi ~ 0
+mD1E0_A12
+Text GLabel 7150 2650 0    39   BiDi ~ 0
+mD1E0_A13
+Text GLabel 7150 2750 0    39   BiDi ~ 0
+mD1E0_A14
+Text GLabel 8800 2150 0    39   BiDi ~ 0
+mD1E0_A8
+Text GLabel 8800 2250 0    39   BiDi ~ 0
+mD1E0_A9
+Text GLabel 8800 2350 0    39   BiDi ~ 0
+mD1E0_A10
+Text GLabel 8800 2450 0    39   BiDi ~ 0
+mD1E0_A11
+Text GLabel 8800 2550 0    39   BiDi ~ 0
+mD1E0_A12
+Text GLabel 8800 2650 0    39   BiDi ~ 0
+mD1E0_A13
+Text GLabel 8800 2750 0    39   BiDi ~ 0
+mD1E0_A14
+Text GLabel 8800 3050 0    39   BiDi ~ 0
+mD1E2_A17
+Text GLabel 8800 3150 0    39   BiDi ~ 0
+mD1E2_A18
+Text GLabel 7150 5050 0    39   BiDi ~ 0
+mD1E0_A8
+Text GLabel 7150 5150 0    39   BiDi ~ 0
+mD1E0_A9
+Text GLabel 7150 5250 0    39   BiDi ~ 0
+mD1E0_A10
+Text GLabel 7150 5350 0    39   BiDi ~ 0
+mD1E0_A11
+Text GLabel 7150 5450 0    39   BiDi ~ 0
+mD1E0_A12
+Text GLabel 7150 5550 0    39   BiDi ~ 0
+mD1E0_A13
+Text GLabel 7150 5650 0    39   BiDi ~ 0
+mD1E0_A14
+Text GLabel 7150 5750 0    39   BiDi ~ 0
+mD1E0_A15
+Text GLabel 7150 5850 0    39   BiDi ~ 0
+mD1E2_A16
+Text GLabel 7150 5950 0    39   BiDi ~ 0
+mD1E2_A17
+Text GLabel 7150 6050 0    39   BiDi ~ 0
+mD1E2_A18
+Text GLabel 8800 5050 0    39   BiDi ~ 0
+mD1E0_A8
+Text GLabel 8800 5150 0    39   BiDi ~ 0
+mD1E0_A9
+Text GLabel 8800 5250 0    39   BiDi ~ 0
+mD1E0_A10
+Text GLabel 8800 5350 0    39   BiDi ~ 0
+mD1E0_A11
+Text GLabel 8800 5450 0    39   BiDi ~ 0
+mD1E0_A12
+Text GLabel 8800 5550 0    39   BiDi ~ 0
+mD1E0_A13
+Text GLabel 8800 5650 0    39   BiDi ~ 0
+mD1E0_A14
+Text GLabel 8800 5750 0    39   BiDi ~ 0
+mD1E0_A15
+Text GLabel 8800 5850 0    39   BiDi ~ 0
+mD1E2_A16
+Text GLabel 8800 5950 0    39   BiDi ~ 0
+mD1E2_A17
+Text GLabel 8800 6050 0    39   BiDi ~ 0
+mD1E2_A18
+Text GLabel 7150 2950 0    39   BiDi ~ 0
+mD1E2_A16
+Text GLabel 7150 2850 0    39   BiDi ~ 0
+mD1E0_A15
+Text GLabel 8800 2850 0    39   BiDi ~ 0
+mD1E0_A15
+Text GLabel 7150 3050 0    39   BiDi ~ 0
+mD1E2_A17
+Text GLabel 8800 2950 0    39   BiDi ~ 0
+mD1E2_A16
+Text GLabel 7150 3150 0    39   BiDi ~ 0
+mD1E2_A18
 $EndSCHEMATC
