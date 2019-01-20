@@ -1,5 +1,5 @@
-Drill report for /home/debian/Progetti/Atari/AT2019/atari23MTS_Upgrade.kicad_pcb
-Created on mar 15 gen 2019 12:05:10 CET
+Drill report for /home/debian/Progetti/ATARI/AT2019/atari23MTS_Upgrade.kicad_pcb
+Created on Sun 20 Jan 2019 20:02:46 CET
 
 Copper Layer Stackup:
     =============================================================
@@ -10,15 +10,14 @@ Copper Layer Stackup:
 Drill file 'atari23MTS_Upgrade.drl' contains
     plated through holes:
     =============================================================
-    T1  0,30mm  0,012"  (445 holes)
-    T2  0,40mm  0,016"  (10 holes)
-    T3  1,02mm  0,040"  (61 holes)
-    T4  3,05mm  0,120"  (4 holes)
+    T1  0,30mm  0,012"  (453 holes)
+    T2  1,02mm  0,040"  (61 holes)
+    T3  3,00mm  0,118"  (4 holes)
 
-    Total plated holes count 520
+    Total plated holes count 518
 
 
-Drill file 'atari23MTS_Upgrade-NPTH.drl' contains
+Not plated through holes are merged with plated holes
     unplated through holes:
     =============================================================
 
