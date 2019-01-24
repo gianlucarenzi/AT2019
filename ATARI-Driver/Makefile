@@ -13,12 +13,16 @@ ifeq ($(DISABLE_EXPANSION),yes)
 	EMUSWITCHES = -win-width 800 \
 	-win-height 600 \
 	-xlxe_rom ~/ATARI/ATARIXL.ROM \
+	-scanlines 50 \
+	-scanlinesint \
 	$(TARGET)
 else
 	EMUSWITCHES = -win-width 800 \
 	-win-height 600 \
 	-xlxe_rom ~/ATARI/ATARIXL.ROM \
 	-retrobit $(MEMSIZEK) \
+	-scanlines 50 \
+	-scanlinesint \
 	$(TARGET)
 endif
 
