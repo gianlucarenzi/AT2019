@@ -1,0 +1,104 @@
+; Parallel Device Handler Example
+; By Earl Rice
+; ANTIC Magazine
+;
+;(ASM,,#D:MYFILE.OBJ) because the obj code is put
+;where there is no RAM available.
+	.OPT	OBJ
+;  EQUATES
+PDVMSK	=	$0247	;Parallel device mask (indicates which are
+PDIMSK	=	$0249	;Parallel interrupt mask (not used in this
+GPDVV	=	$E48F	;Generic Parallel Device Vector
+;
+HATABS	=	$031A	;Device handler table
+CRITIC	=	$42	;Critical code section flag
+;
+DEVNAM	=	'T	;Device name, E.G. T for "Telephone".
+HWGET	=	$D100	;Hardware GET register
+HWPUT	=	$D100	;Hardware PUT register.
+HWRSET	=	$D101	;Hardware reset (clears get register).
+HWSTAT	=	$D101	;Hardware STATUS register.
+;
+	*=	$D800
+; Rom vector table
+	.WORD	0	;Optional ROM checksum
+	.BYTE	0	;Optional Revision number
+	.BYTE	$80	;Mandatory ID number
+	.BYTE	0	;Optional Name or Type
+	JMP	NONEED	;Lo-level IO vector, which we don't need
+	JMP	NONEED	;IRQ handler vector, which we don't need.
+	.BYTE	$91	;Mandatory ID number
+	.BYTE	DEVNAM	;Device name
+	.WORD	NONEED-1	;Open vector, which we don't need.
+	.WORD	NONEED-1	;CLOSE vector, which we don't need.
+	.WORD	GETBYT-1	;GET BYTE vector.
+	.WORD	PUTBYT-1	;PUT BYTE vector.
+	.WORD	GETSTA-1	;GET STATUS vector.
+	.WORD	NONEED-1	;SPECIAL vector, which we don't need.
+	JMP	INIT	;INIT vector at power up or reset.
+	.BYTE	0	;NOT USED.
+;
+;CODE STARTS HERE
+;
+;Initialize device and device handler
+INIT		
+	LDA	PDVMSK	;Get enabled device flags
+	ORA	#1	;Set bit 0.
+	STA	PDVMSK	;& replace.
+;Note: if device used interrupts we would set bit 0 of
+;
+;Put device name in Handler table HATABS
+	LDX	#0
+;        Top of loop
+SEARCH		
+	LDA	HATABS,X	;Get a byte from table
+	BEQ	FNDIT	;0? Then we found space.
+	INX	
+	INX	
+	INX	
+	CPX	#36	;Length of HATABS
+	BCC	SEARCH	;Still looking
+	RTS		;No room in HATABS; device not initialized
+;
+;         We found a spot.
+FNDIT		
+	LDA	#DEVNAM	;Get device name.
+	STA	HATABS,X	;Put it in blank spot.
+	INX	
+	LDA	#GPDVV&$FF	;Get lo byte of vector.
+	LDA	#GPDVV/$0100	;Get hi byte of vector.
+	STA	HATABS+2,X
+	RTS	
+;
+; GET BYTE routine.
+GETBYT		
+	LDA	#0
+	STA	CRITIC	;Enable deferred  vertical blank.
+	LDA	HWGET	;Get a byte from hardware.
+	STA	HWRSET	;Reset hardware.
+	SEC		;Indicate we handled it.
+	RTS	
+;
+; PUT BYTE routine.
+PUTBYT		
+	LDX	#0
+	STX	CRITIC	;Enable deferred  vertical blank.
+	STA	HWPUT	;Put byte to hardware.
+	SEC		;Indicate we handled it.
+	RTS	
+;
+; GET STATUS routine.
+GETSTA		
+	LDA	#0
+	STA	CRITIC	;Enable deferred  vertical blank.
+	LDA	HWSTAT	;Get HW status.
+	SEC		;Indicate we handled it.
+	RTS	
+;
+; Do nothing routine.
+NONEED		
+	SEC		;Indicate we handled it.
+	RTS	
+;
+;
+	.END	
