@@ -58,7 +58,6 @@ LIBS:FPGA_Xilinx_Spartan6
 LIBS:FPGA_Xilinx_Virtex5
 LIBS:FPGA_Xilinx_Virtex6
 LIBS:FPGA_Xilinx_Virtex7
-LIBS:ft232rl
 LIBS:GPU
 LIBS:Graphic
 LIBS:Interface
@@ -187,6 +186,80 @@ LIBS:Transistor_IGBT
 LIBS:Triac_Thyristor
 LIBS:Valve
 LIBS:Video
+LIBS:74xgxx
+LIBS:ac-dc
+LIBS:actel
+LIBS:adc-dac
+LIBS:Altera
+LIBS:analog_devices
+LIBS:analog_switches
+LIBS:atmel
+LIBS:audio
+LIBS:brooktre
+LIBS:cmos4000
+LIBS:cmos_ieee
+LIBS:conn
+LIBS:contrib
+LIBS:cypress
+LIBS:dc-dc
+LIBS:device
+LIBS:digital-audio
+LIBS:diode
+LIBS:display
+LIBS:dsp
+LIBS:elec-unifil
+LIBS:ESD_Protection
+LIBS:ftdi
+LIBS:gennum
+LIBS:graphic
+LIBS:hc11
+LIBS:intel
+LIBS:interface
+LIBS:ir
+LIBS:Lattice
+LIBS:linear
+LIBS:logo
+LIBS:maxim
+LIBS:memory
+LIBS:microchip
+LIBS:microchip_dspic33dsc
+LIBS:microchip_pic10mcu
+LIBS:microchip_pic12mcu
+LIBS:microchip_pic16mcu
+LIBS:microchip_pic18mcu
+LIBS:microchip_pic32mcu
+LIBS:microcontrollers
+LIBS:motor_drivers
+LIBS:motorola
+LIBS:msp430
+LIBS:nordicsemi
+LIBS:nxp_armmcu
+LIBS:onsemi
+LIBS:opto
+LIBS:Oscillators
+LIBS:philips
+LIBS:powerint
+LIBS:references
+LIBS:regul
+LIBS:relays
+LIBS:rfcom
+LIBS:sensors
+LIBS:silabs
+LIBS:siliconi
+LIBS:stm8
+LIBS:stm32
+LIBS:supertex
+LIBS:switches
+LIBS:texas
+LIBS:transf
+LIBS:transistors
+LIBS:ttl_ieee
+LIBS:valves
+LIBS:video
+LIBS:Worldsemi
+LIBS:Xicor
+LIBS:xilinx
+LIBS:Zilog
 LIBS:atari23MTS_Upgrade-cache
 EELAYER 25 0
 EELAYER END
@@ -312,6 +385,260 @@ Text GLabel 4050 2100 0    39   BiDi ~ 0
 ~RST
 Text GLabel 4050 2000 0    39   BiDi ~ 0
 ~EXSEL
+Text Notes 700  1050 0    59   ~ 12
+EXPANSION BUS PASS THRU
+$Comp
+L 74LVC2G74 U12
+U 1 1 5C5D431D
+P 9900 3950
+F 0 "U12" H 9800 4150 50  0000 C CNN
+F 1 "74LVC2G74" H 10100 3750 50  0000 C CNN
+F 2 "Housings_SSOP:TSSOP-8_3x3mm_Pitch0.65mm" H 9900 3950 50  0001 C CNN
+F 3 "" H 9900 3950 50  0001 C CNN
+	1    9900 3950
+	1    0    0    -1  
+$EndComp
+Text GLabel 9800 4500 0    39   BiDi ~ 0
+nRESET
+Text GLabel 8450 3800 0    39   BiDi ~ 0
+mPBISEL
+Text Notes 8200 1850 0    59   ~ 12
+PBI Device Selection when accessing $D1FF
+$Comp
+L Conn_01x02 J8
+U 1 1 5C5D48C5
+P 8800 3350
+F 0 "J8" H 8800 3450 50  0000 C CNN
+F 1 "Conn_01x02" H 8800 3150 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 8800 3350 50  0001 C CNN
+F 3 "" H 8800 3350 50  0001 C CNN
+	1    8800 3350
+	0    1    1    0   
+$EndComp
+Text GLabel 7200 4050 0    39   BiDi ~ 0
+mR/~W
+$Comp
+L Conn_01x02 J6
+U 1 1 5C5D4A20
+P 8450 3350
+F 0 "J6" H 8450 3450 50  0000 C CNN
+F 1 "Conn_01x02" H 8450 3150 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 8450 3350 50  0001 C CNN
+F 3 "" H 8450 3350 50  0001 C CNN
+	1    8450 3350
+	0    1    1    0   
+$EndComp
+$Comp
+L Conn_01x02 J4
+U 1 1 5C5D4A73
+P 8100 3350
+F 0 "J4" H 8100 3450 50  0000 C CNN
+F 1 "Conn_01x02" H 8100 3150 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 8100 3350 50  0001 C CNN
+F 3 "" H 8100 3350 50  0001 C CNN
+	1    8100 3350
+	0    1    1    0   
+$EndComp
+$Comp
+L Conn_01x02 J2
+U 1 1 5C5D4AC9
+P 7750 3350
+F 0 "J2" H 7750 3450 50  0000 C CNN
+F 1 "Conn_01x02" H 7750 3150 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 7750 3350 50  0001 C CNN
+F 3 "" H 7750 3350 50  0001 C CNN
+	1    7750 3350
+	0    1    1    0   
+$EndComp
+$Comp
+L Conn_01x02 J7
+U 1 1 5C5D4BF0
+P 8800 2650
+F 0 "J7" H 8800 2750 50  0000 C CNN
+F 1 "Conn_01x02" H 8800 2450 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 8800 2650 50  0001 C CNN
+F 3 "" H 8800 2650 50  0001 C CNN
+	1    8800 2650
+	0    1    1    0   
+$EndComp
+$Comp
+L Conn_01x02 J5
+U 1 1 5C5D4BF6
+P 8450 2650
+F 0 "J5" H 8450 2750 50  0000 C CNN
+F 1 "Conn_01x02" H 8450 2450 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 8450 2650 50  0001 C CNN
+F 3 "" H 8450 2650 50  0001 C CNN
+	1    8450 2650
+	0    1    1    0   
+$EndComp
+$Comp
+L Conn_01x02 J3
+U 1 1 5C5D4BFC
+P 8100 2650
+F 0 "J3" H 8100 2750 50  0000 C CNN
+F 1 "Conn_01x02" H 8100 2450 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 8100 2650 50  0001 C CNN
+F 3 "" H 8100 2650 50  0001 C CNN
+	1    8100 2650
+	0    1    1    0   
+$EndComp
+$Comp
+L Conn_01x02 J1
+U 1 1 5C5D4C02
+P 7750 2650
+F 0 "J1" H 7750 2750 50  0000 C CNN
+F 1 "Conn_01x02" H 7750 2450 50  0000 C CNN
+F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 7750 2650 50  0001 C CNN
+F 3 "" H 7750 2650 50  0001 C CNN
+	1    7750 2650
+	0    1    1    0   
+$EndComp
+Text GLabel 7150 2050 0    39   BiDi ~ 8
+mD0
+Text GLabel 7150 2150 0    39   BiDi ~ 8
+mD1
+Text GLabel 7150 2250 0    39   BiDi ~ 8
+mD2
+Text GLabel 7150 2350 0    39   BiDi ~ 8
+mD3
+Text GLabel 7150 2450 0    39   BiDi ~ 8
+mD4
+Text GLabel 7150 2550 0    39   BiDi ~ 8
+mD5
+Text GLabel 7150 2650 0    39   BiDi ~ 8
+mD6
+Text GLabel 7150 2750 0    39   BiDi ~ 8
+mD7
+$Comp
+L 74LVC2G32 U10
+U 1 1 5C5D66FE
+P 8800 5250
+F 0 "U10" H 8700 5400 50  0000 C CNN
+F 1 "74LVC2G32" H 8800 5100 50  0000 C CNN
+F 2 "Housings_SSOP:TSSOP-8_3x3mm_Pitch0.65mm" H 8800 5250 50  0001 C CNN
+F 3 "" H 8800 5250 50  0001 C CNN
+	1    8800 5250
+	-1   0    0    1   
+$EndComp
+Text GLabel 9100 5300 2    39   BiDi ~ 0
+~mD8XX-DFXX
+Text GLabel 8550 5250 0    39   BiDi ~ 0
+~mMPD
+Text Notes 7250 5600 0    59   ~ 12
+MATH PACK DISABLE WHEN DEVICE ENABLED & ACCESSING D8XX-DFXX
+NoConn ~ 10150 3850
+Text GLabel 9200 3250 2    39   BiDi ~ 0
+PBIDEV
+Text GLabel 8450 3900 0    39   BiDi ~ 0
+PBIDEV
+$Comp
+L 74LVC2G08 U11
+U 1 1 5C5E39BC
+P 9000 3850
+F 0 "U11" H 8900 4000 50  0000 C CNN
+F 1 "74LVC2G08" H 9000 3700 50  0000 C CNN
+F 2 "Housings_SSOP:TSSOP-8_3x3mm_Pitch0.65mm" H 9000 3850 50  0001 C CNN
+F 3 "" H 9000 3850 50  0001 C CNN
+	1    9000 3850
+	1    0    0    -1  
+$EndComp
+$Comp
+L 74LVC2G08 U11
+U 2 1 5C5E3CD3
+P 9000 4300
+F 0 "U11" H 8900 4450 50  0000 C CNN
+F 1 "74LVC2G08" H 9000 4150 50  0000 C CNN
+F 2 "Housings_SSOP:TSSOP-8_3x3mm_Pitch0.65mm" H 9000 4300 50  0001 C CNN
+F 3 "" H 9000 4300 50  0001 C CNN
+	2    9000 4300
+	1    0    0    -1  
+$EndComp
+Text Notes 9050 3450 0    59   ~ 12
+mPBISEL will go high when accessing $D1FF
+Text GLabel 8700 4350 0    39   BiDi ~ 0
+mPBISEL
+$Comp
+L 74HCT04 U9
+U 1 1 5C5E40DA
+P 7500 4050
+F 0 "U9" H 7500 4100 50  0000 C CNN
+F 1 "74HCT04" H 7500 4000 50  0000 C CNN
+F 2 "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm" H 7500 4050 50  0001 C CNN
+F 3 "" H 7500 4050 50  0001 C CNN
+	1    7500 4050
+	1    0    0    -1  
+$EndComp
+Text GLabel 8700 4250 0    39   BiDi ~ 0
+mW/~R
+Text Notes 7050 4600 0    59   ~ 12
+LATCH CLOCK will be enable only when WRITING
+$Comp
+L 74HCT04 U9
+U 2 1 5C5E4378
+P 5900 4050
+F 0 "U9" H 5900 4100 50  0000 C CNN
+F 1 "74HCT04" H 5900 4000 50  0000 C CNN
+F 2 "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm" H 5900 4050 50  0001 C CNN
+F 3 "" H 5900 4050 50  0001 C CNN
+	2    5900 4050
+	1    0    0    -1  
+$EndComp
+$Comp
+L 74HCT04 U9
+U 3 1 5C5E43E6
+P 5900 4500
+F 0 "U9" H 5900 4550 50  0000 C CNN
+F 1 "74HCT04" H 5900 4450 50  0000 C CNN
+F 2 "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm" H 5900 4500 50  0001 C CNN
+F 3 "" H 5900 4500 50  0001 C CNN
+	3    5900 4500
+	1    0    0    -1  
+$EndComp
+$Comp
+L 74HCT04 U9
+U 4 1 5C5E4437
+P 5900 4950
+F 0 "U9" H 5900 5000 50  0000 C CNN
+F 1 "74HCT04" H 5900 4900 50  0000 C CNN
+F 2 "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm" H 5900 4950 50  0001 C CNN
+F 3 "" H 5900 4950 50  0001 C CNN
+	4    5900 4950
+	1    0    0    -1  
+$EndComp
+$Comp
+L 74HCT04 U9
+U 5 1 5C5E44D6
+P 5100 4050
+F 0 "U9" H 5100 4100 50  0000 C CNN
+F 1 "74HCT04" H 5100 4000 50  0000 C CNN
+F 2 "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm" H 5100 4050 50  0001 C CNN
+F 3 "" H 5100 4050 50  0001 C CNN
+	5    5100 4050
+	1    0    0    -1  
+$EndComp
+$Comp
+L 74HCT04 U9
+U 6 1 5C5E455B
+P 5100 4500
+F 0 "U9" H 5100 4550 50  0000 C CNN
+F 1 "74HCT04" H 5100 4450 50  0000 C CNN
+F 2 "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm" H 5100 4500 50  0001 C CNN
+F 3 "" H 5100 4500 50  0001 C CNN
+	6    5100 4500
+	1    0    0    -1  
+$EndComp
+$Comp
+L 74HCT04 U9
+U 7 1 5C5E4621
+P 4800 5500
+F 0 "U9" H 4800 5550 50  0000 C CNN
+F 1 "74HCT04" H 4800 5450 50  0000 C CNN
+F 2 "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm" H 4800 5500 50  0001 C CNN
+F 3 "" H 4800 5500 50  0001 C CNN
+	7    4800 5500
+	-1   0    0    1   
+$EndComp
 Wire Notes Line
 	550  850  550  3600
 Wire Notes Line
@@ -320,388 +647,162 @@ Wire Notes Line
 	6400 3600 6400 850 
 Wire Notes Line
 	6400 850  550  850 
-Text Notes 700  1050 0    59   ~ 12
-EXPANSION BUS PASS THRU
-$Comp
-L 74LS08 U14
-U 1 1 5C3CC31E
-P 1850 4600
-F 0 "U14" H 1850 4650 50  0000 C CNN
-F 1 "74LS08" H 1850 4550 50  0000 C CNN
-F 2 "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm" H 1850 4600 50  0001 C CNN
-F 3 "" H 1850 4600 50  0001 C CNN
-	1    1850 4600
-	1    0    0    -1  
-$EndComp
-$Comp
-L 74LS08 U14
-U 2 1 5C3CC3C3
-P 2600 4800
-F 0 "U14" H 2600 4850 50  0000 C CNN
-F 1 "74LS08" H 2600 4750 50  0000 C CNN
-F 2 "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm" H 2600 4800 50  0001 C CNN
-F 3 "" H 2600 4800 50  0001 C CNN
-	2    2600 4800
-	1    0    0    -1  
-$EndComp
-$Comp
-L 74LS08 U15
-U 3 1 5C3CC488
-P 3200 4900
-F 0 "U15" H 3200 4950 50  0000 C CNN
-F 1 "74LS08" H 3200 4850 50  0000 C CNN
-F 2 "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm" H 3200 4900 50  0001 C CNN
-F 3 "" H 3200 4900 50  0001 C CNN
-	3    3200 4900
-	1    0    0    -1  
-$EndComp
-$Comp
-L 74LS08 U15
-U 4 1 5C3CC52F
-P 8350 4500
-F 0 "U15" H 8350 4550 50  0000 C CNN
-F 1 "74LS08" H 8350 4450 50  0000 C CNN
-F 2 "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm" H 8350 4500 50  0001 C CNN
-F 3 "" H 8350 4500 50  0001 C CNN
-	4    8350 4500
-	1    0    0    -1  
-$EndComp
-$Comp
-L 74LS08 U14
-U 5 1 5C3CC5C2
-P 5300 5300
-F 0 "U14" H 5300 5350 50  0000 C CNN
-F 1 "74LS08" H 5300 5250 50  0000 C CNN
-F 2 "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm" H 5300 5300 50  0001 C CNN
-F 3 "" H 5300 5300 50  0001 C CNN
-	5    5300 5300
-	1    0    0    -1  
-$EndComp
-$Comp
-L 74LS08 U16
-U 1 1 5C3CC631
-P 7750 4400
-F 0 "U16" H 7750 4450 50  0000 C CNN
-F 1 "74LS08" H 7750 4350 50  0000 C CNN
-F 2 "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm" H 7750 4400 50  0001 C CNN
-F 3 "" H 7750 4400 50  0001 C CNN
-	1    7750 4400
-	1    0    0    -1  
-$EndComp
-$Comp
-L 74LS08 U15
-U 2 1 5C3CC6CE
-P 3250 5750
-F 0 "U15" H 3250 5800 50  0000 C CNN
-F 1 "74LS08" H 3250 5700 50  0000 C CNN
-F 2 "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm" H 3250 5750 50  0001 C CNN
-F 3 "" H 3250 5750 50  0001 C CNN
-	2    3250 5750
-	1    0    0    -1  
-$EndComp
-$Comp
-L 74LS08 U14
-U 3 1 5C3CC75B
-P 2650 6050
-F 0 "U14" H 2650 6100 50  0000 C CNN
-F 1 "74LS08" H 2650 6000 50  0000 C CNN
-F 2 "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm" H 2650 6050 50  0001 C CNN
-F 3 "" H 2650 6050 50  0001 C CNN
-	3    2650 6050
-	1    0    0    -1  
-$EndComp
-Text GLabel 1550 4500 0    39   Input ~ 0
-mA15
-Text GLabel 1550 4700 0    39   Input ~ 0
-mA14
-Text GLabel 1550 5000 0    39   Input ~ 0
-mA12
 Wire Wire Line
-	2150 4600 2150 4700
+	9900 4200 9900 4500
 Wire Wire Line
-	2150 4700 2300 4700
+	9500 4050 9650 4050
 Wire Wire Line
-	2150 5000 2150 4900
+	7750 3150 7750 3100
 Wire Wire Line
-	2150 4900 2300 4900
-Text GLabel 1550 5650 0    39   BiDi ~ 0
-~mA11
-Text GLabel 1550 5200 0    39   BiDi ~ 0
-~mA13
-Text GLabel 1550 5850 0    39   BiDi ~ 0
-mA9
+	7750 3100 9100 3100
 Wire Wire Line
-	1550 5200 2900 5200
-Text GLabel 3550 5750 2    39   BiDi ~ 0
-mX3XX
-$Comp
-L 74LS08 U14
-U 4 1 5C3CCCA1
-P 1850 5750
-F 0 "U14" H 1850 5800 50  0000 C CNN
-F 1 "74LS08" H 1850 5700 50  0000 C CNN
-F 2 "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm" H 1850 5750 50  0001 C CNN
-F 3 "" H 1850 5750 50  0001 C CNN
-	4    1850 5750
-	1    0    0    -1  
-$EndComp
-$Comp
-L 74LS08 U15
-U 5 1 5C3CCD66
-P 5950 5300
-F 0 "U15" H 5950 5350 50  0000 C CNN
-F 1 "74LS08" H 5950 5250 50  0000 C CNN
-F 2 "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm" H 5950 5300 50  0001 C CNN
-F 3 "" H 5950 5300 50  0001 C CNN
-	5    5950 5300
-	1    0    0    -1  
-$EndComp
-$Comp
-L GND #PWR037
-U 1 1 5C3CCE15
-P 5950 5800
-F 0 "#PWR037" H 5950 5550 50  0001 C CNN
-F 1 "GND" H 5950 5650 50  0000 C CNN
-F 2 "" H 5950 5800 50  0001 C CNN
-F 3 "" H 5950 5800 50  0001 C CNN
-	1    5950 5800
-	1    0    0    -1  
-$EndComp
-$Comp
-L GND #PWR038
-U 1 1 5C3CD0DD
-P 5300 5800
-F 0 "#PWR038" H 5300 5550 50  0001 C CNN
-F 1 "GND" H 5300 5650 50  0000 C CNN
-F 2 "" H 5300 5800 50  0001 C CNN
-F 3 "" H 5300 5800 50  0001 C CNN
-	1    5300 5800
-	1    0    0    -1  
-$EndComp
-Text GLabel 5300 4800 1    39   BiDi ~ 0
-VCC3V3
-Text GLabel 5950 4800 1    39   BiDi ~ 0
-VCC3V3
+	8100 3100 8100 3150
+Wire Wire Line
+	8450 3100 8450 3150
+Connection ~ 8100 3100
+Wire Wire Line
+	8800 3100 8800 3150
+Connection ~ 8450 3100
+Wire Wire Line
+	7750 2450 7750 2400
+Wire Wire Line
+	7750 2400 9100 2400
+Wire Wire Line
+	8100 2400 8100 2450
+Wire Wire Line
+	8450 2400 8450 2450
+Connection ~ 8100 2400
+Wire Wire Line
+	8800 2400 8800 2450
+Connection ~ 8450 2400
+Wire Wire Line
+	7650 2450 7650 2350
+Wire Wire Line
+	7650 2350 7150 2350
+Wire Wire Line
+	8000 2450 8000 2250
+Wire Wire Line
+	8000 2250 7150 2250
+Wire Wire Line
+	8350 2450 8350 2150
+Wire Wire Line
+	8350 2150 7150 2150
+Wire Wire Line
+	8700 2450 8700 2050
+Wire Wire Line
+	8700 2050 7150 2050
+Wire Wire Line
+	8700 3150 8700 2800
+Wire Wire Line
+	8700 2800 7500 2800
+Wire Wire Line
+	7500 2800 7500 2450
+Wire Wire Line
+	7500 2450 7150 2450
+Wire Wire Line
+	8350 3150 8350 2900
+Wire Wire Line
+	8350 2900 7400 2900
+Wire Wire Line
+	7400 2900 7400 2550
+Wire Wire Line
+	7400 2550 7150 2550
+Wire Wire Line
+	8000 3150 8000 3000
+Wire Wire Line
+	8000 3000 7300 3000
+Wire Wire Line
+	7300 3000 7300 2650
+Wire Wire Line
+	7300 2650 7150 2650
+Wire Wire Line
+	7650 3150 7650 3100
+Wire Wire Line
+	7650 3100 7200 3100
+Wire Wire Line
+	7200 3100 7200 2750
+Wire Wire Line
+	7200 2750 7150 2750
+Wire Wire Line
+	9250 3850 9650 3850
+Connection ~ 8800 2400
+Connection ~ 9100 3100
+Connection ~ 8800 3100
+Wire Wire Line
+	10150 4050 10550 4050
+Wire Wire Line
+	9100 5200 10550 5200
 Wire Notes Line
-	700  4050 6350 4050
+	6800 1400 6800 5850
 Wire Notes Line
-	6350 4050 6350 7150
+	6800 5850 10950 5850
 Wire Notes Line
-	6350 7150 650  7150
+	10950 1200 6800 1200
 Wire Notes Line
-	650  7150 650  4050
-Wire Notes Line
-	650  4050 750  4050
-Text Notes 950  5500 0    60   ~ 12
-D3xx address select (PIA 6520)
+	6800 1200 6800 1450
 Wire Wire Line
-	1550 5000 2150 5000
+	9900 4500 9800 4500
 Wire Wire Line
-	2900 5200 2900 5000
-Text Notes 950  4250 0    60   ~ 12
-DXXX address select
-Text GLabel 3500 4900 2    39   BiDi ~ 0
-mDXXX
+	9100 2400 9100 3250
 Wire Wire Line
-	2950 5850 2950 6050
-Text Notes 6850 4150 0    60   ~ 12
-D6xx address select
-Text GLabel 2350 5950 0    39   BiDi ~ 0
-~mA10
-Text GLabel 2350 6150 0    39   BiDi ~ 0
-mA8
-Text GLabel 2150 5750 2    39   BiDi ~ 0
-~mA11mA9
-Text GLabel 2950 5650 0    39   BiDi ~ 0
-~mA11mA9
-Text GLabel 7450 4300 0    39   BiDi ~ 0
-mA10
-Text GLabel 7450 4500 0    39   BiDi ~ 0
-~mA8
-Text GLabel 7450 4700 0    39   BiDi ~ 0
-~mA11mA9
+	9100 3250 9200 3250
 Wire Wire Line
-	7450 4700 8050 4700
+	9900 4350 10350 4350
 Wire Wire Line
-	8050 4700 8050 4600
-Text GLabel 8650 4500 2    39   BiDi ~ 0
-mX6XX
+	10350 4350 10350 3600
+Wire Wire Line
+	10350 3600 9900 3600
+Wire Wire Line
+	9900 3600 9900 3700
+Connection ~ 9900 4350
+Wire Wire Line
+	8450 3800 8700 3800
+Wire Wire Line
+	8450 3900 8700 3900
+Wire Wire Line
+	10550 5200 10550 4050
+Wire Wire Line
+	9250 4300 9500 4300
+Wire Wire Line
+	9500 4300 9500 4050
+Wire Wire Line
+	5600 4050 5500 4050
+Wire Wire Line
+	5500 4050 5500 4950
+Wire Wire Line
+	4550 4950 5600 4950
+Wire Wire Line
+	4800 4950 4800 5000
+Connection ~ 5500 4950
+Wire Wire Line
+	5600 4500 5500 4500
+Connection ~ 5500 4500
+Wire Wire Line
+	4800 4050 4550 4050
+Wire Wire Line
+	4550 4050 4550 4950
+Connection ~ 4800 4950
+Wire Wire Line
+	4800 4500 4550 4500
+Connection ~ 4550 4500
 $Comp
-L 74LS08 U15
-U 1 1 5C42E852
-P 1850 6550
-F 0 "U15" H 1850 6600 50  0000 C CNN
-F 1 "74LS08" H 1850 6500 50  0000 C CNN
-F 2 "Housings_SSOP:TSSOP-14_4.4x5mm_Pitch0.65mm" H 1850 6550 50  0001 C CNN
-F 3 "" H 1850 6550 50  0001 C CNN
-	1    1850 6550
-	1    0    0    -1  
-$EndComp
-Text GLabel 1550 6450 0    39   BiDi ~ 0
-mX3XX
-Text GLabel 1550 6650 0    39   BiDi ~ 0
-mDXXX
-Text GLabel 2150 6550 2    39   BiDi ~ 0
-mD3XX
-$Comp
-L 74LS08 U16
-U 2 1 5C42EC5B
-P 7750 5050
-F 0 "U16" H 7750 5100 50  0000 C CNN
-F 1 "74LS08" H 7750 5000 50  0000 C CNN
-F 2 "Housings_SSOP:TSSOP-14_4.4x5mm_Pitch0.65mm" H 7750 5050 50  0001 C CNN
-F 3 "" H 7750 5050 50  0001 C CNN
-	2    7750 5050
-	1    0    0    -1  
-$EndComp
-Text GLabel 7450 4950 0    39   BiDi ~ 0
-mX6XX
-Text GLabel 7450 5150 0    39   BiDi ~ 0
-mDXXX
-Text GLabel 8050 5050 2    39   BiDi ~ 0
-mD6XX
-$Comp
-L 74LS08 U16
-U 3 1 5C42EDA7
-P 7650 5700
-F 0 "U16" H 7650 5750 50  0000 C CNN
-F 1 "74LS08" H 7650 5650 50  0000 C CNN
-F 2 "Housings_SSOP:TSSOP-14_4.4x5mm_Pitch0.65mm" H 7650 5700 50  0001 C CNN
-F 3 "" H 7650 5700 50  0001 C CNN
-	3    7650 5700
-	1    0    0    -1  
-$EndComp
-$Comp
-L 74LS08 U16
-U 4 1 5C42EE0A
-P 8500 5700
-F 0 "U16" H 8500 5750 50  0000 C CNN
-F 1 "74LS08" H 8500 5650 50  0000 C CNN
-F 2 "Housings_SSOP:TSSOP-14_4.4x5mm_Pitch0.65mm" H 8500 5700 50  0001 C CNN
-F 3 "" H 8500 5700 50  0001 C CNN
-	4    8500 5700
-	1    0    0    -1  
-$EndComp
-$Comp
-L 74LS08 U16
-U 5 1 5C42EE59
-P 9900 5050
-F 0 "U16" H 9900 5100 50  0000 C CNN
-F 1 "74LS08" H 9900 5000 50  0000 C CNN
-F 2 "Housings_SSOP:TSSOP-14_4.4x5mm_Pitch0.65mm" H 9900 5050 50  0001 C CNN
-F 3 "" H 9900 5050 50  0001 C CNN
-	5    9900 5050
-	1    0    0    -1  
-$EndComp
-Text GLabel 9900 4550 1    39   BiDi ~ 0
-VCC3V3
-$Comp
-L GND #PWR039
-U 1 1 5C42EEF4
-P 9900 5550
-F 0 "#PWR039" H 9900 5300 50  0001 C CNN
-F 1 "GND" H 9900 5400 50  0000 C CNN
-F 2 "" H 9900 5550 50  0001 C CNN
-F 3 "" H 9900 5550 50  0001 C CNN
-	1    9900 5550
-	1    0    0    -1  
-$EndComp
-NoConn ~ 8800 5700
-NoConn ~ 7950 5700
-$Comp
-L R_Small R6
-U 1 1 5C42EF4D
-P 8200 5500
-F 0 "R6" H 8230 5520 50  0000 L CNN
-F 1 "0" H 8230 5460 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 8200 5500 50  0001 C CNN
-F 3 "" H 8200 5500 50  0000 C CNN
-	1    8200 5500
-	1    0    0    -1  
-$EndComp
-$Comp
-L GND #PWR040
-U 1 1 5C42F02F
-P 8200 5400
-F 0 "#PWR040" H 8200 5150 50  0001 C CNN
-F 1 "GND" H 8200 5250 50  0000 C CNN
-F 2 "" H 8200 5400 50  0001 C CNN
-F 3 "" H 8200 5400 50  0001 C CNN
-	1    8200 5400
-	-1   0    0    1   
-$EndComp
-$Comp
-L R_Small R4
-U 1 1 5C42F0BD
-P 7250 5600
-F 0 "R4" H 7280 5620 50  0000 L CNN
-F 1 "0" H 7280 5560 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 7250 5600 50  0001 C CNN
-F 3 "" H 7250 5600 50  0000 C CNN
-	1    7250 5600
-	0    -1   -1   0   
-$EndComp
-$Comp
-L GND #PWR041
-U 1 1 5C42F0C3
-P 7150 5600
-F 0 "#PWR041" H 7150 5350 50  0001 C CNN
-F 1 "GND" H 7150 5450 50  0000 C CNN
-F 2 "" H 7150 5600 50  0001 C CNN
-F 3 "" H 7150 5600 50  0001 C CNN
-	1    7150 5600
+L GND #PWR033
+U 1 1 5C5E4A20
+P 4550 4500
+F 0 "#PWR033" H 4550 4250 50  0001 C CNN
+F 1 "GND" H 4550 4350 50  0000 C CNN
+F 2 "" H 4550 4500 50  0001 C CNN
+F 3 "" H 4550 4500 50  0001 C CNN
+	1    4550 4500
 	0    1    1    0   
 $EndComp
-$Comp
-L R_Small R5
-U 1 1 5C42F15E
-P 7250 5800
-F 0 "R5" H 7280 5820 50  0000 L CNN
-F 1 "0" H 7280 5760 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 7250 5800 50  0001 C CNN
-F 3 "" H 7250 5800 50  0000 C CNN
-	1    7250 5800
-	0    -1   -1   0   
-$EndComp
-$Comp
-L GND #PWR042
-U 1 1 5C42F164
-P 7150 5800
-F 0 "#PWR042" H 7150 5550 50  0001 C CNN
-F 1 "GND" H 7150 5650 50  0000 C CNN
-F 2 "" H 7150 5800 50  0001 C CNN
-F 3 "" H 7150 5800 50  0001 C CNN
-	1    7150 5800
-	0    1    1    0   
-$EndComp
-$Comp
-L R_Small R7
-U 1 1 5C42F223
-P 8200 5900
-F 0 "R7" H 8230 5920 50  0000 L CNN
-F 1 "0" H 8230 5860 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 8200 5900 50  0001 C CNN
-F 3 "" H 8200 5900 50  0000 C CNN
-	1    8200 5900
-	-1   0    0    1   
-$EndComp
-$Comp
-L GND #PWR043
-U 1 1 5C42F229
-P 8200 6000
-F 0 "#PWR043" H 8200 5750 50  0001 C CNN
-F 1 "GND" H 8200 5850 50  0000 C CNN
-F 2 "" H 8200 6000 50  0001 C CNN
-F 3 "" H 8200 6000 50  0001 C CNN
-	1    8200 6000
-	1    0    0    -1  
-$EndComp
-Wire Notes Line
-	6750 3900 6750 6400
-Wire Notes Line
-	6750 6400 10400 6400
-Wire Notes Line
-	10400 6400 10400 3900
-Wire Notes Line
-	10400 3900 6750 3900
+NoConn ~ 6200 4050
+NoConn ~ 6200 4500
+NoConn ~ 6200 4950
+NoConn ~ 5400 4050
+NoConn ~ 5400 4500
+Text GLabel 4800 6000 3    39   BiDi ~ 8
+VCC3V3
+Text GLabel 7800 4050 2    39   BiDi ~ 0
+mW/~R
 $EndSCHEMATC

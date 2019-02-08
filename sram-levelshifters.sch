@@ -58,7 +58,6 @@ LIBS:FPGA_Xilinx_Spartan6
 LIBS:FPGA_Xilinx_Virtex5
 LIBS:FPGA_Xilinx_Virtex6
 LIBS:FPGA_Xilinx_Virtex7
-LIBS:ft232rl
 LIBS:GPU
 LIBS:Graphic
 LIBS:Interface
@@ -187,6 +186,80 @@ LIBS:Transistor_IGBT
 LIBS:Triac_Thyristor
 LIBS:Valve
 LIBS:Video
+LIBS:74xgxx
+LIBS:ac-dc
+LIBS:actel
+LIBS:adc-dac
+LIBS:Altera
+LIBS:analog_devices
+LIBS:analog_switches
+LIBS:atmel
+LIBS:audio
+LIBS:brooktre
+LIBS:cmos4000
+LIBS:cmos_ieee
+LIBS:conn
+LIBS:contrib
+LIBS:cypress
+LIBS:dc-dc
+LIBS:device
+LIBS:digital-audio
+LIBS:diode
+LIBS:display
+LIBS:dsp
+LIBS:elec-unifil
+LIBS:ESD_Protection
+LIBS:ftdi
+LIBS:gennum
+LIBS:graphic
+LIBS:hc11
+LIBS:intel
+LIBS:interface
+LIBS:ir
+LIBS:Lattice
+LIBS:linear
+LIBS:logo
+LIBS:maxim
+LIBS:memory
+LIBS:microchip
+LIBS:microchip_dspic33dsc
+LIBS:microchip_pic10mcu
+LIBS:microchip_pic12mcu
+LIBS:microchip_pic16mcu
+LIBS:microchip_pic18mcu
+LIBS:microchip_pic32mcu
+LIBS:microcontrollers
+LIBS:motor_drivers
+LIBS:motorola
+LIBS:msp430
+LIBS:nordicsemi
+LIBS:nxp_armmcu
+LIBS:onsemi
+LIBS:opto
+LIBS:Oscillators
+LIBS:philips
+LIBS:powerint
+LIBS:references
+LIBS:regul
+LIBS:relays
+LIBS:rfcom
+LIBS:sensors
+LIBS:silabs
+LIBS:siliconi
+LIBS:stm8
+LIBS:stm32
+LIBS:supertex
+LIBS:switches
+LIBS:texas
+LIBS:transf
+LIBS:transistors
+LIBS:ttl_ieee
+LIBS:valves
+LIBS:video
+LIBS:Worldsemi
+LIBS:Xicor
+LIBS:xilinx
+LIBS:Zilog
 LIBS:atari23MTS_Upgrade-cache
 EELAYER 25 0
 EELAYER END
@@ -203,72 +276,68 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L ISSI61WV5128BL U10
+L ISSI61WV5128BL U7
 U 1 1 5C2B9006
-P 7650 2250
-F 0 "U10" H 7350 3300 50  0000 C CNN
-F 1 "ISSI61WV5128BL" H 8000 1200 50  0000 C CNN
-F 2 "RetroBitLab:SOP-32L-20.5x11.30-1.27mm" H 7650 2250 50  0001 C CIN
-F 3 "" H 7650 2250 60  0001 C CNN
-	1    7650 2250
+P 7500 2250
+F 0 "U7" H 7200 3300 50  0000 C CNN
+F 1 "ISSI61WV5128BL" H 7850 1200 50  0000 C CNN
+F 2 "RetroBitLab:SOP-32L-20.5x11.30-1.27mm" H 7500 2250 50  0001 C CIN
+F 3 "" H 7500 2250 60  0001 C CNN
+	1    7500 2250
 	1    0    0    -1  
-$EndComp
-$Comp
-L GND #PWR023
-U 1 1 5C2BB99F
-P 7650 3350
-F 0 "#PWR023" H 7650 3100 50  0001 C CNN
-F 1 "GND" H 7650 3200 50  0000 C CNN
-F 2 "" H 7650 3350 60  0001 C CNN
-F 3 "" H 7650 3350 60  0001 C CNN
-	1    7650 3350
-	1    0    0    -1  
-$EndComp
-Text GLabel 7650 1000 1    39   Input ~ 0
-VCC3V3
-Text GLabel 8150 2650 3    39   BiDi ~ 0
-~BSEL0
-Text GLabel 8250 2900 3    39   BiDi ~ 0
-mR/~W
-Wire Wire Line
-	8150 2450 8150 2650
-Wire Wire Line
-	8150 2300 8250 2300
-Wire Wire Line
-	8250 2300 8250 2900
-Wire Wire Line
-	8150 2200 8350 2200
-Wire Wire Line
-	8350 2200 8350 2650
-Wire Wire Line
-	7650 1000 7650 1150
-$Comp
-L C_Small C4
-U 1 1 5C2BF542
-P 7800 1100
-F 0 "C4" H 7810 1170 50  0000 L CNN
-F 1 "100n" V 7900 900 50  0000 L CNN
-F 2 "Capacitors_SMD:C_1206_HandSoldering" H 7800 1100 50  0001 C CNN
-F 3 "" H 7800 1100 60  0001 C CNN
-	1    7800 1100
-	0    -1   -1   0   
 $EndComp
 $Comp
 L GND #PWR024
-U 1 1 5C2BF58F
-P 7900 1100
-F 0 "#PWR024" H 7900 850 50  0001 C CNN
-F 1 "GND" H 7900 950 50  0000 C CNN
-F 2 "" H 7900 1100 60  0001 C CNN
-F 3 "" H 7900 1100 60  0001 C CNN
-	1    7900 1100
+U 1 1 5C2BB99F
+P 7500 3350
+F 0 "#PWR024" H 7500 3100 50  0001 C CNN
+F 1 "GND" H 7500 3200 50  0000 C CNN
+F 2 "" H 7500 3350 60  0001 C CNN
+F 3 "" H 7500 3350 60  0001 C CNN
+	1    7500 3350
+	1    0    0    -1  
+$EndComp
+Text GLabel 7500 1000 1    39   Input ~ 0
+VCC3V3
+Text GLabel 8350 2900 3    39   BiDi ~ 0
+mR/~W
+Wire Wire Line
+	8000 2300 8350 2300
+Wire Wire Line
+	8350 2300 8350 2900
+Wire Wire Line
+	8000 2200 8450 2200
+Wire Wire Line
+	8450 2200 8450 2650
+Wire Wire Line
+	7500 1000 7500 1150
+$Comp
+L C_Small C4
+U 1 1 5C2BF542
+P 7650 1100
+F 0 "C4" H 7660 1170 50  0000 L CNN
+F 1 "100n" V 7750 900 50  0000 L CNN
+F 2 "Capacitors_SMD:C_1206_HandSoldering" H 7650 1100 50  0001 C CNN
+F 3 "" H 7650 1100 60  0001 C CNN
+	1    7650 1100
 	0    -1   -1   0   
 $EndComp
 $Comp
-L TXB0108-PW U4
+L GND #PWR025
+U 1 1 5C2BF58F
+P 7750 1100
+F 0 "#PWR025" H 7750 850 50  0001 C CNN
+F 1 "GND" H 7750 950 50  0000 C CNN
+F 2 "" H 7750 1100 60  0001 C CNN
+F 3 "" H 7750 1100 60  0001 C CNN
+	1    7750 1100
+	0    -1   -1   0   
+$EndComp
+$Comp
+L TXB0108-PW U2
 U 1 1 5C2BF846
 P 1350 1650
-F 0 "U4" H 1150 2400 60  0000 L CNN
+F 0 "U2" H 1150 2400 60  0000 L CNN
 F 1 "TXB0108-PW" H 1150 900 60  0000 L CNN
 F 2 "Housings_SSOP:SSOP-20_4.4x6.5mm_Pitch0.65mm" H 1150 1600 60  0001 C CNN
 F 3 "" H 1350 1650 60  0001 C CNN
@@ -276,32 +345,32 @@ F 3 "" H 1350 1650 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L TXB0108-PW U5
+L TXB0108-PW U3
 U 1 1 5C2BF9CC
-P 1600 5800
-F 0 "U5" H 1400 6550 60  0000 L CNN
-F 1 "TXB0108-PW" H 1400 5050 60  0000 L CNN
-F 2 "Housings_SSOP:SSOP-20_4.4x6.5mm_Pitch0.65mm" H 1400 5750 60  0001 C CNN
-F 3 "" H 1600 5800 60  0001 C CNN
-	1    1600 5800
+P 1650 4200
+F 0 "U3" H 1450 4950 60  0000 L CNN
+F 1 "TXB0108-PW" H 1450 3450 60  0000 L CNN
+F 2 "Housings_SSOP:SSOP-20_4.4x6.5mm_Pitch0.65mm" H 1450 4150 60  0001 C CNN
+F 3 "" H 1650 4200 60  0001 C CNN
+	1    1650 4200
 	1    0    0    -1  
 $EndComp
 $Comp
-L TXB0108-PW U8
+L TXB0108-PW U5
 U 1 1 5C2BFA07
-P 4050 5800
-F 0 "U8" H 3850 6550 60  0000 L CNN
-F 1 "TXB0108-PW" H 3850 5050 60  0000 L CNN
-F 2 "Housings_SSOP:SSOP-20_4.4x6.5mm_Pitch0.65mm" H 3850 5750 60  0001 C CNN
-F 3 "" H 4050 5800 60  0001 C CNN
-	1    4050 5800
+P 4100 4200
+F 0 "U5" H 3900 4950 60  0000 L CNN
+F 1 "TXB0108-PW" H 3900 3450 60  0000 L CNN
+F 2 "Housings_SSOP:SSOP-20_4.4x6.5mm_Pitch0.65mm" H 3900 4150 60  0001 C CNN
+F 3 "" H 4100 4200 60  0001 C CNN
+	1    4100 4200
 	1    0    0    -1  
 $EndComp
 $Comp
-L TXB0108-PW U9
+L TXB0108-PW U6
 U 1 1 5C2BFAD5
 P 4600 1600
-F 0 "U9" H 4400 2350 60  0000 L CNN
+F 0 "U6" H 4400 2350 60  0000 L CNN
 F 1 "TXB0108-PW" H 4400 850 60  0000 L CNN
 F 2 "Housings_SSOP:SSOP-20_4.4x6.5mm_Pitch0.65mm" H 4400 1550 60  0001 C CNN
 F 3 "" H 4600 1600 60  0001 C CNN
@@ -326,17 +395,17 @@ Text GLabel 1850 2050 2    39   BiDi ~ 0
 A7
 Text GLabel 1850 1050 2    39   BiDi ~ 0
 VCC5V
-Text GLabel 2100 5200 2    39   BiDi ~ 0
+Text GLabel 2150 3600 2    39   BiDi ~ 0
 VCC5V
-Text GLabel 4550 5200 2    39   BiDi ~ 0
+Text GLabel 4600 3600 2    39   BiDi ~ 0
 VCC5V
 Text GLabel 5100 1000 2    39   BiDi ~ 0
 VCC5V
 $Comp
-L GND #PWR025
+L GND #PWR026
 U 1 1 5C2D99D7
 P 950 2250
-F 0 "#PWR025" H 950 2000 50  0001 C CNN
+F 0 "#PWR026" H 950 2000 50  0001 C CNN
 F 1 "GND" H 950 2100 50  0000 C CNN
 F 2 "" H 950 2250 60  0001 C CNN
 F 3 "" H 950 2250 60  0001 C CNN
@@ -344,32 +413,32 @@ F 3 "" H 950 2250 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR026
-U 1 1 5C2D9EC5
-P 1200 6400
-F 0 "#PWR026" H 1200 6150 50  0001 C CNN
-F 1 "GND" H 1200 6250 50  0000 C CNN
-F 2 "" H 1200 6400 60  0001 C CNN
-F 3 "" H 1200 6400 60  0001 C CNN
-	1    1200 6400
-	1    0    0    -1  
-$EndComp
-$Comp
 L GND #PWR027
-U 1 1 5C2D9EE5
-P 3650 6400
-F 0 "#PWR027" H 3650 6150 50  0001 C CNN
-F 1 "GND" H 3650 6250 50  0000 C CNN
-F 2 "" H 3650 6400 60  0001 C CNN
-F 3 "" H 3650 6400 60  0001 C CNN
-	1    3650 6400
+U 1 1 5C2D9EC5
+P 1250 4800
+F 0 "#PWR027" H 1250 4550 50  0001 C CNN
+F 1 "GND" H 1250 4650 50  0000 C CNN
+F 2 "" H 1250 4800 60  0001 C CNN
+F 3 "" H 1250 4800 60  0001 C CNN
+	1    1250 4800
 	1    0    0    -1  
 $EndComp
 $Comp
 L GND #PWR028
+U 1 1 5C2D9EE5
+P 3700 4800
+F 0 "#PWR028" H 3700 4550 50  0001 C CNN
+F 1 "GND" H 3700 4650 50  0000 C CNN
+F 2 "" H 3700 4800 60  0001 C CNN
+F 3 "" H 3700 4800 60  0001 C CNN
+	1    3700 4800
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR029
 U 1 1 5C2D9F05
 P 4200 2200
-F 0 "#PWR028" H 4200 1950 50  0001 C CNN
+F 0 "#PWR029" H 4200 1950 50  0001 C CNN
 F 1 "GND" H 4200 2050 50  0000 C CNN
 F 2 "" H 4200 2200 60  0001 C CNN
 F 3 "" H 4200 2200 60  0001 C CNN
@@ -378,17 +447,17 @@ F 3 "" H 4200 2200 60  0001 C CNN
 $EndComp
 Text GLabel 950  1050 0    39   BiDi ~ 0
 VCC3V3
-Text GLabel 1200 5200 0    39   BiDi ~ 0
+Text GLabel 1250 3600 0    39   BiDi ~ 0
 VCC3V3
-Text GLabel 3650 5200 0    39   BiDi ~ 0
+Text GLabel 3700 3600 0    39   BiDi ~ 0
 VCC3V3
 Text GLabel 4200 1000 0    39   BiDi ~ 0
 VCC3V3
 Text GLabel 950  1250 0    39   BiDi ~ 0
 VCC3V3
-Text GLabel 1200 5400 0    39   BiDi ~ 0
+Text GLabel 1250 3800 0    39   BiDi ~ 0
 VCC3V3
-Text GLabel 3650 5400 0    39   BiDi ~ 0
+Text GLabel 3700 3800 0    39   BiDi ~ 0
 VCC3V3
 Text GLabel 4200 1200 0    39   BiDi ~ 0
 VCC3V3
@@ -412,21 +481,21 @@ Wire Notes Line
 	600  650  3050 650 
 Text Notes 1750 2650 0    59   ~ 12
 ADDRESS BUS SECTION
-Text GLabel 7150 1350 0    39   BiDi ~ 0
+Text GLabel 7000 1350 0    39   BiDi ~ 0
 mA0
-Text GLabel 7150 1450 0    39   BiDi ~ 0
+Text GLabel 7000 1450 0    39   BiDi ~ 0
 mA1
-Text GLabel 7150 1550 0    39   BiDi ~ 0
+Text GLabel 7000 1550 0    39   BiDi ~ 0
 mA2
-Text GLabel 7150 1650 0    39   BiDi ~ 0
+Text GLabel 7000 1650 0    39   BiDi ~ 0
 mA3
-Text GLabel 7150 1750 0    39   BiDi ~ 0
+Text GLabel 7000 1750 0    39   BiDi ~ 0
 mA4
-Text GLabel 7150 1850 0    39   BiDi ~ 0
+Text GLabel 7000 1850 0    39   BiDi ~ 0
 mA5
-Text GLabel 7150 1950 0    39   BiDi ~ 0
+Text GLabel 7000 1950 0    39   BiDi ~ 0
 mA6
-Text GLabel 7150 2050 0    39   BiDi ~ 0
+Text GLabel 7000 2050 0    39   BiDi ~ 0
 mA7
 Text GLabel 5100 1300 2    39   BiDi ~ 0
 D0
@@ -464,492 +533,100 @@ Wire Notes Line
 	3150 650  5450 650 
 Text Notes 4200 2650 0    59   ~ 12
 DATA BUS SECTION
-Text GLabel 8150 1350 2    39   BiDi ~ 0
+Text GLabel 8000 1350 2    39   BiDi ~ 0
 mD0
-Text GLabel 8150 1450 2    39   BiDi ~ 0
+Text GLabel 8000 1450 2    39   BiDi ~ 0
 mD1
-Text GLabel 8150 1550 2    39   BiDi ~ 0
+Text GLabel 8000 1550 2    39   BiDi ~ 0
 mD2
-Text GLabel 8150 1650 2    39   BiDi ~ 0
+Text GLabel 8000 1650 2    39   BiDi ~ 0
 mD3
-Text GLabel 8150 1750 2    39   BiDi ~ 0
+Text GLabel 8000 1750 2    39   BiDi ~ 0
 mD4
-Text GLabel 8150 1850 2    39   BiDi ~ 0
+Text GLabel 8000 1850 2    39   BiDi ~ 0
 mD5
-Text GLabel 8150 1950 2    39   BiDi ~ 0
+Text GLabel 8000 1950 2    39   BiDi ~ 0
 mD6
-Text GLabel 8150 2050 2    39   BiDi ~ 0
+Text GLabel 8000 2050 2    39   BiDi ~ 0
 mD7
-$Comp
-L ISSI61WV5128BL U12
-U 1 1 5C2DCB84
-P 9300 2250
-F 0 "U12" H 9000 3300 50  0000 C CNN
-F 1 "ISSI61WV5128BL" H 9650 1200 50  0000 C CNN
-F 2 "RetroBitLab:SOP-32L-20.5x11.30-1.27mm" H 9300 2250 50  0001 C CIN
-F 3 "" H 9300 2250 60  0001 C CNN
-	1    9300 2250
-	1    0    0    -1  
-$EndComp
-$Comp
-L GND #PWR029
-U 1 1 5C2DCB90
-P 9300 3350
-F 0 "#PWR029" H 9300 3100 50  0001 C CNN
-F 1 "GND" H 9300 3200 50  0000 C CNN
-F 2 "" H 9300 3350 60  0001 C CNN
-F 3 "" H 9300 3350 60  0001 C CNN
-	1    9300 3350
-	1    0    0    -1  
-$EndComp
-Text GLabel 9300 1000 1    39   Input ~ 0
-VCC3V3
-Text GLabel 9800 2650 3    39   BiDi ~ 0
-~BSEL1
-Text GLabel 9900 2900 3    39   BiDi ~ 0
-mR/~W
-Wire Wire Line
-	9800 2450 9800 2650
-Wire Wire Line
-	9800 2300 9900 2300
-Wire Wire Line
-	9900 2300 9900 2900
-Wire Wire Line
-	9800 2200 10000 2200
-Wire Wire Line
-	10000 2200 10000 2650
-Wire Wire Line
-	9300 1000 9300 1150
-$Comp
-L C_Small C6
-U 1 1 5C2DCB9F
-P 9450 1100
-F 0 "C6" H 9460 1170 50  0000 L CNN
-F 1 "100n" V 9550 900 50  0000 L CNN
-F 2 "Capacitors_SMD:C_1206_HandSoldering" H 9450 1100 50  0001 C CNN
-F 3 "" H 9450 1100 60  0001 C CNN
-	1    9450 1100
-	0    -1   -1   0   
-$EndComp
-$Comp
-L GND #PWR030
-U 1 1 5C2DCBA5
-P 9550 1100
-F 0 "#PWR030" H 9550 850 50  0001 C CNN
-F 1 "GND" H 9550 950 50  0000 C CNN
-F 2 "" H 9550 1100 60  0001 C CNN
-F 3 "" H 9550 1100 60  0001 C CNN
-	1    9550 1100
-	0    -1   -1   0   
-$EndComp
-Text GLabel 8800 1350 0    39   BiDi ~ 0
-mA0
-Text GLabel 8800 1450 0    39   BiDi ~ 0
-mA1
-Text GLabel 8800 1550 0    39   BiDi ~ 0
-mA2
-Text GLabel 8800 1650 0    39   BiDi ~ 0
-mA3
-Text GLabel 8800 1750 0    39   BiDi ~ 0
-mA4
-Text GLabel 8800 1850 0    39   BiDi ~ 0
-mA5
-Text GLabel 8800 1950 0    39   BiDi ~ 0
-mA6
-Text GLabel 8800 2050 0    39   BiDi ~ 0
-mA7
-Text GLabel 9800 1350 2    39   BiDi ~ 0
-mD0
-Text GLabel 9800 1450 2    39   BiDi ~ 0
-mD1
-Text GLabel 9800 1550 2    39   BiDi ~ 0
-mD2
-Text GLabel 9800 1650 2    39   BiDi ~ 0
-mD3
-Text GLabel 9800 1750 2    39   BiDi ~ 0
-mD4
-Text GLabel 9800 1850 2    39   BiDi ~ 0
-mD5
-Text GLabel 9800 1950 2    39   BiDi ~ 0
-mD6
-Text GLabel 9800 2050 2    39   BiDi ~ 0
-mD7
-$Comp
-L ISSI61WV5128BL U11
-U 1 1 5C2DCEF9
-P 7650 5150
-F 0 "U11" H 7350 6200 50  0000 C CNN
-F 1 "ISSI61WV5128BL" H 8000 4100 50  0000 C CNN
-F 2 "RetroBitLab:SOP-32L-20.5x11.30-1.27mm" H 7650 5150 50  0001 C CIN
-F 3 "" H 7650 5150 60  0001 C CNN
-	1    7650 5150
-	1    0    0    -1  
-$EndComp
-$Comp
-L GND #PWR031
-U 1 1 5C2DCF05
-P 7650 6250
-F 0 "#PWR031" H 7650 6000 50  0001 C CNN
-F 1 "GND" H 7650 6100 50  0000 C CNN
-F 2 "" H 7650 6250 60  0001 C CNN
-F 3 "" H 7650 6250 60  0001 C CNN
-	1    7650 6250
-	1    0    0    -1  
-$EndComp
-Text GLabel 7650 3900 1    39   Input ~ 0
-VCC3V3
-Text GLabel 8150 5550 3    39   BiDi ~ 0
-~BSEL2
-Text GLabel 8250 5800 3    39   BiDi ~ 0
-mR/~W
-Wire Wire Line
-	8150 5350 8150 5550
-Wire Wire Line
-	8150 5200 8250 5200
-Wire Wire Line
-	8250 5200 8250 5800
-Wire Wire Line
-	8150 5100 8350 5100
-Wire Wire Line
-	8350 5100 8350 5550
-Wire Wire Line
-	7650 3900 7650 4050
-$Comp
-L C_Small C5
-U 1 1 5C2DCF14
-P 7850 4000
-F 0 "C5" H 7860 4070 50  0000 L CNN
-F 1 "100n" V 7950 3800 50  0000 L CNN
-F 2 "Capacitors_SMD:C_1206_HandSoldering" H 7850 4000 50  0001 C CNN
-F 3 "" H 7850 4000 60  0001 C CNN
-	1    7850 4000
-	0    -1   -1   0   
-$EndComp
-$Comp
-L GND #PWR032
-U 1 1 5C2DCF1A
-P 7950 4000
-F 0 "#PWR032" H 7950 3750 50  0001 C CNN
-F 1 "GND" H 7950 3850 50  0000 C CNN
-F 2 "" H 7950 4000 60  0001 C CNN
-F 3 "" H 7950 4000 60  0001 C CNN
-	1    7950 4000
-	0    -1   -1   0   
-$EndComp
-Text GLabel 7150 4250 0    39   BiDi ~ 0
-mA0
-Text GLabel 7150 4350 0    39   BiDi ~ 0
-mA1
-Text GLabel 7150 4450 0    39   BiDi ~ 0
-mA2
-Text GLabel 7150 4550 0    39   BiDi ~ 0
-mA3
-Text GLabel 7150 4650 0    39   BiDi ~ 0
-mA4
-Text GLabel 7150 4750 0    39   BiDi ~ 0
-mA5
-Text GLabel 7150 4850 0    39   BiDi ~ 0
-mA6
-Text GLabel 7150 4950 0    39   BiDi ~ 0
-mA7
-Text GLabel 8150 4250 2    39   BiDi ~ 0
-mD0
-Text GLabel 8150 4350 2    39   BiDi ~ 0
-mD1
-Text GLabel 8150 4450 2    39   BiDi ~ 0
-mD2
-Text GLabel 8150 4550 2    39   BiDi ~ 0
-mD3
-Text GLabel 8150 4650 2    39   BiDi ~ 0
-mD4
-Text GLabel 8150 4750 2    39   BiDi ~ 0
-mD5
-Text GLabel 8150 4850 2    39   BiDi ~ 0
-mD6
-Text GLabel 8150 4950 2    39   BiDi ~ 0
-mD7
-$Comp
-L ISSI61WV5128BL U13
-U 1 1 5C2DCF3B
-P 9300 5150
-F 0 "U13" H 9000 6200 50  0000 C CNN
-F 1 "ISSI61WV5128BL" H 9650 4100 50  0000 C CNN
-F 2 "RetroBitLab:SOP-32L-20.5x11.30-1.27mm" H 9300 5150 50  0001 C CIN
-F 3 "" H 9300 5150 60  0001 C CNN
-	1    9300 5150
-	1    0    0    -1  
-$EndComp
-$Comp
-L GND #PWR033
-U 1 1 5C2DCF47
-P 9300 6250
-F 0 "#PWR033" H 9300 6000 50  0001 C CNN
-F 1 "GND" H 9300 6100 50  0000 C CNN
-F 2 "" H 9300 6250 60  0001 C CNN
-F 3 "" H 9300 6250 60  0001 C CNN
-	1    9300 6250
-	1    0    0    -1  
-$EndComp
-Text GLabel 9300 3900 1    39   Input ~ 0
-VCC3V3
-Text GLabel 9800 5550 3    39   BiDi ~ 0
-~BSEL3
-Text GLabel 9900 5800 3    39   BiDi ~ 0
-mR/~W
-Wire Wire Line
-	9800 5350 9800 5550
-Wire Wire Line
-	9800 5200 9900 5200
-Wire Wire Line
-	9900 5200 9900 5800
-Wire Wire Line
-	9800 5100 10000 5100
-Wire Wire Line
-	10000 5100 10000 5550
-Wire Wire Line
-	9300 3900 9300 4050
-$Comp
-L C_Small C7
-U 1 1 5C2DCF56
-P 9500 4000
-F 0 "C7" H 9510 4070 50  0000 L CNN
-F 1 "100n" V 9600 3800 50  0000 L CNN
-F 2 "Capacitors_SMD:C_1206_HandSoldering" H 9500 4000 50  0001 C CNN
-F 3 "" H 9500 4000 60  0001 C CNN
-	1    9500 4000
-	0    -1   -1   0   
-$EndComp
-$Comp
-L GND #PWR034
-U 1 1 5C2DCF5C
-P 9600 4000
-F 0 "#PWR034" H 9600 3750 50  0001 C CNN
-F 1 "GND" H 9600 3850 50  0000 C CNN
-F 2 "" H 9600 4000 60  0001 C CNN
-F 3 "" H 9600 4000 60  0001 C CNN
-	1    9600 4000
-	0    -1   -1   0   
-$EndComp
-Text GLabel 8800 4250 0    39   BiDi ~ 0
-mA0
-Text GLabel 8800 4350 0    39   BiDi ~ 0
-mA1
-Text GLabel 8800 4450 0    39   BiDi ~ 0
-mA2
-Text GLabel 8800 4550 0    39   BiDi ~ 0
-mA3
-Text GLabel 8800 4650 0    39   BiDi ~ 0
-mA4
-Text GLabel 8800 4750 0    39   BiDi ~ 0
-mA5
-Text GLabel 8800 4850 0    39   BiDi ~ 0
-mA6
-Text GLabel 8800 4950 0    39   BiDi ~ 0
-mA7
-Text GLabel 9800 4250 2    39   BiDi ~ 0
-mD0
-Text GLabel 9800 4350 2    39   BiDi ~ 0
-mD1
-Text GLabel 9800 4450 2    39   BiDi ~ 0
-mD2
-Text GLabel 9800 4550 2    39   BiDi ~ 0
-mD3
-Text GLabel 9800 4650 2    39   BiDi ~ 0
-mD4
-Text GLabel 9800 4750 2    39   BiDi ~ 0
-mD5
-Text GLabel 9800 4850 2    39   BiDi ~ 0
-mD6
-Text GLabel 9800 4950 2    39   BiDi ~ 0
-mD7
-Text GLabel 2100 5600 2    39   BiDi ~ 0
+Text GLabel 2150 4000 2    39   BiDi ~ 0
 ~D1XX
-Text GLabel 2100 5700 2    39   BiDi ~ 0
+Text GLabel 2150 4100 2    39   BiDi ~ 0
 ~HALT
-Text GLabel 2100 5800 2    39   BiDi ~ 0
+Text GLabel 2150 4200 2    39   BiDi ~ 0
 ~MPD
-Text GLabel 2100 5900 2    39   BiDi ~ 0
+Text GLabel 2150 4300 2    39   BiDi ~ 0
 ~IRQ
-Text GLabel 2100 6000 2    39   BiDi ~ 0
+Text GLabel 2150 4400 2    39   BiDi ~ 0
 ~RST
-Text GLabel 2100 6100 2    39   BiDi ~ 0
+Text GLabel 2150 4500 2    39   BiDi ~ 0
 ~REF
-Text GLabel 2100 6200 2    39   BiDi ~ 0
+Text GLabel 2150 4600 2    39   BiDi ~ 0
 ~CCTL
-Text GLabel 4550 5500 2    39   BiDi ~ 0
+Text GLabel 4600 3900 2    39   BiDi ~ 0
 B02/PHI2
-Text GLabel 4550 5600 2    39   BiDi ~ 0
+Text GLabel 4600 4000 2    39   BiDi ~ 0
 R/~W
-Text GLabel 1200 5500 0    39   BiDi ~ 0
+Text GLabel 1250 3900 0    39   BiDi ~ 0
 ~mEXSEL
-Text GLabel 3650 5500 0    39   BiDi ~ 0
+Text GLabel 3700 3900 0    39   BiDi ~ 0
 mB02/PHI2
-Text GLabel 3650 5600 0    39   BiDi ~ 0
+Text GLabel 3700 4000 0    39   BiDi ~ 0
 mR/~W
-Text GLabel 1200 5600 0    39   BiDi ~ 0
+Text GLabel 1250 4000 0    39   BiDi ~ 0
 ~mD1XX
-Text GLabel 1200 5700 0    39   BiDi ~ 0
+Text GLabel 1250 4100 0    39   BiDi ~ 0
 ~mHALT
-Text GLabel 1200 5800 0    39   BiDi ~ 0
+Text GLabel 1250 4200 0    39   BiDi ~ 0
 ~mMPD
-Text GLabel 1200 5900 0    39   BiDi ~ 0
+Text GLabel 1250 4300 0    39   BiDi ~ 0
 ~mIRQ
-Text GLabel 1200 6000 0    39   BiDi ~ 0
+Text GLabel 1250 4400 0    39   BiDi ~ 0
 ~mRST
-Text GLabel 1200 6100 0    39   BiDi ~ 0
+Text GLabel 1250 4500 0    39   BiDi ~ 0
 ~mREF
-Text GLabel 1200 6200 0    39   BiDi ~ 0
+Text GLabel 1250 4600 0    39   BiDi ~ 0
 ~mCCTL
 Wire Notes Line
-	600  4850 5200 4850
+	650  3250 5250 3250
 Wire Notes Line
-	5200 4850 5200 7100
+	5250 3250 5250 5500
 Wire Notes Line
-	5200 7100 600  7100
+	5250 5500 650  5500
 Wire Notes Line
-	600  7100 600  4850
-Text Notes 750  6950 0    59   ~ 12
+	650  5500 650  3250
+Text Notes 800  5350 0    59   ~ 12
 SIGNAL SECTION
 Wire Notes Line
-	6300 600  6300 6450
-Wire Notes Line
-	6300 6450 11050 6450
-Wire Notes Line
-	11050 6450 11050 600 
-Wire Notes Line
-	11050 600  6300 600 
+	6000 600  11050 600 
 Text Notes 6450 800  0    59   ~ 12
-STATIC RAM
-Text GLabel 1000 4050 0    39   BiDi ~ 0
-mA10
-$Comp
-L 74HC04 U3
-U 2 1 5C2DFEE1
-P 3050 3250
-F 0 "U3" H 3050 3300 50  0000 C CNN
-F 1 "74HC04" H 3050 3200 50  0000 C CNN
-F 2 "Housings_SSOP:TSSOP-14_4.4x5mm_Pitch0.65mm" H 3050 3250 50  0001 C CNN
-F 3 "" H 3050 3250 60  0001 C CNN
-	2    3050 3250
-	1    0    0    -1  
-$EndComp
-$Comp
-L 74HC04 U3
-U 3 1 5C2DFF28
-P 1300 3650
-F 0 "U3" H 1300 3700 50  0000 C CNN
-F 1 "74HC04" H 1300 3600 50  0000 C CNN
-F 2 "Housings_SSOP:TSSOP-14_4.4x5mm_Pitch0.65mm" H 1300 3650 50  0001 C CNN
-F 3 "" H 1300 3650 60  0001 C CNN
-	3    1300 3650
-	1    0    0    -1  
-$EndComp
-$Comp
-L 74HC04 U3
-U 4 1 5C2E0001
-P 1300 4450
-F 0 "U3" H 1300 4500 50  0000 C CNN
-F 1 "74HC04" H 1300 4400 50  0000 C CNN
-F 2 "Housings_SSOP:TSSOP-14_4.4x5mm_Pitch0.65mm" H 1300 4450 50  0001 C CNN
-F 3 "" H 1300 4450 60  0001 C CNN
-	4    1300 4450
-	1    0    0    -1  
-$EndComp
-$Comp
-L 74HC04 U3
-U 5 1 5C2E0114
-P 3050 4250
-F 0 "U3" H 3050 4300 50  0000 C CNN
-F 1 "74HC04" H 3050 4200 50  0000 C CNN
-F 2 "Housings_SSOP:TSSOP-14_4.4x5mm_Pitch0.65mm" H 3050 4250 50  0001 C CNN
-F 3 "" H 3050 4250 60  0001 C CNN
-	5    3050 4250
-	1    0    0    -1  
-$EndComp
-$Comp
-L 74HC04 U3
-U 6 1 5C2E0161
-P 1300 3250
-F 0 "U3" H 1300 3300 50  0000 C CNN
-F 1 "74HC04" H 1300 3200 50  0000 C CNN
-F 2 "Housings_SSOP:TSSOP-14_4.4x5mm_Pitch0.65mm" H 1300 3250 50  0001 C CNN
-F 3 "" H 1300 3250 60  0001 C CNN
-	6    1300 3250
-	1    0    0    -1  
-$EndComp
-$Comp
-L 74HC04 U3
-U 7 1 5C2E0C9C
-P 5750 3550
-F 0 "U3" H 5750 3600 50  0000 C CNN
-F 1 "74HC04" H 5750 3500 50  0000 C CNN
-F 2 "Housings_SSOP:TSSOP-14_4.4x5mm_Pitch0.65mm" H 5750 3550 50  0001 C CNN
-F 3 "" H 5750 3550 60  0001 C CNN
-	7    5750 3550
-	1    0    0    -1  
-$EndComp
-Text GLabel 5750 3050 1    39   BiDi ~ 0
-VCC3V3
-Text GLabel 2100 5500 2    39   BiDi ~ 0
+1024K STATIC RAM
+Text GLabel 2150 3900 2    39   BiDi ~ 0
 ~EXSEL
 Wire Wire Line
-	7750 4000 7650 4000
-Connection ~ 7650 4000
-Wire Wire Line
-	9400 4000 9300 4000
-Connection ~ 9300 4000
-Wire Wire Line
-	9350 1100 9300 1100
-Connection ~ 9300 1100
-Wire Wire Line
-	7700 1100 7650 1100
-Connection ~ 7650 1100
-$Comp
-L GND #PWR035
-U 1 1 5C2E9245
-P 5650 4050
-F 0 "#PWR035" H 5650 3800 50  0001 C CNN
-F 1 "GND" H 5650 3900 50  0000 C CNN
-F 2 "" H 5650 4050 60  0001 C CNN
-F 3 "" H 5650 4050 60  0001 C CNN
-	1    5650 4050
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	5650 4050 5750 4050
-Text GLabel 2750 3250 0    39   BiDi ~ 0
-mR/~W
-Text GLabel 3350 3250 2    39   BiDi ~ 0
-~mOE
-Text GLabel 8350 2650 3    39   BiDi ~ 0
-~mOE
-Text GLabel 10000 2650 3    39   BiDi ~ 0
-~mOE
-Text GLabel 10000 5550 3    39   BiDi ~ 0
-~mOE
-Text GLabel 8350 5550 3    39   BiDi ~ 0
-~mOE
-Text GLabel 4550 5700 2    39   BiDi ~ 0
+	7550 1100 7500 1100
+Connection ~ 7500 1100
+Text GLabel 4600 4100 2    39   BiDi ~ 0
 ~S4
-Text GLabel 4550 5800 2    39   BiDi ~ 0
+Text GLabel 4600 4200 2    39   BiDi ~ 0
 RD4
-Text GLabel 4550 5900 2    39   BiDi ~ 0
+Text GLabel 4600 4300 2    39   BiDi ~ 0
 ~S5
-Text GLabel 4550 6000 2    39   BiDi ~ 0
+Text GLabel 4600 4400 2    39   BiDi ~ 0
 RD5
-Text GLabel 3650 6000 0    39   BiDi ~ 0
+Text GLabel 3700 4400 0    39   BiDi ~ 0
 mRD5
-Text GLabel 3650 5900 0    39   BiDi ~ 0
+Text GLabel 3700 4300 0    39   BiDi ~ 0
 ~mS5
-Text GLabel 3650 5800 0    39   BiDi ~ 0
+Text GLabel 3700 4200 0    39   BiDi ~ 0
 mRD4
-Text GLabel 3650 5700 0    39   BiDi ~ 0
+Text GLabel 3700 4100 0    39   BiDi ~ 0
 ~mS4
 $Comp
-L TXB0108-PW U6
+L TXB0108-PW U4
 U 1 1 5C374049
 P 2900 1600
-F 0 "U6" H 2700 2350 60  0000 L CNN
+F 0 "U4" H 2700 2350 60  0000 L CNN
 F 1 "TXB0108-PW" H 2700 850 60  0000 L CNN
 F 2 "Housings_SSOP:SSOP-20_4.4x6.5mm_Pitch0.65mm" H 2700 1550 60  0001 C CNN
 F 3 "" H 2900 1600 60  0001 C CNN
@@ -959,10 +636,10 @@ $EndComp
 Text GLabel 3400 1000 2    39   BiDi ~ 0
 VCC5V
 $Comp
-L GND #PWR036
+L GND #PWR030
 U 1 1 5C374058
 P 2500 2200
-F 0 "#PWR036" H 2500 1950 50  0001 C CNN
+F 0 "#PWR030" H 2500 1950 50  0001 C CNN
 F 1 "GND" H 2500 2050 50  0000 C CNN
 F 2 "" H 2500 2200 60  0001 C CNN
 F 3 "" H 2500 2200 60  0001 C CNN
@@ -1011,164 +688,278 @@ Wire Notes Line
 	600  2950 5450 2950
 Wire Notes Line
 	600  2950 600  650 
-NoConn ~ 4550 6100
-NoConn ~ 4550 6200
-NoConn ~ 3650 6200
-NoConn ~ 3650 6100
-Text GLabel 1000 3250 0    39   BiDi ~ 0
-mA13
-Text GLabel 1600 3250 2    39   BiDi ~ 0
-~mA13
-Text GLabel 1000 3650 0    39   BiDi ~ 0
-mA11
-Text GLabel 1600 3650 2    39   BiDi ~ 0
-~mA11
-Text GLabel 1000 4450 0    39   BiDi ~ 0
-mA8
-Text GLabel 1600 4450 2    39   BiDi ~ 0
-~mA8
-Text GLabel 2750 4250 0    39   BiDi ~ 0
-mD3XX
-Text GLabel 3350 4250 2    39   BiDi ~ 0
-~mD3XX
-$Comp
-L 74HC04 U3
-U 1 1 5C2DFE46
-P 1300 4050
-F 0 "U3" H 1300 4100 50  0000 C CNN
-F 1 "74HC04" H 1300 4000 50  0000 C CNN
-F 2 "Housings_SSOP:TSSOP-14_4.4x5mm_Pitch0.65mm" H 1300 4050 50  0001 C CNN
-F 3 "" H 1300 4050 60  0001 C CNN
-	1    1300 4050
-	1    0    0    -1  
-$EndComp
-Text GLabel 1600 4050 2    39   BiDi ~ 0
-~mA10
-$Comp
-L 74HC04 U7
-U 7 1 5C420D5D
-P 5750 4550
-F 0 "U7" H 5750 4600 50  0000 C CNN
-F 1 "74HC04" H 5750 4500 50  0000 C CNN
-F 2 "Housings_SSOP:TSSOP-14_4.4x5mm_Pitch0.65mm" H 5750 4550 50  0001 C CNN
-F 3 "" H 5750 4550 60  0001 C CNN
-	7    5750 4550
-	-1   0    0    1   
-$EndComp
-Text GLabel 5750 5050 3    39   BiDi ~ 0
-VCC3V3
-Connection ~ 5750 4050
-Text GLabel 2750 3750 0    39   BiDi ~ 0
-mD6XX
-Text GLabel 3350 3750 2    39   BiDi ~ 0
-~mD6XX
-$Comp
-L 74HC04 U7
-U 1 1 5C4210C2
-P 3050 3750
-F 0 "U7" H 3050 3800 50  0000 C CNN
-F 1 "74HC04" H 3050 3700 50  0000 C CNN
-F 2 "Housings_SSOP:TSSOP-14_4.4x5mm_Pitch0.65mm" H 3050 3750 50  0001 C CNN
-F 3 "" H 3050 3750 60  0001 C CNN
-	1    3050 3750
-	1    0    0    -1  
-$EndComp
-Wire Notes Line
-	600  3050 3750 3050
-Wire Notes Line
-	3750 3050 3750 4750
-Wire Notes Line
-	3750 4750 600  4750
-Wire Notes Line
-	600  4750 600  3050
 Wire Notes Line
 	5450 2950 5450 650 
-Text GLabel 7150 2150 0    39   BiDi ~ 0
-mD1E0_A8
-Text GLabel 7150 2250 0    39   BiDi ~ 0
-mD1E0_A9
-Text GLabel 7150 2350 0    39   BiDi ~ 0
-mD1E0_A10
-Text GLabel 7150 2450 0    39   BiDi ~ 0
-mD1E0_A11
-Text GLabel 7150 2550 0    39   BiDi ~ 0
-mD1E0_A12
-Text GLabel 7150 2650 0    39   BiDi ~ 0
-mD1E0_A13
-Text GLabel 7150 2750 0    39   BiDi ~ 0
-mD1E0_A14
-Text GLabel 8800 2150 0    39   BiDi ~ 0
-mD1E0_A8
-Text GLabel 8800 2250 0    39   BiDi ~ 0
-mD1E0_A9
-Text GLabel 8800 2350 0    39   BiDi ~ 0
-mD1E0_A10
-Text GLabel 8800 2450 0    39   BiDi ~ 0
-mD1E0_A11
-Text GLabel 8800 2550 0    39   BiDi ~ 0
-mD1E0_A12
-Text GLabel 8800 2650 0    39   BiDi ~ 0
-mD1E0_A13
-Text GLabel 8800 2750 0    39   BiDi ~ 0
-mD1E0_A14
-Text GLabel 8800 3050 0    39   BiDi ~ 0
-mD1E2_A17
-Text GLabel 8800 3150 0    39   BiDi ~ 0
-mD1E2_A18
-Text GLabel 7150 5050 0    39   BiDi ~ 0
-mD1E0_A8
-Text GLabel 7150 5150 0    39   BiDi ~ 0
-mD1E0_A9
-Text GLabel 7150 5250 0    39   BiDi ~ 0
-mD1E0_A10
-Text GLabel 7150 5350 0    39   BiDi ~ 0
-mD1E0_A11
-Text GLabel 7150 5450 0    39   BiDi ~ 0
-mD1E0_A12
-Text GLabel 7150 5550 0    39   BiDi ~ 0
-mD1E0_A13
-Text GLabel 7150 5650 0    39   BiDi ~ 0
-mD1E0_A14
-Text GLabel 7150 5750 0    39   BiDi ~ 0
-mD1E0_A15
-Text GLabel 7150 5850 0    39   BiDi ~ 0
-mD1E2_A16
-Text GLabel 7150 5950 0    39   BiDi ~ 0
-mD1E2_A17
-Text GLabel 7150 6050 0    39   BiDi ~ 0
-mD1E2_A18
-Text GLabel 8800 5050 0    39   BiDi ~ 0
-mD1E0_A8
-Text GLabel 8800 5150 0    39   BiDi ~ 0
-mD1E0_A9
-Text GLabel 8800 5250 0    39   BiDi ~ 0
-mD1E0_A10
-Text GLabel 8800 5350 0    39   BiDi ~ 0
-mD1E0_A11
-Text GLabel 8800 5450 0    39   BiDi ~ 0
-mD1E0_A12
-Text GLabel 8800 5550 0    39   BiDi ~ 0
-mD1E0_A13
-Text GLabel 8800 5650 0    39   BiDi ~ 0
-mD1E0_A14
-Text GLabel 8800 5750 0    39   BiDi ~ 0
-mD1E0_A15
-Text GLabel 8800 5850 0    39   BiDi ~ 0
-mD1E2_A16
-Text GLabel 8800 5950 0    39   BiDi ~ 0
-mD1E2_A17
-Text GLabel 8800 6050 0    39   BiDi ~ 0
-mD1E2_A18
-Text GLabel 7150 2950 0    39   BiDi ~ 0
-mD1E2_A16
-Text GLabel 7150 2850 0    39   BiDi ~ 0
-mD1E0_A15
-Text GLabel 8800 2850 0    39   BiDi ~ 0
-mD1E0_A15
-Text GLabel 7150 3050 0    39   BiDi ~ 0
-mD1E2_A17
-Text GLabel 8800 2950 0    39   BiDi ~ 0
-mD1E2_A16
-Text GLabel 7150 3150 0    39   BiDi ~ 0
-mD1E2_A18
+Text GLabel 7000 2150 0    39   BiDi ~ 0
+mA8
+Text GLabel 7000 2250 0    39   BiDi ~ 0
+mA9
+Text GLabel 7000 2350 0    39   BiDi ~ 0
+mA10
+Text GLabel 7000 2450 0    39   BiDi ~ 0
+mA11
+Text GLabel 7000 2550 0    39   BiDi ~ 0
+mA12
+Text GLabel 7000 2650 0    39   BiDi ~ 0
+mA13
+Text GLabel 6450 2750 0    39   BiDi ~ 0
+mxA14
+Wire Notes Line
+	11050 600  11050 5350
+Text GLabel 6450 2850 0    39   BiDi ~ 0
+mxA15
+Text GLabel 6450 2950 0    39   BiDi ~ 0
+mxA16
+Text GLabel 6450 3050 0    39   BiDi ~ 0
+mxA17
+Text GLabel 6450 3150 0    39   BiDi ~ 0
+mxA18
+Wire Notes Line
+	11050 5350 6300 5350
+Wire Wire Line
+	8000 2450 8200 2450
+Wire Wire Line
+	8200 2450 8200 3500
+Text GLabel 8200 3500 3    39   BiDi ~ 0
+~mCHIP0
+Text Notes 7050 4500 0    79   ~ 16
+EXTERNAL RAM ACCESS WILL ASSERT THE EXTSEL SIGNAL
+Text GLabel 3700 4500 0    39   BiDi ~ 0
+mSPARE1
+Text GLabel 3700 4600 0    39   BiDi ~ 0
+mSPARE2
+Text GLabel 4600 4500 2    39   BiDi ~ 0
+SPARE1
+Text GLabel 4600 4600 2    39   BiDi ~ 0
+SPARE2
+Text GLabel 3950 5900 2    39   BiDi ~ 0
+SPARE1
+Text GLabel 3950 6100 2    39   BiDi ~ 0
+SPARE2
+$Comp
+L R_Small R4
+U 1 1 5C5E6B0A
+P 3700 5900
+F 0 "R4" H 3730 5920 50  0000 L CNN
+F 1 "0" H 3730 5860 50  0000 L CNN
+F 2 "Resistors_SMD:R_1206_HandSoldering" H 3700 5900 50  0001 C CNN
+F 3 "" H 3700 5900 50  0001 C CNN
+	1    3700 5900
+	0    -1   -1   0   
+$EndComp
+$Comp
+L R_Small R5
+U 1 1 5C5E6B49
+P 3700 6100
+F 0 "R5" H 3730 6120 50  0000 L CNN
+F 1 "0" H 3730 6060 50  0000 L CNN
+F 2 "Resistors_SMD:R_1206_HandSoldering" H 3700 6100 50  0001 C CNN
+F 3 "" H 3700 6100 50  0001 C CNN
+	1    3700 6100
+	0    -1   -1   0   
+$EndComp
+Wire Wire Line
+	3800 5900 3950 5900
+Wire Wire Line
+	3950 6100 3800 6100
+Wire Wire Line
+	3600 5900 3450 5900
+Wire Wire Line
+	3450 6100 3600 6100
+$Comp
+L CONN_01X01 P7
+U 1 1 5C5E6DCF
+P 3250 5900
+F 0 "P7" H 3250 6000 50  0000 C CNN
+F 1 "CONN_01X01" H 3250 5700 50  0000 C CNN
+F 2 "TestPoint:TestPoint_Pad_1.5x1.5mm" H 3250 5900 50  0001 C CNN
+F 3 "" H 3250 5900 50  0000 C CNN
+	1    3250 5900
+	-1   0    0    1   
+$EndComp
+$Comp
+L CONN_01X01 P8
+U 1 1 5C5E6E2A
+P 3250 6100
+F 0 "P8" H 3250 6200 50  0000 C CNN
+F 1 "CONN_01X01" H 3250 6350 50  0000 C CNN
+F 2 "TestPoint:TestPoint_Pad_1.5x1.5mm" H 3250 6100 50  0001 C CNN
+F 3 "" H 3250 6100 50  0000 C CNN
+	1    3250 6100
+	-1   0    0    1   
+$EndComp
+Text GLabel 8450 2650 3    39   BiDi ~ 0
+mW/~R
+$Comp
+L ISSI61WV5128BL U8
+U 1 1 5C5E8B61
+P 9700 2300
+F 0 "U8" H 9400 3350 50  0000 C CNN
+F 1 "ISSI61WV5128BL" H 10050 1250 50  0000 C CNN
+F 2 "RetroBitLab:SOP-32L-20.5x11.30-1.27mm" H 9700 2300 50  0001 C CIN
+F 3 "" H 9700 2300 60  0001 C CNN
+	1    9700 2300
+	1    0    0    -1  
+$EndComp
+$Comp
+L GND #PWR031
+U 1 1 5C5E8B67
+P 9700 3400
+F 0 "#PWR031" H 9700 3150 50  0001 C CNN
+F 1 "GND" H 9700 3250 50  0000 C CNN
+F 2 "" H 9700 3400 60  0001 C CNN
+F 3 "" H 9700 3400 60  0001 C CNN
+	1    9700 3400
+	1    0    0    -1  
+$EndComp
+Text GLabel 9700 1050 1    39   Input ~ 0
+VCC3V3
+Text GLabel 10550 2950 3    39   BiDi ~ 0
+mR/~W
+Wire Wire Line
+	10200 2350 10550 2350
+Wire Wire Line
+	10550 2350 10550 2950
+Wire Wire Line
+	10200 2250 10650 2250
+Wire Wire Line
+	10650 2250 10650 2700
+Wire Wire Line
+	9700 1050 9700 1200
+$Comp
+L C_Small C5
+U 1 1 5C5E8B74
+P 9850 1150
+F 0 "C5" H 9860 1220 50  0000 L CNN
+F 1 "100n" V 9950 950 50  0000 L CNN
+F 2 "Capacitors_SMD:C_1206_HandSoldering" H 9850 1150 50  0001 C CNN
+F 3 "" H 9850 1150 60  0001 C CNN
+	1    9850 1150
+	0    -1   -1   0   
+$EndComp
+$Comp
+L GND #PWR032
+U 1 1 5C5E8B7A
+P 9950 1150
+F 0 "#PWR032" H 9950 900 50  0001 C CNN
+F 1 "GND" H 9950 1000 50  0000 C CNN
+F 2 "" H 9950 1150 60  0001 C CNN
+F 3 "" H 9950 1150 60  0001 C CNN
+	1    9950 1150
+	0    -1   -1   0   
+$EndComp
+Text GLabel 9200 1400 0    39   BiDi ~ 0
+mA0
+Text GLabel 9200 1500 0    39   BiDi ~ 0
+mA1
+Text GLabel 9200 1600 0    39   BiDi ~ 0
+mA2
+Text GLabel 9200 1700 0    39   BiDi ~ 0
+mA3
+Text GLabel 9200 1800 0    39   BiDi ~ 0
+mA4
+Text GLabel 9200 1900 0    39   BiDi ~ 0
+mA5
+Text GLabel 9200 2000 0    39   BiDi ~ 0
+mA6
+Text GLabel 9200 2100 0    39   BiDi ~ 0
+mA7
+Text GLabel 10200 1400 2    39   BiDi ~ 0
+mD0
+Text GLabel 10200 1500 2    39   BiDi ~ 0
+mD1
+Text GLabel 10200 1600 2    39   BiDi ~ 0
+mD2
+Text GLabel 10200 1700 2    39   BiDi ~ 0
+mD3
+Text GLabel 10200 1800 2    39   BiDi ~ 0
+mD4
+Text GLabel 10200 1900 2    39   BiDi ~ 0
+mD5
+Text GLabel 10200 2000 2    39   BiDi ~ 0
+mD6
+Text GLabel 10200 2100 2    39   BiDi ~ 0
+mD7
+Wire Wire Line
+	9750 1150 9700 1150
+Connection ~ 9700 1150
+Text GLabel 9200 2200 0    39   BiDi ~ 0
+mA8
+Text GLabel 9200 2300 0    39   BiDi ~ 0
+mA9
+Text GLabel 9200 2400 0    39   BiDi ~ 0
+mA10
+Text GLabel 9200 2500 0    39   BiDi ~ 0
+mA11
+Text GLabel 9200 2600 0    39   BiDi ~ 0
+mA12
+Text GLabel 9200 2700 0    39   BiDi ~ 0
+mA13
+Wire Wire Line
+	10200 2500 10400 2500
+Wire Wire Line
+	10400 2500 10400 3550
+Text GLabel 10400 3550 3    39   BiDi ~ 0
+~mCHIP1
+Text GLabel 10650 2700 3    39   BiDi ~ 0
+mW/~R
+Wire Wire Line
+	6450 2750 7000 2750
+Wire Wire Line
+	6450 2850 7000 2850
+Wire Wire Line
+	6450 2950 7000 2950
+Wire Wire Line
+	6450 3050 7000 3050
+Wire Wire Line
+	6450 3150 7000 3150
+Wire Wire Line
+	9200 2800 8650 2800
+Wire Wire Line
+	8650 2800 8650 3850
+Wire Wire Line
+	8650 3850 6950 3850
+Wire Wire Line
+	6950 3850 6950 2750
+Connection ~ 6950 2750
+Wire Wire Line
+	9200 2900 8750 2900
+Wire Wire Line
+	8750 2900 8750 3950
+Wire Wire Line
+	8750 3950 6850 3950
+Wire Wire Line
+	6850 3950 6850 2850
+Connection ~ 6850 2850
+Wire Wire Line
+	9200 3000 8850 3000
+Wire Wire Line
+	8850 3000 8850 4050
+Wire Wire Line
+	8850 4050 6750 4050
+Wire Wire Line
+	6750 4050 6750 2950
+Connection ~ 6750 2950
+Wire Wire Line
+	9200 3100 8950 3100
+Wire Wire Line
+	8950 3100 8950 4150
+Wire Wire Line
+	8950 4150 6650 4150
+Wire Wire Line
+	6650 4150 6650 3050
+Connection ~ 6650 3050
+Wire Wire Line
+	9200 3200 9050 3200
+Wire Wire Line
+	9050 3200 9050 4250
+Wire Wire Line
+	9050 4250 6550 4250
+Wire Wire Line
+	6550 4250 6550 3150
+Connection ~ 6550 3150
+Wire Notes Line
+	6000 600  6000 5350
+Wire Notes Line
+	6000 5350 6350 5350
 $EndSCHEMATC

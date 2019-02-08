@@ -1,0 +1,27 @@
+Address decoder
+---------------
+
+D1xx, D8xx-DFxx, D6xx, D3xx
+
+4000-7FFF = (A15 + /A14)
+
+---------------------------------------------
+
+/D1xx == is already present as signal /D1XX
+
+/Dxxx = (/A15 + /A14 + A13 + /A12)
+
+x8xx - xFxx = /A11
+
+/D8xx-DFxx = (/Dxxx + /A11)
+
+/x3xx = (A11 + A10 + /A9 + /A8)
+
+/x6xx = (A11 + /A10 + /A9 + A8)
+
+/D3xx = (/Dxxx + /x3xx)
+
+/D6xx = (/Dxxx + /x6xx)
+
+
+

@@ -58,7 +58,6 @@ LIBS:FPGA_Xilinx_Spartan6
 LIBS:FPGA_Xilinx_Virtex5
 LIBS:FPGA_Xilinx_Virtex6
 LIBS:FPGA_Xilinx_Virtex7
-LIBS:ft232rl
 LIBS:GPU
 LIBS:Graphic
 LIBS:Interface
@@ -187,6 +186,80 @@ LIBS:Transistor_IGBT
 LIBS:Triac_Thyristor
 LIBS:Valve
 LIBS:Video
+LIBS:74xgxx
+LIBS:ac-dc
+LIBS:actel
+LIBS:adc-dac
+LIBS:Altera
+LIBS:analog_devices
+LIBS:analog_switches
+LIBS:atmel
+LIBS:audio
+LIBS:brooktre
+LIBS:cmos4000
+LIBS:cmos_ieee
+LIBS:conn
+LIBS:contrib
+LIBS:cypress
+LIBS:dc-dc
+LIBS:device
+LIBS:digital-audio
+LIBS:diode
+LIBS:display
+LIBS:dsp
+LIBS:elec-unifil
+LIBS:ESD_Protection
+LIBS:ftdi
+LIBS:gennum
+LIBS:graphic
+LIBS:hc11
+LIBS:intel
+LIBS:interface
+LIBS:ir
+LIBS:Lattice
+LIBS:linear
+LIBS:logo
+LIBS:maxim
+LIBS:memory
+LIBS:microchip
+LIBS:microchip_dspic33dsc
+LIBS:microchip_pic10mcu
+LIBS:microchip_pic12mcu
+LIBS:microchip_pic16mcu
+LIBS:microchip_pic18mcu
+LIBS:microchip_pic32mcu
+LIBS:microcontrollers
+LIBS:motor_drivers
+LIBS:motorola
+LIBS:msp430
+LIBS:nordicsemi
+LIBS:nxp_armmcu
+LIBS:onsemi
+LIBS:opto
+LIBS:Oscillators
+LIBS:philips
+LIBS:powerint
+LIBS:references
+LIBS:regul
+LIBS:relays
+LIBS:rfcom
+LIBS:sensors
+LIBS:silabs
+LIBS:siliconi
+LIBS:stm8
+LIBS:stm32
+LIBS:supertex
+LIBS:switches
+LIBS:texas
+LIBS:transf
+LIBS:transistors
+LIBS:ttl_ieee
+LIBS:valves
+LIBS:video
+LIBS:Worldsemi
+LIBS:Xicor
+LIBS:xilinx
+LIBS:Zilog
 LIBS:atari23MTS_Upgrade-cache
 EELAYER 25 0
 EELAYER END
@@ -203,10 +276,10 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L STM32F407VETx U17
+L STM32F407VETx U13
 U 1 1 5C42189F
 P 5300 3650
-F 0 "U17" H 4600 6200 50  0000 L CNN
+F 0 "U13" H 4600 6200 50  0000 L CNN
 F 1 "STM32F407VETx" H 5800 6200 50  0000 L CNN
 F 2 "Housings_QFP:LQFP-100_14x14mm_Pitch0.5mm" H 4600 1050 50  0001 R CNN
 F 3 "" H 5300 3650 50  0001 C CNN
@@ -234,10 +307,10 @@ F 3 "" H 2500 2700 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L C_Small C8
+L C_Small C6
 U 1 1 5C421C91
 P 2100 2350
-F 0 "C8" H 2110 2420 50  0000 L CNN
+F 0 "C6" H 2110 2420 50  0000 L CNN
 F 1 "20p" H 2110 2270 50  0000 L CNN
 F 2 "Capacitors_SMD:C_1206_HandSoldering" H 2100 2350 50  0001 C CNN
 F 3 "" H 2100 2350 50  0000 C CNN
@@ -245,10 +318,10 @@ F 3 "" H 2100 2350 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L C_Small C9
+L C_Small C7
 U 1 1 5C421D1B
 P 2100 3050
-F 0 "C9" H 2110 3120 50  0000 L CNN
+F 0 "C7" H 2110 3120 50  0000 L CNN
 F 1 "20p" H 2110 2970 50  0000 L CNN
 F 2 "Capacitors_SMD:C_1206_HandSoldering" H 2100 3050 50  0001 C CNN
 F 3 "" H 2100 3050 50  0000 C CNN
@@ -256,10 +329,10 @@ F 3 "" H 2100 3050 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L GND #PWR044
+L GND #PWR034
 U 1 1 5C421D68
 P 1750 2700
-F 0 "#PWR044" H 1750 2450 50  0001 C CNN
+F 0 "#PWR034" H 1750 2450 50  0001 C CNN
 F 1 "GND" H 1750 2550 50  0000 C CNN
 F 2 "" H 1750 2700 50  0001 C CNN
 F 3 "" H 1750 2700 50  0001 C CNN
@@ -267,10 +340,10 @@ F 3 "" H 1750 2700 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L C_Small C11
+L C_Small C9
 U 1 1 5C421E29
 P 8600 850
-F 0 "C11" H 8610 920 50  0000 L CNN
+F 0 "C9" H 8610 920 50  0000 L CNN
 F 1 "100n" H 8610 770 50  0000 L CNN
 F 2 "Capacitors_SMD:C_1206_HandSoldering" H 8600 850 50  0001 C CNN
 F 3 "" H 8600 850 50  0000 C CNN
@@ -278,10 +351,10 @@ F 3 "" H 8600 850 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L C_Small C12
+L C_Small C10
 U 1 1 5C421EE5
 P 8600 1200
-F 0 "C12" H 8610 1270 50  0000 L CNN
+F 0 "C10" H 8610 1270 50  0000 L CNN
 F 1 "100n" H 8610 1120 50  0000 L CNN
 F 2 "Capacitors_SMD:C_1206_HandSoldering" H 8600 1200 50  0001 C CNN
 F 3 "" H 8600 1200 50  0000 C CNN
@@ -289,10 +362,10 @@ F 3 "" H 8600 1200 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L C_Small C13
+L C_Small C11
 U 1 1 5C421F19
 P 8600 1550
-F 0 "C13" H 8610 1620 50  0000 L CNN
+F 0 "C11" H 8610 1620 50  0000 L CNN
 F 1 "100n" H 8610 1470 50  0000 L CNN
 F 2 "Capacitors_SMD:C_1206_HandSoldering" H 8600 1550 50  0001 C CNN
 F 3 "" H 8600 1550 50  0000 C CNN
@@ -300,10 +373,10 @@ F 3 "" H 8600 1550 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L C_Small C14
+L C_Small C12
 U 1 1 5C421F4C
 P 8600 1900
-F 0 "C14" H 8610 1970 50  0000 L CNN
+F 0 "C12" H 8610 1970 50  0000 L CNN
 F 1 "100n" H 8610 1820 50  0000 L CNN
 F 2 "Capacitors_SMD:C_1206_HandSoldering" H 8600 1900 50  0001 C CNN
 F 3 "" H 8600 1900 50  0000 C CNN
@@ -311,10 +384,10 @@ F 3 "" H 8600 1900 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L C_Small C15
+L C_Small C13
 U 1 1 5C421F82
 P 8600 2250
-F 0 "C15" H 8610 2320 50  0000 L CNN
+F 0 "C13" H 8610 2320 50  0000 L CNN
 F 1 "100n" H 8610 2170 50  0000 L CNN
 F 2 "Capacitors_SMD:C_1206_HandSoldering" H 8600 2250 50  0001 C CNN
 F 3 "" H 8600 2250 50  0000 C CNN
@@ -322,10 +395,10 @@ F 3 "" H 8600 2250 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L C_Small C16
+L C_Small C14
 U 1 1 5C421FB7
 P 8600 2600
-F 0 "C16" H 8610 2670 50  0000 L CNN
+F 0 "C14" H 8610 2670 50  0000 L CNN
 F 1 "100n" H 8610 2520 50  0000 L CNN
 F 2 "Capacitors_SMD:C_1206_HandSoldering" H 8600 2600 50  0001 C CNN
 F 3 "" H 8600 2600 50  0000 C CNN
@@ -333,10 +406,10 @@ F 3 "" H 8600 2600 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L C_Small C17
+L C_Small C15
 U 1 1 5C421FF7
 P 8600 2950
-F 0 "C17" H 8610 3020 50  0000 L CNN
+F 0 "C15" H 8610 3020 50  0000 L CNN
 F 1 "100n" H 8610 2870 50  0000 L CNN
 F 2 "Capacitors_SMD:C_1206_HandSoldering" H 8600 2950 50  0001 C CNN
 F 3 "" H 8600 2950 50  0000 C CNN
@@ -399,10 +472,10 @@ Wire Wire Line
 	8100 1200 8500 1200
 Connection ~ 8300 1200
 $Comp
-L GND #PWR045
+L GND #PWR035
 U 1 1 5C422248
 P 8850 1900
-F 0 "#PWR045" H 8850 1650 50  0001 C CNN
+F 0 "#PWR035" H 8850 1650 50  0001 C CNN
 F 1 "GND" H 8850 1750 50  0000 C CNN
 F 2 "" H 8850 1900 50  0001 C CNN
 F 3 "" H 8850 1900 50  0001 C CNN
@@ -485,22 +558,6 @@ Text GLabel 4400 5250 0    39   BiDi ~ 0
 mA6
 Text GLabel 4400 5350 0    39   BiDi ~ 0
 mA7
-Text GLabel 4400 5450 0    39   BiDi ~ 0
-mA8
-Text GLabel 4400 5550 0    39   BiDi ~ 0
-mA9
-Text GLabel 4400 5650 0    39   BiDi ~ 0
-mA10
-Text GLabel 4400 5750 0    39   BiDi ~ 0
-mA11
-Text GLabel 4400 5850 0    39   BiDi ~ 0
-mA12
-Text GLabel 4400 5950 0    39   BiDi ~ 0
-mA13
-Text GLabel 4400 6050 0    39   BiDi ~ 0
-mA14
-Text GLabel 4400 6150 0    39   BiDi ~ 0
-mA15
 Text GLabel 6200 4650 2    39   BiDi ~ 0
 mB02/PHI2
 Text GLabel 6200 4750 2    39   BiDi ~ 0
@@ -530,10 +587,10 @@ Text GLabel 6200 3550 2    39   BiDi ~ 0
 Text GLabel 6200 3450 2    39   BiDi ~ 0
 ~mD1XX
 $Comp
-L R_Small R18
+L R_Small R13
 U 1 1 5C422FC6
 P 9950 3850
-F 0 "R18" H 9980 3870 50  0000 L CNN
+F 0 "R13" H 9980 3870 50  0000 L CNN
 F 1 "220" H 9980 3810 50  0000 L CNN
 F 2 "Resistors_SMD:R_1206_HandSoldering" H 9950 3850 50  0001 C CNN
 F 3 "" H 9950 3850 50  0000 C CNN
@@ -541,10 +598,10 @@ F 3 "" H 9950 3850 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R_Small R20
+L R_Small R15
 U 1 1 5C42306F
 P 10650 3850
-F 0 "R20" H 10680 3870 50  0000 L CNN
+F 0 "R15" H 10680 3870 50  0000 L CNN
 F 1 "220" H 10680 3810 50  0000 L CNN
 F 2 "Resistors_SMD:R_1206_HandSoldering" H 10650 3850 50  0001 C CNN
 F 3 "" H 10650 3850 50  0000 C CNN
@@ -578,10 +635,10 @@ Wire Wire Line
 Wire Wire Line
 	10650 3400 10650 3550
 $Comp
-L GND #PWR046
+L GND #PWR036
 U 1 1 5C42325A
 P 10300 3250
-F 0 "#PWR046" H 10300 3000 50  0001 C CNN
+F 0 "#PWR036" H 10300 3000 50  0001 C CNN
 F 1 "GND" H 10300 3100 50  0000 C CNN
 F 2 "" H 10300 3250 50  0001 C CNN
 F 3 "" H 10300 3250 50  0001 C CNN
@@ -604,10 +661,10 @@ Wire Wire Line
 	5200 6450 5200 6650
 Connection ~ 5200 6650
 $Comp
-L GND #PWR047
+L GND #PWR037
 U 1 1 5C4234AD
 P 5300 6850
-F 0 "#PWR047" H 5300 6600 50  0001 C CNN
+F 0 "#PWR037" H 5300 6600 50  0001 C CNN
 F 1 "GND" H 5300 6700 50  0000 C CNN
 F 2 "" H 5300 6850 50  0001 C CNN
 F 3 "" H 5300 6850 50  0001 C CNN
@@ -617,10 +674,10 @@ $EndComp
 Text GLabel 6200 3350 2    39   BiDi ~ 0
 mRD4
 $Comp
-L R_Small R19
+L R_Small R14
 U 1 1 5C4340D0
 P 10300 3850
-F 0 "R19" H 10330 3870 50  0000 L CNN
+F 0 "R14" H 10330 3870 50  0000 L CNN
 F 1 "220" H 10330 3810 50  0000 L CNN
 F 2 "Resistors_SMD:R_1206_HandSoldering" H 10300 3850 50  0001 C CNN
 F 3 "" H 10300 3850 50  0000 C CNN
@@ -662,7 +719,7 @@ LEDRED
 Text GLabel 9500 4300 0    39   BiDi Italic 8
 LEDAMBER
 Text Notes 8750 5050 0    59   ~ 12
-AMBER LED (MEMORY ACCESS SRAM)
+AMBER LED (EXPANSION MEMORY ACCESS SRAM)
 Text Notes 8750 4650 0    59   ~ 12
 GREEN LED (CARTRIDGE SWITCHING)
 Text Notes 8750 4850 0    59   ~ 12
@@ -682,10 +739,10 @@ Wire Wire Line
 Wire Wire Line
 	6200 2250 7050 2250
 $Comp
-L R_Small R11
+L R_Small R9
 U 1 1 5C434D22
 P 6650 1950
-F 0 "R11" H 6680 1970 50  0000 L CNN
+F 0 "R9" H 6680 1970 50  0000 L CNN
 F 1 "10k" H 6680 1910 50  0000 L CNN
 F 2 "Resistors_SMD:R_1206_HandSoldering" H 6650 1950 50  0001 C CNN
 F 3 "" H 6650 1950 50  0000 C CNN
@@ -693,10 +750,10 @@ F 3 "" H 6650 1950 50  0000 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R_Small R12
+L R_Small R10
 U 1 1 5C434E28
 P 6900 1950
-F 0 "R12" H 6930 1970 50  0000 L CNN
+F 0 "R10" H 6930 1970 50  0000 L CNN
 F 1 "10k" H 6930 1910 50  0000 L CNN
 F 2 "Resistors_SMD:R_1206_HandSoldering" H 6900 1950 50  0001 C CNN
 F 3 "" H 6900 1950 50  0000 C CNN
@@ -724,157 +781,9 @@ Text GLabel 6200 2550 2    39   BiDi ~ 0
 SWDIO
 Text GLabel 6200 4950 2    39   BiDi ~ 0
 TP1
-$Comp
-L R_Small R14
-U 1 1 5C4356B9
-P 6900 4050
-F 0 "R14" H 6850 4600 50  0000 L CNN
-F 1 "0" H 6930 4010 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 6900 4050 50  0001 C CNN
-F 3 "" H 6900 4050 50  0000 C CNN
-	1    6900 4050
-	0    1    1    0   
-$EndComp
-$Comp
-L R_Small R13
-U 1 1 5C43571E
-P 6900 3950
-F 0 "R13" H 6700 3950 50  0000 L CNN
-F 1 "0" H 6930 3910 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 6900 3950 50  0001 C CNN
-F 3 "" H 6900 3950 50  0000 C CNN
-	1    6900 3950
-	0    1    1    0   
-$EndComp
-$Comp
-L R_Small R15
-U 1 1 5C435782
-P 6900 4150
-F 0 "R15" H 7000 4150 50  0000 L CNN
-F 1 "0" H 6930 4110 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 6900 4150 50  0001 C CNN
-F 3 "" H 6900 4150 50  0000 C CNN
-	1    6900 4150
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	6200 3950 6800 3950
-Wire Wire Line
-	6200 4050 6800 4050
-Wire Wire Line
-	6200 4150 6800 4150
-Wire Wire Line
-	7000 3950 7200 3950
-Wire Wire Line
-	7200 3950 7200 4150
-Wire Wire Line
-	7200 4150 7000 4150
-Wire Wire Line
-	7000 4050 7200 4050
-Connection ~ 7200 4050
-$Comp
-L GND #PWR048
-U 1 1 5C435C55
-P 7200 4050
-F 0 "#PWR048" H 7200 3800 50  0001 C CNN
-F 1 "GND" H 7200 3900 50  0000 C CNN
-F 2 "" H 7200 4050 50  0001 C CNN
-F 3 "" H 7200 4050 50  0001 C CNN
-	1    7200 4050
-	0    -1   -1   0   
-$EndComp
-Text Label 6550 3950 0    39   ~ 0
-SPARE1
-Text Label 6550 4050 0    39   ~ 0
-SPARE2
-Text Label 6550 4150 0    39   ~ 0
-SPARE3
-$Comp
-L R_Small R17
-U 1 1 5C436E38
-P 6900 5350
-F 0 "R17" H 6930 5370 50  0000 L CNN
-F 1 "0" H 6930 5310 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 6900 5350 50  0001 C CNN
-F 3 "" H 6900 5350 50  0000 C CNN
-	1    6900 5350
-	0    1    1    0   
-$EndComp
-$Comp
-L R_Small R16
-U 1 1 5C436E3E
-P 6900 5250
-F 0 "R16" H 6700 5250 50  0000 L CNN
-F 1 "0" H 6930 5210 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 6900 5250 50  0001 C CNN
-F 3 "" H 6900 5250 50  0000 C CNN
-	1    6900 5250
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	6200 5250 6800 5250
-Wire Wire Line
-	6200 5350 6800 5350
-Text Label 6550 5250 0    39   ~ 0
-SPARE4
-Text Label 6550 5350 0    39   ~ 0
-SPARE5
-Wire Wire Line
-	7000 5250 7250 5250
-Wire Wire Line
-	7250 5250 7250 5350
-Wire Wire Line
-	7250 5350 7000 5350
-$Comp
-L GND #PWR049
-U 1 1 5C4371DD
-P 7250 5250
-F 0 "#PWR049" H 7250 5000 50  0001 C CNN
-F 1 "GND" H 7250 5100 50  0000 C CNN
-F 2 "" H 7250 5250 50  0001 C CNN
-F 3 "" H 7250 5250 50  0001 C CNN
-	1    7250 5250
-	0    -1   -1   0   
-$EndComp
-Connection ~ 7250 5250
 NoConn ~ 6200 1950
 NoConn ~ 6200 1850
 NoConn ~ 6200 1750
-NoConn ~ 6200 1650
-NoConn ~ 6200 1550
-NoConn ~ 6200 1450
-NoConn ~ 6200 1350
-NoConn ~ 6200 1250
-Text GLabel 4400 2950 0    39   BiDi ~ 0
-mD1E0_A8
-Text GLabel 4400 3050 0    39   BiDi ~ 0
-mD1E0_A9
-Text GLabel 4400 3150 0    39   BiDi ~ 0
-mD1E0_A10
-Text GLabel 4400 3250 0    39   BiDi ~ 0
-mD1E0_A11
-Text GLabel 4400 3350 0    39   BiDi ~ 0
-mD1E0_A12
-Text GLabel 4400 3450 0    39   BiDi ~ 0
-mD1E0_A13
-Text GLabel 4400 3550 0    39   BiDi ~ 0
-mD1E0_A14
-Text GLabel 4400 3650 0    39   BiDi ~ 0
-mD1E0_A15
-Text GLabel 6300 5450 2    39   BiDi ~ 0
-mD1E2_A16
-Text GLabel 6300 5550 2    39   BiDi ~ 0
-mD1E2_A17
-Text GLabel 6300 5650 2    39   BiDi ~ 0
-mD1E2_A18
-Text GLabel 6300 5750 2    39   BiDi ~ 0
-mD1E2_A19
-Text GLabel 6300 5850 2    39   BiDi ~ 0
-mD1E3_A20
-Text GLabel 6300 5950 2    39   BiDi ~ 0
-mD1E3_A21
-NoConn ~ 6200 6050
-NoConn ~ 6200 6150
 Text GLabel 3100 4650 2    39   BiDi ~ 0
 mSDCLK
 Text GLabel 3150 4450 2    39   BiDi ~ 0
@@ -882,10 +791,10 @@ mSDO
 Text GLabel 3200 4850 2    39   BiDi ~ 0
 mSDI
 $Comp
-L R_Small R10
+L R_Small R8
 U 1 1 5C4392C7
 P 2900 4250
-F 0 "R10" H 2700 4250 50  0000 L CNN
+F 0 "R8" H 2700 4250 50  0000 L CNN
 F 1 "47k" H 2950 4250 50  0000 L CNN
 F 2 "Resistors_SMD:R_1206_HandSoldering" H 2900 4250 50  0001 C CNN
 F 3 "" H 2900 4250 50  0000 C CNN
@@ -895,10 +804,10 @@ $EndComp
 Text GLabel 3600 4750 2    39   Input ~ 0
 VCC3V3
 $Comp
-L Micro_SD_Card_Det J1
+L Micro_SD_Card_Det J9
 U 1 1 5C439616
 P 1500 4650
-F 0 "J1" H 850 5350 50  0000 C CNN
+F 0 "J9" H 850 5350 50  0000 C CNN
 F 1 "Micro_SD_Card_Det" H 2150 5350 50  0000 R CNN
 F 2 "RetroBitLab:microSD_HC_Hirose_DM3D-SF" H 3550 5350 50  0001 C CNN
 F 3 "" H 1500 4750 50  0001 C CNN
@@ -906,10 +815,10 @@ F 3 "" H 1500 4750 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L GND #PWR050
+L GND #PWR038
 U 1 1 5C439B80
 P 2500 4550
-F 0 "#PWR050" H 2500 4300 50  0001 C CNN
+F 0 "#PWR038" H 2500 4300 50  0001 C CNN
 F 1 "GND" H 2500 4400 50  0000 C CNN
 F 2 "" H 2500 4550 50  0001 C CNN
 F 3 "" H 2500 4550 50  0001 C CNN
@@ -922,10 +831,10 @@ NoConn ~ 700  4150
 Wire Wire Line
 	2400 4450 3150 4450
 $Comp
-L C_Small C10
+L C_Small C8
 U 1 1 5C43AFC5
 P 3500 4950
-F 0 "C10" H 3510 5020 50  0000 L CNN
+F 0 "C8" H 3510 5020 50  0000 L CNN
 F 1 "100n" H 3510 4870 50  0000 L CNN
 F 2 "Capacitors_SMD:C_1206_HandSoldering" H 3500 4950 50  0001 C CNN
 F 3 "" H 3500 4950 50  0000 C CNN
@@ -935,10 +844,10 @@ $EndComp
 Wire Wire Line
 	3500 5050 3500 5150
 $Comp
-L GND #PWR051
+L GND #PWR039
 U 1 1 5C43B2D3
 P 3500 5150
-F 0 "#PWR051" H 3500 4900 50  0001 C CNN
+F 0 "#PWR039" H 3500 4900 50  0001 C CNN
 F 1 "GND" H 3500 5000 50  0000 C CNN
 F 2 "" H 3500 5150 50  0001 C CNN
 F 3 "" H 3500 5150 50  0001 C CNN
@@ -968,31 +877,11 @@ NoConn ~ 2400 4950
 NoConn ~ 2400 5050
 Text Notes 800  5600 0    59   ~ 12
 MICROSD Card Connector in SPI MODE
-Wire Wire Line
-	6200 5450 6300 5450
-Wire Wire Line
-	6200 5550 6300 5550
-Wire Wire Line
-	6200 5650 6300 5650
-Wire Wire Line
-	6200 5750 6300 5750
-Wire Wire Line
-	6200 5850 6300 5850
-Wire Wire Line
-	6200 5950 6300 5950
-Text GLabel 6200 2750 2    39   BiDi ~ 0
-RAMEN
-Text GLabel 6200 2450 2    39   BiDi ~ 0
-~mD3XX
-Text GLabel 6200 2350 2    39   BiDi ~ 0
-~mREF
-Text GLabel 6200 2050 2    39   BiDi ~ 0
-~mIRQ
 $Comp
-L R_Small R9
+L R_Small R7
 U 1 1 5C43FC39
 P 2850 3050
-F 0 "R9" H 2880 3070 50  0000 L CNN
+F 0 "R7" H 2880 3070 50  0000 L CNN
 F 1 "220" H 2880 3010 50  0000 L CNN
 F 2 "Resistors_SMD:R_1206_HandSoldering" H 2850 3050 50  0001 C CNN
 F 3 "" H 2850 3050 50  0000 C CNN
@@ -1000,10 +889,10 @@ F 3 "" H 2850 3050 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L R_Small R8
+L R_Small R6
 U 1 1 5C43FCB0
 P 2850 2350
-F 0 "R8" H 2880 2370 50  0000 L CNN
+F 0 "R6" H 2880 2370 50  0000 L CNN
 F 1 "0" H 2880 2310 50  0000 L CNN
 F 2 "Resistors_SMD:R_1206_HandSoldering" H 2850 2350 50  0001 C CNN
 F 3 "" H 2850 2350 50  0000 C CNN
@@ -1026,4 +915,108 @@ Wire Wire Line
 	3600 2750 3600 3050
 Wire Wire Line
 	3600 3050 2950 3050
+Text GLabel 6200 5450 2    39   BiDi ~ 0
+mxA16
+NoConn ~ 4400 3250
+NoConn ~ 4400 3350
+NoConn ~ 4400 3450
+NoConn ~ 4400 3550
+NoConn ~ 4400 3650
+Text GLabel 4400 5450 0    39   BiDi ~ 0
+mA8
+Text GLabel 4400 5550 0    39   BiDi ~ 0
+mA9
+Text GLabel 4400 5650 0    39   BiDi ~ 0
+mA10
+Text GLabel 4400 5750 0    39   BiDi ~ 0
+mA11
+Text GLabel 4400 5850 0    39   BiDi ~ 0
+mA12
+Text GLabel 4400 5950 0    39   BiDi ~ 0
+mA13
+Text GLabel 4400 6050 0    39   BiDi ~ 0
+mA14
+Text GLabel 4400 6150 0    39   BiDi ~ 0
+mA15
+NoConn ~ 6200 2050
+NoConn ~ 6200 2350
+NoConn ~ 6200 2450
+NoConn ~ 6200 2750
+NoConn ~ 4400 3150
+NoConn ~ 4400 3050
+NoConn ~ 4400 2950
+Text GLabel 6200 5550 2    39   BiDi ~ 0
+mxA17
+Text GLabel 6200 5650 2    39   BiDi ~ 0
+mxA18
+Text GLabel 6200 5950 2    39   BiDi ~ 0
+mPBISEL
+Text GLabel 6200 5350 2    39   BiDi ~ 0
+mxA15
+Text GLabel 6200 5250 2    39   BiDi ~ 0
+mxA14
+Text GLabel 7400 5750 2    39   BiDi ~ 0
+~mCHIP0
+Text GLabel 7400 5850 2    39   BiDi ~ 0
+~mCHIP1
+$Comp
+L R_Small R11
+U 1 1 5C5D7367
+P 6900 5500
+F 0 "R11" H 6930 5520 50  0000 L CNN
+F 1 "10K" H 6930 5460 50  0000 L CNN
+F 2 "Resistors_SMD:R_1206_HandSoldering" H 6900 5500 50  0001 C CNN
+F 3 "" H 6900 5500 50  0001 C CNN
+	1    6900 5500
+	1    0    0    -1  
+$EndComp
+$Comp
+L R_Small R12
+U 1 1 5C5D73FE
+P 7150 5500
+F 0 "R12" H 7180 5520 50  0000 L CNN
+F 1 "10K" H 7180 5460 50  0000 L CNN
+F 2 "Resistors_SMD:R_1206_HandSoldering" H 7150 5500 50  0001 C CNN
+F 3 "" H 7150 5500 50  0001 C CNN
+	1    7150 5500
+	1    0    0    -1  
+$EndComp
+Text GLabel 7400 5250 2    39   Input ~ 0
+VCC3V3
+Wire Wire Line
+	6200 5750 7400 5750
+Wire Wire Line
+	6200 5850 7400 5850
+Wire Wire Line
+	7400 5250 6900 5250
+Wire Wire Line
+	6900 5250 6900 5400
+Wire Wire Line
+	6900 5600 6900 5750
+Connection ~ 6900 5750
+Wire Wire Line
+	7150 5250 7150 5400
+Connection ~ 7150 5250
+Wire Wire Line
+	7150 5600 7150 5850
+Connection ~ 7150 5850
+Text GLabel 6900 6050 2    39   BiDi ~ 0
+mSPARE1
+Text GLabel 6900 6150 2    39   BiDi ~ 0
+mSPARE2
+Wire Wire Line
+	6200 6050 6900 6050
+Wire Wire Line
+	6200 6150 6900 6150
+Text GLabel 6200 3950 2    39   BiDi ~ 0
+~mD8XX-DFXX
+NoConn ~ 6200 1650
+NoConn ~ 6200 1550
+NoConn ~ 6200 1450
+NoConn ~ 6200 1350
+NoConn ~ 6200 1250
+Text GLabel 6200 4050 2    39   BiDi ~ 0
+~mIRQ
+Text GLabel 6200 4150 2    39   BiDi ~ 0
+~mREF
 $EndSCHEMATC
