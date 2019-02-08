@@ -266,14 +266,14 @@ EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 1 4
-Title "ATARI XE 2/4 MegaRAM Expansion POWER/DEBUG/Logic"
+Title "ATARI XE 1 MegaRAM Expansion POWER/DEBUG/Logic"
 Date "7 jan 2019"
 Rev ""
 Comp "RetrobitLab"
 Comment1 "CART+ECI Interface to mapping 512K x 8 x 4 (x 2)"
-Comment2 "2048K + 64K RAM EXPANSION"
+Comment2 "1024K + 64K RAM EXPANSION"
 Comment3 "MIO ICD Memory Expansion Compatible"
-Comment4 ""
+Comment4 "MULTICARTRIDGE SDCard"
 $EndDescr
 Wire Wire Line
 	9950 1850 9950 1700

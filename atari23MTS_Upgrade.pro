@@ -1,4 +1,4 @@
-update=Fri 08 Feb 2019 13:33:02 CET
+update=Fri 08 Feb 2019 16:10:19 CET
 version=1
 last_client=kicad
 [pcbnew]
@@ -25,16 +25,6 @@ version=1
 NetIExt=net
 [general]
 version=1
-[schematic_editor]
-version=1
-PageLayoutDescrFile=
-PlotDirectoryName=
-SubpartIdSeparator=0
-SubpartFirstId=65
-NetFmtName=Pcbnew
-SpiceForceRefPrefix=0
-SpiceUseNetNumbers=0
-LabSize=60
 [eeschema]
 version=1
 LibDir=../../../packages/kicad/kicad-footprints;../../../packages/kicad/kicad-packages3D;../../../packages/kicad/kicad-symbols
@@ -300,3 +290,13 @@ LibName258=Worldsemi
 LibName259=Xicor
 LibName260=xilinx
 LibName261=Zilog
+[schematic_editor]
+version=1
+PageLayoutDescrFile=
+PlotDirectoryName=
+SubpartIdSeparator=0
+SubpartFirstId=65
+NetFmtName=Pcbnew
+SpiceForceRefPrefix=0
+SpiceUseNetNumbers=0
+LabSize=60
