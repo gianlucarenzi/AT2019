@@ -1,7 +1,11 @@
 /*
- * --------------------------------------
+ * ---------------------------------------
+ * DUOCart Firmware (c)2019 Gianluca Renzi
+ *
+ * based on the original work by:
+ *
  * UNOCart Firmware (c)2016 Robin Edwards
- * --------------------------------------
+ * ---------------------------------------
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -84,9 +88,9 @@ typedef struct {
 	char full_path[210];
 } DIR_ENTRY;	// 256 bytes = 256 entries in 64k
 
-int num_dir_entries = 0; // how many entries in the current directory
+static int num_dir_entries = 0; // how many entries in the current directory
 
-int entry_compare(const void* p1, const void* p2)
+static int entry_compare(const void* p1, const void* p2)
 {
 	DIR_ENTRY* e1 = (DIR_ENTRY*)p1;
 	DIR_ENTRY* e2 = (DIR_ENTRY*)p2;
@@ -95,13 +99,13 @@ int entry_compare(const void* p1, const void* p2)
 	else return stricmp(e1->long_filename, e2->long_filename);
 }
 
-char *get_filename_ext(char *filename) {
+static char *get_filename_ext(char *filename) {
     char *dot = strrchr(filename, '.');
     if(!dot || dot == filename) return "";
     return dot + 1;
 }
 
-int is_valid_file(char *filename) {
+static int is_valid_file(char *filename) {
 	char *ext = get_filename_ext(filename);
 	if (stricmp(ext, "CAR") == 0 || stricmp(ext, "ROM") == 0
 			|| stricmp(ext, "XEX") == 0 || stricmp(ext, "ATR") == 0)
@@ -110,16 +114,16 @@ int is_valid_file(char *filename) {
 }
 
 // single FILINFO structure
-FILINFO fno;
-char lfn[_MAX_LFN + 1];   /* Buffer to store the LFN */
+static FILINFO fno;
+static char lfn[_MAX_LFN + 1];   /* Buffer to store the LFN */
 
-void init() {
+static void init() {
 	// this seems to be required for this version of FAT FS
 	fno.lfname = lfn;
 	fno.lfsize = sizeof lfn;
 }
 
-int scan_files(char *path, char *search)
+static int scan_files(char *path, char *search)
 {
     FRESULT res;
     DIR dir;
@@ -166,7 +170,7 @@ int scan_files(char *path, char *search)
 	return res;
 }
 
-int search_directory(char *path, char *search) {
+static int search_directory(char *path, char *search) {
 	char pathBuf[256];
 	strcpy(pathBuf, path);
 	num_dir_entries = 0;
@@ -189,7 +193,7 @@ int search_directory(char *path, char *search) {
 	return 0;
 }
 
-int read_directory(char *path) {
+static int read_directory(char *path) {
 	int ret = 0;
 	num_dir_entries = 0;
 	DIR_ENTRY *dst = (DIR_ENTRY *)&cart_ram1[0];
@@ -253,12 +257,12 @@ typedef struct {
 	FIL fil;
 } MountedATR;
 
-MountedATR mountedATRs[1] = {0};
+static MountedATR mountedATRs[1] = {0};
 
-FATFS FatFs;
-int doneFatFsInit = 0;
+static FATFS FatFs;
+static int doneFatFsInit = 0;
 
-int mount_atr(char *filename) {
+static int mount_atr(char *filename) {
 	// returns 0 for success or error code
 	// 1 = no media, 2 = no file, 3 = bad atr
 	if (!doneFatFsInit) {
@@ -281,7 +285,7 @@ int mount_atr(char *filename) {
 	return 0;
 }
 
-int read_atr_sector(uint16_t sector, uint8_t page, uint8_t *buf) {
+static int read_atr_sector(uint16_t sector, uint8_t page, uint8_t *buf) {
 	// returns 0 for success or error code
 	// 1 = no ATR mounted, 2 = invalid sector
 	MountedATR *mountedATR = &mountedATRs[0];
@@ -305,7 +309,7 @@ int read_atr_sector(uint16_t sector, uint8_t page, uint8_t *buf) {
 	return 0;
 }
 
-int write_atr_sector(uint16_t sector, uint8_t page, uint8_t *buf) {
+static int write_atr_sector(uint16_t sector, uint8_t page, uint8_t *buf) {
 	// returns 0 for success or error code
 	// 1 = no ATR mounted, 2 = write error
 	MountedATR *mountedATR = &mountedATRs[0];
@@ -329,7 +333,7 @@ int write_atr_sector(uint16_t sector, uint8_t page, uint8_t *buf) {
 
 /* CARTRIDGE/XEX HANDLING */
 
-int load_file(char *filename) {
+static int load_file(char *filename) {
 	TM_DELAY_Init();
 	FATFS FatFs;
 	int cart_type = CART_TYPE_NONE;
@@ -528,7 +532,7 @@ static void set_addr_a20_a21(uint8_t data)
 }
 
 /* Green LED -> PB0, Red LED -> PB1, RD5 -> PB2, Amber LED -> PB3, RD4 -> PB4 */
-void config_gpio_leds_RD45()
+static void config_gpio_leds_RD45()
 {
 	/* GPIOB Periph clock enable */
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
@@ -544,7 +548,7 @@ void config_gpio_leds_RD45()
 /* Input Signals GPIO pins on:
  *  CLK -> PC0, /S5 -> PC1, /S4 ->PC2, CCTL -> PC4, R/W -> PC5, TP1 -> PC3
  */
-void config_gpio_sig(void) {
+static void config_gpio_sig(void) {
 	/* GPIOC Periph clock enable */
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
 
@@ -565,7 +569,7 @@ void config_gpio_sig(void) {
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 }
 
-void config_gpio_extra_sig(void) {
+static void config_gpio_extra_sig(void) {
 	/* GPIOA Periph clock enable */
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 
@@ -600,7 +604,7 @@ void config_gpio_extra_sig(void) {
 }
 
 /* Input/Output data GPIO pins on PE{8..15} */
-void config_gpio_data(void) {
+static void config_gpio_data(void) {
 	/* GPIOE Periph clock enable */
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
 
@@ -616,7 +620,7 @@ void config_gpio_data(void) {
 }
 
 /* Extra RAM GPIO pins on PC{8..13} and PE{0..7} */
-void config_gpio_extra_ram_addressing(void) {
+static void config_gpio_extra_ram_addressing(void) {
 
 	/* PE0-7  -- A8-A15
 	 * PC8-13 -- A16-A21
@@ -650,7 +654,7 @@ void config_gpio_extra_ram_addressing(void) {
 }
 
 /* Input Address GPIO pins on PD{0..15} */
-void config_gpio_addr(void) {
+static void config_gpio_addr(void) {
 	/* GPIOD Periph clock enable */
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOD, ENABLE);
 
@@ -679,7 +683,7 @@ void config_gpio_addr(void) {
  Results of the command are in $D501-$D5DF
 */
 
-int emulate_boot_rom(int atrMode) {
+static int emulate_boot_rom(int atrMode) {
 	__disable_irq();	// Disable interrupts
 	if (atrMode) RD5_LOW else RD5_HIGH
 	RD4_LOW
@@ -727,7 +731,7 @@ int emulate_boot_rom(int atrMode) {
 	return data>>8;
 }
 
-void emulate_standard_8k() {
+static void emulate_standard_8k() {
 	// 8k
 	RD5_HIGH
 	uint16_t addr;
@@ -745,7 +749,7 @@ void emulate_standard_8k() {
 	}
 }
 
-void emulate_standard_16k() {
+static void emulate_standard_16k() {
 	// 16k
 	RD4_HIGH
 	RD5_HIGH
@@ -773,7 +777,7 @@ void emulate_standard_16k() {
 	}
 }
 
-void emulate_XEGS_32k(char switchable) {
+static void emulate_XEGS_32k(char switchable) {
 	// 32k
 	RD4_HIGH
 	RD5_HIGH
@@ -823,7 +827,7 @@ void emulate_XEGS_32k(char switchable) {
 	}
 }
 
-void emulate_XEGS_64k(char switchable) {
+static void emulate_XEGS_64k(char switchable) {
 	// 64k
 	RD4_HIGH
 	RD5_HIGH
@@ -873,7 +877,7 @@ void emulate_XEGS_64k(char switchable) {
 	}
 }
 
-void emulate_XEGS_128k(char switchable) {
+static void emulate_XEGS_128k(char switchable) {
 	// 128k
 	RD4_HIGH
 	RD5_HIGH
@@ -925,7 +929,7 @@ void emulate_XEGS_128k(char switchable) {
 	}
 }
 
-void emulate_bounty_bob() {
+static void emulate_bounty_bob() {
 	// 40k
 	RD4_HIGH
 	RD5_HIGH
@@ -1004,7 +1008,7 @@ void emulate_atarimax_128k() {
 	}
 }
 
-void emulate_williams() {
+static void emulate_williams() {
 	// williams 32k, 64k
 	RD5_HIGH
 	RD4_LOW
@@ -1043,7 +1047,7 @@ void emulate_williams() {
 	}
 }
 
-void emulate_OSS_B() {
+static void emulate_OSS_B() {
 	// OSS type B
 	RD5_HIGH
 	RD4_LOW
@@ -1086,7 +1090,7 @@ void emulate_OSS_B() {
 	}
 }
 
-void emulate_OSS_A(char is034M) {
+static void emulate_OSS_A(char is034M) {
 	// OSS type A (034M, 043M)
 	RD5_HIGH
 	RD4_LOW
@@ -1128,7 +1132,7 @@ void emulate_OSS_A(char is034M) {
 	}
 }
 
-void emulate_megacart(int size) {
+static void emulate_megacart(int size) {
 	// 16k - 128k
 	RD4_HIGH
 	RD5_HIGH
@@ -1183,7 +1187,7 @@ void emulate_megacart(int size) {
 	}
 }
 
-void emulate_SIC() {
+static void emulate_SIC() {
 	// 128k
 	RD5_HIGH
 	RD4_LOW
@@ -1242,7 +1246,7 @@ void emulate_SIC() {
 	}
 }
 
-void emulate_SDX(int size) {
+static void emulate_SDX(int size) {
 	RD5_HIGH
 	RD4_LOW
 	uint16_t addr, c;
@@ -1291,7 +1295,7 @@ void emulate_SDX(int size) {
 	}
 }
 
-void emulate_diamond_express(uint8_t cctlAddr) {
+static void emulate_diamond_express(uint8_t cctlAddr) {
 	RD5_HIGH
 	RD4_LOW
 	uint16_t addr, c;
@@ -1326,7 +1330,7 @@ void emulate_diamond_express(uint8_t cctlAddr) {
 	}
 }
 
-void emulate_blizzard() {
+static void emulate_blizzard() {
 	//16k
 	RD4_HIGH
 	RD5_HIGH
@@ -1358,7 +1362,7 @@ void emulate_blizzard() {
 	}
 }
 
-void feed_XEX_loader(void) {
+static void feed_XEX_loader(void) {
 	RD5_LOW
 	RD4_LOW
 	GREEN_LED_OFF
@@ -1401,7 +1405,7 @@ void feed_XEX_loader(void) {
 	}
 }
 
-void emulate_cartridge(int cartType) {
+static void emulate_cartridge(int cartType) {
 	__disable_irq();	// Disable interrupts
 
 	if (cartType == CART_TYPE_8K) emulate_standard_8k();
@@ -1439,116 +1443,18 @@ void emulate_cartridge(int cartType) {
 	}
 }
 
-/**
- *
-Address (HEX)					Register Operation
-						Write								Read
-$D1E0 			Set address A15-A8 for $D600 RAM window.	----
-
-$D1E2			B[3..0] High RAM address,
-					sets address A19-A16.
-				B[4] 1 = Set SEL- true
-				B[5] 1 = Enable RAM access
-				B[6] 1 = Set STROBE- true
-				B[7] 1 = Enable Parallel IRQ
-
-$D1E3			Set ROM enable and bank.
-				Only IRQ sense bits + Misc inputs.
-				or 1 bit allowed set at a time.
-				B[2] 1 = Disk Interface ROM
-				B[3] 1 = Seg 2 of setup MENU
-				B[4] 1 = R:/P: Handler ROM
-				B[5] 1 = Seg 1 of setup MENU
-				B[7..6] High RAM address,
-					set address A21-A20
-
-$D6xx 			Write RAM. High address A21-A8		Read RAM. High address A21-A8
-				selected by $D1E0/$D1E2/$D1E3 		selected by $D1E0/D1E2/$D1E3.
-
-	* Addressing the RAM
-	* 
-	* The MIO standard board can access up to 1 Megabyte of RAM which
-	* takes 20 bits to address. Address bits A19-A16 are set from writing
-	* to the latch at $D1E2, bits A15-A8 are set from writing to the latch at
-	* $D1E0, and bits A7-A0 are CPU address lines A7-A0 when reading/writing $D6xx.
-	* Thus there are up to 4096 "pages" of memory that may appear at
-	* the $D6xx window. The DUO Cart board is a MIO Compatible board but
-	* add two extra bits for addressing up to 4 Megabyte of RAM which takes
-	* 22 bits to address (A20-A21).
-	* Those extra bits are at $D1E3 or $D1FF, bits 6/7. In order to access the memory,
-	* it must first be enabled by setting $D1E2 bit 5 to "1" (this also turns
-	* on the MIO's red LED and the DUO’s amber LED).
-	* It is generally a good idea to leave the RAM disabled while not using it in
-	* case of a system crash (which could inadvertently write in the $D6xx window).
- */
-void emulate_mio_ram(void) {
-	__disable_irq();	// Disable interrupts
-	uint16_t addr, data, c;
-	static uint16_t ramen = 0; // (BIT 5 of $D1E2)
-	while (1)
-	{
-		// wait for phi2 high
-		while (!((c = CONTROL_IN) & PHI2))
-			;
-		// Check only if access when WRITING
-		if (!(c & RW))
-		{
-			// write
-			// Now check for nD1xx access (D1E0, D1E2, D1E3)
-			if (!((c = EXTRA_CONTROL_IN) & !D1XX))
-			{
-				// write
-				addr = ADDR_IN;
-				data = DATA_IN;
-				// read data bus on falling edge of phi2
-				while (CONTROL_IN & PHI2)
-					data = DATA_IN;
-				// data contains the register's bit-field
-				switch (addr & 0xFF)
-				{
-					case 0xE0:
-						set_addr_a8_a15(data);
-						break;
-					case 0xE2:
-						if ((data & (1 << 5)) == 0)
-						{
-							RAMEN_ON;
-							ramen = 1;
-							AMBER_LED_ON;
-						}
-						else
-						{
-							RAMEN_OFF;
-							ramen = 0;
-							AMBER_LED_OFF;
-						}
-						if (ramen)
-						{
-							set_addr_a16_a19(data);
-						}
-						break;
-					case 0xE3:
-					case 0xFF:
-						if (ramen)
-						{
-							set_addr_a20_a21(data);
-						}
-						break;
-				}
-			}
-		}
-		break;
-	}
-	__enable_irq();
-}
 
 int main(void) {
+
 	/* Ouptut: LEDS - PB{0..1}, RD5 - PB2, RD4 - PB4 */
 	config_gpio_leds_RD45();
+
 	/* InOut: Data - PE{8..15} */
 	config_gpio_data();
+
 	/* In: Address - PD{0..15} */
 	config_gpio_addr();
+
 	/* In: Other Cart Input Sigs - PC{0..2, 4..5} */
 	config_gpio_sig();
 
@@ -1712,8 +1618,6 @@ int main(void) {
 			else
 				emulate_cartridge(cartType);
 		}
-		// EMULATE MIO RAM EXPANSION
-		emulate_mio_ram();
+		// EXTRA MEMORY UPGRADE GOES HERE...
 	}
-
 }
