@@ -796,6 +796,8 @@ $Comp
 L Micro_SD_Card_Det J9
 U 1 1 5C439616
 P 1500 4650
+AR Path="/5C439616" Ref="J9"  Part="1" 
+AR Path="/5C421880/5C439616" Ref="J9"  Part="1" 
 F 0 "J9" H 850 5350 50  0000 C CNN
 F 1 "Micro_SD_Card_Det" H 2150 5350 50  0000 R CNN
 F 2 "RetroBitLab:microSD_HC_Hirose_DM3D-SF" H 3550 5350 50  0001 C CNN
