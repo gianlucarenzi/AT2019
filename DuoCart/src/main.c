@@ -33,12 +33,12 @@
 #include "rom.h" /* unsigned char cart_rom[64*1024] */
 #include "osrom.h"
 
-unsigned char cart_ram1[64*1024];
-unsigned char cart_ram2[64*1024] __attribute__((section(".ccmram")));
-unsigned char cart_d5xx[256] = {0};
-unsigned char pbi[2048] = {0}; // 2K address space for PBI ROM Code!
+static unsigned char cart_ram1[64*1024];
+static unsigned char cart_ram2[64*1024] __attribute__((section(".ccmram")));
+static unsigned char cart_d5xx[256] = {0};
+static unsigned char pbi[2048] = {0}; // 2K address space for PBI ROM Code!
 
-char errorBuf[40];
+static char errorBuf[40];
 
 #define CART_CMD_OPEN_ITEM			0x00
 #define CART_CMD_READ_CUR_DIR		0x01
@@ -2013,5 +2013,24 @@ int main(void) {
 
 			__enable_irq();
 		}
+	}
+}
+
+/**
+  * @brief  Reports the name of the source file and the source line number
+  *         where the assert_param error has occurred.
+  * @param  file: pointer to the source file name
+  * @param  line: assert_param error line source number
+  * @retval None
+  */
+void assert_failed(uint8_t* file, uint32_t line)
+{
+	/* USER CODE BEGIN 6 */
+	/* User can add his own implementation to report the file name and line number,
+	 tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
+	/* USER CODE END 6 */
+	printf("Error! Wrong parameters value: file %s on line %ld\r\n", file, line);
+	while (1)
+	{
 	}
 }
