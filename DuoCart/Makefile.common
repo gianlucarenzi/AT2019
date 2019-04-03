@@ -18,15 +18,25 @@ BUILD_DIR = build
 ######################################
 # Library sources
 ######################################
-LIBRARY_C_SOURCES =
+LIBRARY_C_SOURCES = \
+	Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_rcc.c \
+	Libraries/STM32F4xx_StdPeriph_Driver/src/stm32f4xx_gpio.c \
+	Libraries/tm_stm32f4_delay/tm_stm32f4_delay.c \
+	Libraries/tm_stm32f4_fatfs/fatfs/ff.c \
+	Libraries/tm_stm32f4_fatfs/fatfs/diskio.c \
+	Libraries/tm_stm32f4_fatfs/fatfs/option/ccsbcs.c \
+	Libraries/tm_stm32f4_fatfs/fatfs/option/syscall.c \
+
 
 LIBRARY_C_INCLUDES = \
 	-ILibraries/Device/STM32F4xx/Include \
 	-ILibraries/CMSIS/Include/ \
 	-ILibraries/tm_stm32f4_fatfs \
 	-ILibraries/tm_stm32f4_fatfs/fatfs \
+	-ILibraries/tm_stm32f4_fatfs/fatfs/drivers \
 	-ILibraries/tm_stm32f4_delay \
 	-ILibraries/tm_stm32f4_gpio \
+	-ILibraries/tm_stm32f4_spi \
 	-ILibraries/STM32F4xx_StdPeriph_Driver/inc/ \
 	-Isrc/
 
