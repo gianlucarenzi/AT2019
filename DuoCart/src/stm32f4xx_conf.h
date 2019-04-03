@@ -29,7 +29,9 @@
 #ifndef __STM32F4xx_CONF_H
 #define __STM32F4xx_CONF_H
 
-#define STM32F40XX
+#ifndef STM32F40XX
+	#define STM32F40XX
+#endif
 
 /* Includes ------------------------------------------------------------------*/
 /* Uncomment the line below to enable peripheral header file inclusion */
