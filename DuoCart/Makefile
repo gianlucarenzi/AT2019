@@ -18,6 +18,8 @@ TARGET = duocart
 # Librerie et al.
 include Makefile.common
 
+include Makefile.board
+
 ######################################
 # source
 ######################################
@@ -34,10 +36,7 @@ C_SOURCES += \
 
 # ASM sources
 ASM_SOURCES =  \
-	startup_stm32f40xx.s \
-
-
-include Makefile.board
+	src/startup_stm32f40xx.s \
 
 # C includes
 C_INCLUDES =  \
@@ -67,7 +66,7 @@ CFLAGS += -MMD -MP -MF"$(@:%.o=%.d)"
 #######################################
 # link script
 LDSCRIPT = \
-	stm32f401rctx_flash.ld \
+	stm32f4_flash.ld \
 
 
 # libraries
