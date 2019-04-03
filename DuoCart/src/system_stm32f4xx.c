@@ -120,6 +120,7 @@
   * @{
   */
 
+#include "stm32f4xx_conf.h"
 #include "stm32f4xx.h"
 
 /**
@@ -385,7 +386,7 @@ static void SetSysClock(void)
   RCC->CFGR |= RCC_CFGR_SW_PLL;
 
   /* Wait till the main PLL is used as system clock source */
-  while ((RCC->CFGR & (uint32_t)RCC_CFGR_SWS ) != RCC_CFGR_SWS_PLL);
+  while ((RCC->CFGR & (uint32_t)RCC_CFGR_SWS ) != RCC_CFGR_SWS_PLL)
   {
   }
 }

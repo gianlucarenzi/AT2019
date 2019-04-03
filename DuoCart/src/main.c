@@ -23,6 +23,7 @@
 #define _GNU_SOURCE
 
 #include "defines.h"
+#include "stm32f4xx_conf.h"
 #include "stm32f4xx.h"
 #include "tm_stm32f4_fatfs.h"
 #include "tm_stm32f4_delay.h"
@@ -35,6 +36,8 @@
 unsigned char cart_ram1[64*1024];
 unsigned char cart_ram2[64*1024] __attribute__((section(".ccmram")));
 unsigned char cart_d5xx[256] = {0};
+unsigned char pbi[2048] = {0}; // 2K address space for PBI ROM Code!
+
 char errorBuf[40];
 
 #define CART_CMD_OPEN_ITEM			0x00
@@ -78,7 +81,13 @@ char errorBuf[40];
 #define CART_TYPE_DIAMOND_64K		23	// 64k
 #define CART_TYPE_EXPRESS_64K		24	// 64k
 #define CART_TYPE_BLIZZARD_16K		25	// 16k
-#define CART_TYPE_ATR				254
+#define CART_TYPE_PBI				26	// PBI ROM CODE
+#define CART_TYPE_COMPYSHOP_128K	27	// MEMORY EXPANSION TYPE
+#define CART_TYPE_RAMBO_256K		28
+#define CART_TYPE_COMPYSHOP_256K	29
+#define CART_TYPE_RAMBO_576K		30
+#define CART_TYPE_MEGARAM_1088K		31
+#define CART_TYPE_ATR				254	// END OF LIST
 #define CART_TYPE_XEX				255
 
 typedef struct {
@@ -96,7 +105,7 @@ static int entry_compare(const void* p1, const void* p2)
 	DIR_ENTRY* e2 = (DIR_ENTRY*)p2;
 	if (e1->isDir && !e2->isDir) return -1;
 	else if (!e1->isDir && e2->isDir) return 1;
-	else return stricmp(e1->long_filename, e2->long_filename);
+	else return strcasecmp(e1->long_filename, e2->long_filename);
 }
 
 static char *get_filename_ext(char *filename) {
@@ -107,8 +116,9 @@ static char *get_filename_ext(char *filename) {
 
 static int is_valid_file(char *filename) {
 	char *ext = get_filename_ext(filename);
-	if (stricmp(ext, "CAR") == 0 || stricmp(ext, "ROM") == 0
-			|| stricmp(ext, "XEX") == 0 || stricmp(ext, "ATR") == 0)
+	if (strcasecmp(ext, "CAR") == 0 || strcasecmp(ext, "ROM") == 0
+			|| strcasecmp(ext, "XEX") == 0 || strcasecmp(ext, "ATR") == 0 ||
+			strcasecmp(ext, "PBI") == 0)
 		return 1;
 	return 0;
 }
@@ -331,6 +341,36 @@ static int write_atr_sector(uint16_t sector, uint8_t page, uint8_t *buf) {
 	return 0;
 }
 
+/* PBI ROM CODE HANDLING */
+static int check_pbirom_header(unsigned char *header, int headersize)
+{
+	unsigned char *ptr = header;
+	if (header == NULL || headersize != 8)
+		return 1;
+	if (*(ptr) == 'P')
+	{
+		ptr++;
+		if (*(ptr) == 'B')
+		{
+			ptr++;
+			if (*(ptr) == 'I')
+			{
+				ptr++;
+				if (*(ptr) == 0x00)
+					return 0;
+				else
+					return 1;
+			}
+			else
+				return 1;
+		}
+		else
+			return 1;
+	}
+	else
+		return 1;
+}
+
 /* CARTRIDGE/XEX HANDLING */
 
 static int load_file(char *filename) {
@@ -338,13 +378,30 @@ static int load_file(char *filename) {
 	FATFS FatFs;
 	int cart_type = CART_TYPE_NONE;
 	int car_file = 0, xex_file = 0, expectedSize = 0;
+	int pbirom_file = 0, expansion_file = 0;
 	unsigned char carFileHeader[16];
+	unsigned char pbiFileHeader[8];
+	/* PBI ROM Code Header: 'PBI\0AAAALLLL'
+	 * [0] = 'P'
+	 * [1] = 'B'
+	 * [2] = 'I'
+	 * [3] = 0x00 \0
+	 * [4] = AA; LOW ADDR  ENTRY POINT (OFFSET FROM D800)
+	 * [5] = AA; HIGH ADDR ENTRY POINT (OFFSET FROM D800)
+	 * [6] = LL; LOW ADDR FILE SIZE
+	 * [7] = LL; HIGH ADDR FILE SIZE (max 2048 <--> 0x0800)
+	 * [8] ... DATA
+	 */
 	UINT br, size = 0;
 
 	if (strncasecmp(filename+strlen(filename)-4, ".CAR", 4) == 0)
 		car_file = 1;
 	if (strncasecmp(filename+strlen(filename)-4, ".XEX", 4) == 0)
 		xex_file = 1;
+	if (strncasecmp(filename+strlen(filename)-4, ".PBI", 4) == 0)
+		pbirom_file = 1;
+	if (strncasecmp(filename+strlen(filename)-4, ".NFO", 4) == 0)
+		expansion_file = 1;
 
 	if (f_mount(&FatFs, "", 1) != FR_OK) {
 		strcpy(errorBuf, "Can't read SD card");
@@ -404,6 +461,63 @@ static int load_file(char *filename) {
 		dst += 4;	// leave room for the file length at the start of sram
 		bytes_to_read -= 4;
 	}
+
+	if (pbirom_file) {
+		if (f_read(&fil, pbiFileHeader, 8, &br) != FR_OK || br != 8) {
+			strcpy(errorBuf, "Bad PBI file");
+			goto closefile;
+		}
+		if (check_pbirom_header(pbiFileHeader, 8) != 0) {
+			strcpy(errorBuf, "Bad PBI head");
+			goto closefile;
+		}
+		int offset = pbiFileHeader[4] + 256 * pbiFileHeader[5];
+		bytes_to_read = pbiFileHeader[6] + 256 * pbiFileHeader[7];
+		// The lenght of PBI ROM Code must be under < 2K
+		if (bytes_to_read > 0x800)
+		{
+			strcpy(errorBuf, "Bad PBI len");
+			goto closefile;
+		}
+		// The code must be resident in 2K area
+		if (offset > 0x800)
+		{
+			strcpy(errorBuf, "Bad PBI off");
+			goto closefile;
+		}
+		// The code must fit in 2K area
+		if ((offset + bytes_to_read) > 0x800)
+		{
+			strcpy(errorBuf, "Bad PBI reloc");
+			goto closefile;
+		}
+		dst = &pbi[offset];
+		if (f_read(&fil, dst, bytes_to_read, &br) != FR_OK) {
+			cart_type = CART_TYPE_NONE;
+			goto closefile;
+		}
+		cart_type = CART_TYPE_PBI;
+		goto closefile;
+	}
+
+	if (expansion_file) {
+		unsigned char expFile[1];
+		if (f_read(&fil, expFile, 1, &br) != FR_OK || br != 1) {
+			strcpy(errorBuf, "Bad NFO file");
+			cart_type = CART_TYPE_RAMBO_576K; /* Default if no file found */ 
+		} else {
+			/* Range Checking: if wrong, RAMBO_576K as default */
+			if (expFile[0] < CART_TYPE_COMPYSHOP_128K ||
+				expFile[0] > CART_TYPE_MEGARAM_1088K) {
+				strcpy(errorBuf, "Bad NFO value");
+				cart_type = CART_TYPE_RAMBO_576K;
+			} else {
+				cart_type = expFile[0];
+			}
+		}
+		goto closefile;
+	}
+
 	// read the file in two 64k chunks to each area of SRAM
 	if (f_read(&fil, dst, bytes_to_read, &br) != FR_OK) {
 		cart_type = CART_TYPE_NONE;
@@ -476,20 +590,61 @@ cleanup:
 #define ADDR_IN GPIOD->IDR
 #define DATA_IN GPIOE->IDR
 #define DATA_OUT GPIOE->ODR
-#define EXTRA_CONTROL_IN GPIOB->IDR
 
-#define PHI2_RD (GPIOC->IDR & 0x0001)
-#define S5_RD (GPIOC->IDR & 0x0002)
-#define S4_RD (GPIOC->IDR & 0x0004)
-#define S4_AND_S5_HIGH (GPIOC->IDR & 0x0006) == 0x6
-#define D1XX_RD (GPIOB->IDR & (1 << 5)) /* PB5 mD1XX LOW ACTIVE */
+/* PORTA SIGNALS */
+#define UART_TX_TTL		(1 << 9)
+#define UART_RX_TTL		(1 << 10)
 
-#define PHI2	0x0001
-#define S5		0x0002
-#define S4		0x0004
-#define CCTL	0x0010
-#define RW		0x0020
-#define D1XX	0x0020
+/* PORTB SIGNALS */
+#define D1XX		(1 << 5)
+#define EXSEL		(1 << 6)
+#define HALT		(1 << 7)
+#define RST			(1 << 8)
+#define MPD			(1 << 9)
+#define D8XX_DFXX	(1 << 10)
+#define IRQ			(1 << 11)
+#define REF			(1 << 12)
+
+/* PORTC SIGNALS */
+#define PHI2	(1 << 0)
+#define S5		(1 << 1)
+#define S4		(1 << 2)
+#define TP1		(1 << 3)
+#define CCTL	(1 << 4)
+#define RW		(1 << 5)
+#define xA14	(1 << 6)
+#define xA15	(1 << 7)
+#define xA16	(1 << 8)
+#define xA17	(1 << 9)
+#define xA18	(1 << 10)
+#define CHIP0	(1 << 11)
+#define CHIP1	(1 << 12)
+#define PBISEL	(1 << 13)
+
+/* ADDRESS SELECTOR 16K BANK */
+#define xA14_LOW  GPIOC->BSRRH = GPIO_Pin_6;
+#define xA14_HIGH GPIOC->BSRRL = GPIO_Pin_6;
+#define xA15_LOW  GPIOC->BSRRH = GPIO_Pin_7;
+#define xA15_HIGH GPIOC->BSRRL = GPIO_Pin_7;
+#define xA16_LOW  GPIOC->BSRRH = GPIO_Pin_8;
+#define xA16_HIGH GPIOC->BSRRL = GPIO_Pin_8;
+#define xA17_LOW  GPIOC->BSRRH = GPIO_Pin_9;
+#define xA17_HIGH GPIOC->BSRRL = GPIO_Pin_9;
+#define xA18_LOW  GPIOC->BSRRH = GPIO_Pin_10;
+#define xA18_HIGH GPIOC->BSRRL = GPIO_Pin_10;
+#define xCHIP0_LOW  GPIOC->BSRRH = GPIO_Pin_11;
+#define xCHIP0_HIGH GPIOC->BSRRL = GPIO_Pin_11;
+#define xCHIP1_LOW  GPIOC->BSRRH = GPIO_Pin_12;
+#define xCHIP1_HIGH GPIOC->BSRRL = GPIO_Pin_12;
+
+#define SPARE1	(1 << 14)
+#define SPARE2	(1 << 15)
+
+#define PHI2_RD        (GPIOC->IDR & 0x0001)
+#define S5_RD          (GPIOC->IDR & 0x0002)
+#define S4_RD          (GPIOC->IDR & 0x0004)
+#define S4_AND_S5_HIGH ((GPIOC->IDR & 0x0006) == 0x6)
+#define D1XX_RD        (GPIOB->IDR & D1XX) /* PB5 mD1XX LOW ACTIVE */
 
 #define SET_DATA_MODE_IN GPIOE->MODER = 0x00000000;
 #define SET_DATA_MODE_OUT GPIOE->MODER = 0x55550000;
@@ -502,41 +657,14 @@ cleanup:
 #define RED_LED_ON    GPIOB->BSRRL = GPIO_Pin_1;
 #define AMBER_LED_ON  GPIOB->BSRRL = GPIO_Pin_3;
 
-#define RAMEN_ON  GPIOA->BSRRH = GPIO_Pin_15;
-#define RAMEN_OFF GPIOA->BSRRL = GPIO_Pin_15;
-
 GPIO_InitTypeDef  GPIO_InitStructure;
-
-/* Extra RAM GPIO pins on PC{8..13} and PE{0..7}
- * PC8-13 -- A16-A21
- */
-static void set_addr_a8_a15(uint8_t data)
-{
-	GPIOE->ODR = data & 0xFF;
-}
-
-static void set_addr_a16_a19(uint8_t data)
-{
-	uint8_t rback = GPIOC->ODR;
-	rback &= ~(0x0F); // Clear all BIT 0..3
-	rback |= (data & 0x0F);
-	GPIOC->ODR = rback;
-}
-
-static void set_addr_a20_a21(uint8_t data)
-{
-	uint8_t rback = GPIOC->ODR;
-	rback &= ~(0xC0); // Clear all BIT 6..7
-	rback |= (data & 0xC0);
-	GPIOC->ODR = rback;
-}
 
 /* Green LED -> PB0, Red LED -> PB1, RD5 -> PB2, Amber LED -> PB3, RD4 -> PB4 */
 static void config_gpio_leds_RD45()
 {
 	/* GPIOB Periph clock enable */
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
-	/* Configure PB0, PB1in output pushpull mode */
+	/* Configure PB0, PB1 in output pushpull mode */
 	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3 | GPIO_Pin_4;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
@@ -546,7 +674,7 @@ static void config_gpio_leds_RD45()
 }
 
 /* Input Signals GPIO pins on:
- *  CLK -> PC0, /S5 -> PC1, /S4 ->PC2, CCTL -> PC4, R/W -> PC5, TP1 -> PC3
+ *  CLK -> PC0, /S5 -> PC1, /S4 ->PC2,  TP1 -> PC3, CCTL -> PC4, R/W -> PC5
  */
 static void config_gpio_sig(void) {
 	/* GPIOC Periph clock enable */
@@ -570,37 +698,50 @@ static void config_gpio_sig(void) {
 }
 
 static void config_gpio_extra_sig(void) {
-	/* GPIOA Periph clock enable */
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOA, ENABLE);
 
-	/* Configure GPIO Settings mIRQ, mREF, mD3XX */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_8 | GPIO_Pin_11 | GPIO_Pin_12;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
-	/* RAMEN is an OUTPUT */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_15;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_Init(GPIOA, &GPIO_InitStructure);
-
+	/* ******************
+	 * * PORT B SIGNALS *
+	 * ******************
+	 */ 
 	/* GPIOB Periph clock enable */
 	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOB, ENABLE);
 
-	/* Configure GPIO Settings mD1XX */
-	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5;
+	/* Configure GPIO Settings mD1XX, mEXSEL, mHALT, mRST, mMPD, mD8XX_DFXX, mIRQ, mREF
+	 * 
+	 * INPUTS:
+	 * mD1XX, mD8XX_DFXX, mHALT
+	 * 
+	 * OUTPUTS:
+	 * mEXSEL, mRST, mMPD, mIRQ, mREF
+	 * */
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_5 | GPIO_Pin_7 | GPIO_Pin_10;
 	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_IN;
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
 	GPIO_Init(GPIOB, &GPIO_InitStructure);
 
-	/* Actually other pins mEXSEL, mHALT, mRST, mMPD are not used */
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_8 | GPIO_Pin_9 |
+		GPIO_Pin_11 | GPIO_Pin_12;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
+
+	/* GPIOC Periph clock enable */
+	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
+	/* Configure GPIO Settings: mxA14, mxA15, mxA16, mxA17, mxA18,
+	 * CHIP0, CHIP1, mPBISEL, mSPARE1, mSPARE2
+	 */
+	GPIO_InitStructure.GPIO_Pin = GPIO_Pin_6 | GPIO_Pin_7 | GPIO_Pin_8 |
+		GPIO_Pin_9 | GPIO_Pin_10 | GPIO_Pin_11 | GPIO_Pin_12 |
+		GPIO_Pin_13 | GPIO_Pin_14 | GPIO_Pin_15;
+	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
+	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
+	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_100MHz;
+	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
+	GPIO_Init(GPIOB, &GPIO_InitStructure);
 }
 
 /* Input/Output data GPIO pins on PE{8..15} */
@@ -616,40 +757,6 @@ static void config_gpio_data(void) {
 	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
 	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;	// avoid sharp edges
 	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_DOWN;
-	GPIO_Init(GPIOE, &GPIO_InitStructure);
-}
-
-/* Extra RAM GPIO pins on PC{8..13} and PE{0..7} */
-static void config_gpio_extra_ram_addressing(void) {
-
-	/* PE0-7  -- A8-A15
-	 * PC8-13 -- A16-A21
-	 */
-	/* GPIOC Periph clock enable */
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOC, ENABLE);
-
-	/* Configure GPIO Settings for Address $D1E2 and $D1E3 */
-	GPIO_InitStructure.GPIO_Pin =
-		GPIO_Pin_8  | GPIO_Pin_9  | GPIO_Pin_10 |
-		GPIO_Pin_11 | GPIO_Pin_12 | GPIO_Pin_13;
-
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
-	GPIO_Init(GPIOC, &GPIO_InitStructure);
-
-	/* GPIOE Periph clock enable */
-	RCC_AHB1PeriphClockCmd(RCC_AHB1Periph_GPIOE, ENABLE);
-
-	/* Configure GPIO Settings for Address $D1E0 */
-	GPIO_InitStructure.GPIO_Pin =
-		GPIO_Pin_0 | GPIO_Pin_1 | GPIO_Pin_2 | GPIO_Pin_3 |
-		GPIO_Pin_4 | GPIO_Pin_5 | GPIO_Pin_6 | GPIO_Pin_7;
-	GPIO_InitStructure.GPIO_Mode = GPIO_Mode_OUT;
-	GPIO_InitStructure.GPIO_OType = GPIO_OType_PP;
-	GPIO_InitStructure.GPIO_Speed = GPIO_Speed_25MHz;	// avoid sharp edges
-	GPIO_InitStructure.GPIO_PuPd = GPIO_PuPd_NOPULL;
 	GPIO_Init(GPIOE, &GPIO_InitStructure);
 }
 
@@ -729,6 +836,37 @@ static int emulate_boot_rom(int atrMode) {
 	}
 	__enable_irq();
 	return data>>8;
+}
+
+static void emulate_pbi_rom(void) {
+	__disable_irq();	// Disable interrupts
+	uint16_t addr, data, c;
+	while (1)
+	{
+		// wait for phi2 high
+		while (!((c = CONTROL_IN) & PHI2)) ;
+
+		// Low active
+		if (!(c & D8XX_DFXX)) {
+			// accessing D8xx - DFxx range memory --> low
+			if (c & RW) {
+				// read
+				SET_DATA_MODE_OUT
+				addr = ADDR_IN;
+				DATA_OUT = ((uint16_t)pbi[addr&0xFF])<<8;
+				// wait for phi2 low
+				while (CONTROL_IN & PHI2) ;
+					SET_DATA_MODE_IN
+			}
+			else {
+				// Cannot write ROM!
+			}
+		} else {
+			// If no access to ROM Code, exit...
+			break;
+		}
+	}
+	__enable_irq();
 }
 
 static void emulate_standard_8k() {
@@ -1443,6 +1581,133 @@ static void emulate_cartridge(int cartType) {
 	}
 }
 
+#define MIN_ADDRESS_RAM_WINDOW 0x4000
+#define MAX_ADDRESS_RAM_WINDOW 0x7fff
+#define PBCTL 0xD303
+#define PORTB 0xD301
+#define PORTBCTL_W (1 << 2) /* use Port B for data input/output */
+#define ASSERT_EXSEL   GPIOB->BSRRL = GPIO_Pin_6;
+#define DEASSERT_EXSEL GPIOB->BSRRH = GPIO_Pin_6;
+
+static void external_memory_setup(uint8_t banksel)
+{
+	// BIT 0
+	if (banksel & 0x01)
+		xA14_HIGH
+	else
+		xA14_LOW
+
+	// BIT 1
+	if (banksel & 0x02)
+		xA15_HIGH
+	else
+		xA15_LOW
+
+	// BIT 2
+	if (banksel & 0x04)
+		xA16_HIGH
+	else
+		xA16_LOW
+
+	// BIT 3
+	if (banksel & 0x08)
+		xA17_HIGH
+	else
+		xA17_LOW
+
+	// BIT 4
+	if (banksel & 0x10)
+		xA18_HIGH
+	else
+		xA18_LOW
+
+	// BIT 5
+	if (banksel & 0x20)
+		xCHIP0_HIGH
+	else
+		xCHIP0_LOW
+
+	// BIT 6
+	if (banksel & 0x40)
+		xCHIP1_HIGH
+	else
+		xCHIP1_LOW
+}
+
+static void duocart_memory_expansion(uint8_t portb, uint8_t exptype)
+{
+	/* Possible combinations
+	 * 
+	 *  Bit  Meaning if value set to 1
+	 *  ---  -------------------------
+	 *  #0   OS ROM enabled / RAM disabled (16KiB, 49152-65535 or $C000-$FFFF,
+	         except 2KiB range of hardware addresses, 53248-55295 or $D000-$D7FF)
+
+	 *  #1   BASIC ROM disabled / RAM enabled (8KiB, 40960-49151 or $A000-$BFFF)
+
+	 *  #2   1200XL LED 1 off; 130XE bank selection least significant bit (LSB)
+
+	 *  #3   1200XL LED 2 off; 130XE bank selection most significant bit (MSB)
+
+	 *  #4   130XE CPU Bank /Enable (CBE) (1=disabled, 0=enabled)
+             (16KiB, 16384-32767 or $4000-$7FFF)
+
+	 *  #5   130XE Video Bank /Enable (VBE) (1=disabled, 0=enabled)
+             (16KiB, 16384-32767 or $4000-$7FFF)
+
+	 *  #6   XE System Console Missile Command disabled / RAM enabled
+             (8KiB, 40960-49151 or $A000-$BFFF)
+
+	 *  #7   Self Test ROM disabled / RAM enabled (2KiB, 20480-22527 or $5000-$57FF)
+
+		CompyShop 128k       (bit 2, 3, 6) 8 - 16k banks
+		Rambo 256k           (bit 2, 3, 5, 6) - 16 - 16k banks
+		CompyShop 256k       (bit 2, 3, 6, 7) - 16 - 16k banks
+		Rambo 576k           (bit 2, 3, 5, 6, 7) - 32 - 16k banks
+		Newell MegaRAM 1088k (bit 1, 2, 3, 5, 6, 7) - 64 - 16k banks
+	*/
+	uint8_t mask;
+	uint8_t bank; // Bank selection number
+	switch (exptype)
+	{
+		case CART_TYPE_COMPYSHOP_128K:
+			mask = portb & 0x4c;
+			bank = (mask & 0x0c) >> 2;
+			bank += (mask & 0x40) >> 6;
+			break;
+		case CART_TYPE_RAMBO_256K:
+			mask = portb & 0x6c;
+			bank = (mask & 0x0c) >> 2;
+			bank += (mask & 0x60) >> 5;
+			break;
+		case CART_TYPE_COMPYSHOP_256K:
+			mask = portb & 0xcc;
+			bank = (mask & 0x0c) >> 2;
+			bank += (mask & 0xc0) >> 5;
+			break;
+		case CART_TYPE_MEGARAM_1088K:
+			mask = portb & 0xee;
+			bank = (mask & 0x0e) >> 1;
+			bank += (mask & 0xe0) >> 5;
+			break;
+		case CART_TYPE_RAMBO_576K:
+		default:
+			mask = portb & 0xec;
+			bank = (mask & 0x0c) >> 2;
+			bank += (mask & 0xe0) >> 5;
+			break;
+	}
+
+	/* Now bank has the correct linear bank number */
+	external_memory_setup(bank);
+}
+
+static void setup_memory_expansion(uint8_t *typ)
+{
+	uint8_t mext;
+	mext = load_file("MEM.NFO");
+	*(typ) = mext;
+}
 
 int main(void) {
 
@@ -1458,11 +1723,18 @@ int main(void) {
 	/* In: Other Cart Input Sigs - PC{0..2, 4..5} */
 	config_gpio_sig();
 
+	/* All other signals */
+	config_gpio_extra_sig();
+
 	RED_LED_ON
 	int cartType = 0, atrMode = 0;
+	uint8_t expType = 0;
 	char curPath[256] = "";
 	char path[256];
 	init();
+
+	// memory type will be managed by a file present as MEM.NFO
+	setup_memory_expansion(&expType);
 
 	while (1) {
 		GREEN_LED_OFF
@@ -1490,7 +1762,7 @@ int main(void) {
 					strcpy(path, curPath); // file in current directory
 				strcat(path, "/");
 				strcat(path, entry[n].filename);
-				if (stricmp(get_filename_ext(entry[n].filename), "ATR")==0)
+				if (strcasecmp(get_filename_ext(entry[n].filename), "ATR")==0)
 				{	// ATR
 					cart_d5xx[0x01] = 3;	// ATR
 					cartType = CART_TYPE_ATR;
@@ -1618,6 +1890,128 @@ int main(void) {
 			else
 				emulate_cartridge(cartType);
 		}
-		// EXTRA MEMORY UPGRADE GOES HERE...
+		else
+		{
+			// EXTRA MEMORY UPGRADE GOES HERE...
+			uint16_t c, address;
+			uint8_t data;
+			// Logic flow inspired by atari800 emulator @ src/pia.c
+			static uint8_t PIA_PBCTL      = 0x3f;
+			static uint8_t PIA_PORTB      = 0xff;
+			static uint8_t PIA_PORTB_mask = 0xff;
+			static uint8_t MEMORY_EXPANSION_ENABLE = 0;
+
+			// Let's start with AMBER LED OFF
+			AMBER_LED_OFF
+
+			__disable_irq();	// Disable interrupts
+
+			// wait for phi2 high
+			while (!((c = CONTROL_IN) & PHI2)) ;
+
+			address = GPIOD->IDR;     // Read 16bit PortD (all address bits)
+			data = GPIOE->IDR & 0xff; // Read 8bit PortE (all data bits)
+
+			if (address >= MIN_ADDRESS_RAM_WINDOW &&
+				address <= MAX_ADDRESS_RAM_WINDOW)
+			{
+				if (MEMORY_EXPANSION_ENABLE) {
+					ASSERT_EXSEL;
+					// Disable on-board memory when accessing external RAM window
+				}
+			}
+			else
+			{
+				if (! MEMORY_EXPANSION_ENABLE) {
+					AMBER_LED_OFF
+					DEASSERT_EXSEL;
+				}
+				// Enable on-board memory when accessing other RAM Address
+			}
+
+			// Specific emulation
+			switch (address)
+			{
+				case PBCTL:
+					if (c & RW)
+					{
+						// READ
+						// CPU 6502C MUST READ PBCTL
+						SET_DATA_MODE_OUT
+						DATA_OUT = ((uint16_t)PIA_PBCTL)<<8;
+						// wait for phi2 low
+						while (CONTROL_IN & PHI2)
+							;
+						SET_DATA_MODE_IN
+					}
+					else
+					{
+						// WRITE
+						// CPU 6502 MUST WRITE PBCTL
+						data &= 0x3f; /* bits 6 & 7 cannot be written */
+						PIA_PBCTL = ((PIA_PBCTL & 0xc0) | data);
+						if (PIA_PBCTL & 0x04)
+						{
+							MEMORY_EXPANSION_ENABLE = 1;
+							AMBER_LED_ON; // We can have memory banking
+						}
+						else
+						{
+							MEMORY_EXPANSION_ENABLE = 0;
+							AMBER_LED_OFF; // We can not have memory banking
+						}
+					}
+					break;
+
+				case PORTB:
+					if (c & RW)
+					{
+						// READ PORTB
+						uint8_t val;
+						if ((PIA_PBCTL & 0x04) == 0)
+						{
+							/* read DDRA (data direction register B) */
+							val = ~PIA_PORTB_mask;
+						}
+						else
+						{
+							/* read PIBB (peripheral interface buffer B) */
+							/* also called ORB (output register B) 
+							 * even for reading in data sheet */
+							PIA_PBCTL &= 0x3f; /* clear bit 6 & 7 */
+							val = PIA_PORTB | PIA_PORTB_mask;
+						}
+						// Now prepare data for CPU 6502 read cycle
+						SET_DATA_MODE_OUT
+						DATA_OUT = ((uint16_t) val)<<8;
+						// wait for phi2 low
+						while (CONTROL_IN & PHI2)
+							;
+						SET_DATA_MODE_IN
+					}
+					else
+					{
+						// WRITE PORTB
+						if ((PIA_PBCTL & 0x04) == 0)
+						{
+							PIA_PORTB_mask = ~data;
+							MEMORY_EXPANSION_ENABLE = 0;
+						}
+						else
+						{
+							if (MEMORY_EXPANSION_ENABLE)
+							{
+								AMBER_LED_ON
+								PIA_PORTB = data;
+								// NOW LET'S DO MEMORY EXPANSION STUFF!
+								duocart_memory_expansion(PIA_PORTB, expType);
+							}
+						}
+					}
+					break;
+			}
+
+			__enable_irq();
+		}
 	}
 }
