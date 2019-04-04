@@ -28,7 +28,7 @@ C_SOURCES =  \
 	src/main.c \
 	src/system_stm32f4xx.c \
 	src/tiny_printf.c \
-
+	
 
 C_SOURCES += \
 	$(LIBRARY_C_SOURCES) \
