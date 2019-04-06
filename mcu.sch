@@ -123,163 +123,26 @@ LIBS:MCU_ST_STM32L4+
 LIBS:MCU_Texas
 LIBS:MCU_Texas_MSP430
 LIBS:Mechanical
-LIBS:Memory_Controller
-LIBS:Memory_EEPROM
-LIBS:Memory_EPROM
-LIBS:Memory_Flash
-LIBS:Memory_NVRAM
-LIBS:Memory_RAM
-LIBS:Memory_ROM
-LIBS:Memory_UniqueID
-LIBS:Motor
-LIBS:Oscillator
-LIBS:Potentiometer_Digital
-LIBS:power
-LIBS:Power_Management
-LIBS:Power_Protection
-LIBS:Power_Supervisor
-LIBS:pspice
-LIBS:Reference_Current
-LIBS:Reference_Voltage
-LIBS:Regulator_Controller
-LIBS:Regulator_Current
-LIBS:Regulator_Linear
-LIBS:Regulator_SwitchedCapacitor
-LIBS:Regulator_Switching
-LIBS:Relay
-LIBS:Relay_SolidState
-LIBS:RF
-LIBS:RF_AM_FM
-LIBS:RF_Amplifier
-LIBS:RF_Bluetooth
-LIBS:RF_GPS
-LIBS:RF_GSM
-LIBS:RF_Mixer
-LIBS:RF_Module
-LIBS:RF_RFID
-LIBS:RF_Switch
-LIBS:RF_WiFi
-LIBS:RF_ZigBee
-LIBS:Security
-LIBS:Sensor
-LIBS:Sensor_Audio
-LIBS:Sensor_Current
-LIBS:Sensor_Gas
-LIBS:Sensor_Humidity
-LIBS:Sensor_Magnetic
-LIBS:Sensor_Motion
-LIBS:Sensor_Optical
-LIBS:Sensor_Pressure
-LIBS:Sensor_Proximity
-LIBS:Sensor_Temperature
-LIBS:Sensor_Touch
-LIBS:Sensor_Voltage
-LIBS:Switch
-LIBS:Timer
-LIBS:Timer_PLL
-LIBS:Timer_RTC
-LIBS:Transformer
-LIBS:Transistor_Array
-LIBS:Transistor_BJT
-LIBS:Transistor_FET
-LIBS:Transistor_IGBT
-LIBS:Triac_Thyristor
-LIBS:Valve
-LIBS:Video
-LIBS:74xgxx
-LIBS:ac-dc
-LIBS:actel
-LIBS:adc-dac
-LIBS:Altera
-LIBS:analog_devices
-LIBS:analog_switches
-LIBS:atmel
-LIBS:audio
-LIBS:brooktre
-LIBS:cmos4000
-LIBS:cmos_ieee
-LIBS:conn
-LIBS:contrib
-LIBS:cypress
-LIBS:dc-dc
-LIBS:device
-LIBS:digital-audio
-LIBS:diode
-LIBS:display
-LIBS:dsp
-LIBS:elec-unifil
-LIBS:ESD_Protection
-LIBS:ftdi
-LIBS:gennum
-LIBS:graphic
-LIBS:hc11
-LIBS:intel
-LIBS:interface
-LIBS:ir
-LIBS:Lattice
-LIBS:linear
-LIBS:logo
-LIBS:maxim
-LIBS:memory
-LIBS:microchip
-LIBS:microchip_dspic33dsc
-LIBS:microchip_pic10mcu
-LIBS:microchip_pic12mcu
-LIBS:microchip_pic16mcu
-LIBS:microchip_pic18mcu
-LIBS:microchip_pic32mcu
-LIBS:microcontrollers
-LIBS:motor_drivers
-LIBS:motorola
-LIBS:msp430
-LIBS:nordicsemi
-LIBS:nxp_armmcu
-LIBS:onsemi
-LIBS:opto
-LIBS:Oscillators
-LIBS:philips
-LIBS:powerint
-LIBS:references
-LIBS:regul
-LIBS:relays
-LIBS:rfcom
-LIBS:sensors
-LIBS:silabs
-LIBS:siliconi
-LIBS:stm8
-LIBS:stm32
-LIBS:supertex
-LIBS:switches
-LIBS:texas
-LIBS:transf
-LIBS:transistors
-LIBS:ttl_ieee
-LIBS:valves
-LIBS:video
-LIBS:Worldsemi
-LIBS:Xicor
-LIBS:xilinx
-LIBS:Zilog
 LIBS:atari23MTS_Upgrade-cache
 EELAYER 25 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
 Sheet 4 4
-Title "MCU STM32F407VET6"
-Date "2019-01-18"
+Title "MCU STM32F407VET6 SDCARD & CART"
+Date "2019-04-06"
 Rev ""
 Comp "RetroBit Lab"
-Comment1 ""
-Comment2 ""
+Comment1 "MULTI CARD MPU Interface"
+Comment2 "STM32F407 for ROM and Cartridge Emulation"
 Comment3 ""
 Comment4 ""
 $EndDescr
 NoConn ~ 5000 950 
 Text GLabel 4400 1250 0    39   Input ~ 0
-nRESET
+nRESET_CART
 Text GLabel 4400 1450 0    39   Input ~ 0
-BOOT0
+BOOT0_CART
 NoConn ~ 4400 1650
 NoConn ~ 4400 1750
 Text GLabel 4400 1850 0    39   Input ~ 0
@@ -290,7 +153,7 @@ U 1 1 5C421B52
 P 2500 2700
 F 0 "XT1" H 2500 2800 50  0000 C CNN
 F 1 "8Mhz" H 2500 2600 50  0000 C CNN
-F 2 "Crystal:Crystal_SMD_0603-4Pin_6.0x3.5mm_HandSoldering" H 2500 2700 50  0001 C CNN
+F 2 "Crystals:Crystal_HC49-U_Vertical" H 2500 2700 50  0001 C CNN
 F 3 "" H 2500 2700 50  0000 C CNN
 	1    2500 2700
 	0    1    1    0   
@@ -565,16 +428,6 @@ Text GLabel 6200 4350 2    39   BiDi ~ 0
 mSDO
 Text GLabel 6200 4450 2    39   BiDi ~ 0
 mSDI
-Text GLabel 6200 3850 2    39   BiDi ~ 0
-~mMPD
-Text GLabel 6200 3750 2    39   BiDi ~ 0
-~mRST
-Text GLabel 6200 3650 2    39   BiDi ~ 0
-~mHALT
-Text GLabel 6200 3550 2    39   BiDi ~ 0
-~mEXSEL
-Text GLabel 6200 3450 2    39   BiDi ~ 0
-~mD1XX
 $Comp
 L R_Small R13
 U 1 1 5C422FC6
@@ -584,17 +437,6 @@ F 1 "220" H 9980 3810 50  0000 L CNN
 F 2 "Resistors_SMD:R_1206_HandSoldering" H 9950 3850 50  0001 C CNN
 F 3 "" H 9950 3850 50  0000 C CNN
 	1    9950 3850
-	1    0    0    -1  
-$EndComp
-$Comp
-L R_Small R15
-U 1 1 5C42306F
-P 10650 3850
-F 0 "R15" H 10680 3870 50  0000 L CNN
-F 1 "220" H 10680 3810 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 10650 3850 50  0001 C CNN
-F 3 "" H 10650 3850 50  0000 C CNN
-	1    10650 3850
 	1    0    0    -1  
 $EndComp
 $Comp
@@ -608,30 +450,17 @@ F 3 "" V 9950 3650 50  0000 C CNN
 	1    9950 3650
 	0    1    1    0   
 $EndComp
-$Comp
-L Led_Small D5
-U 1 1 5C4231C2
-P 10650 3650
-F 0 "D5" H 10600 3775 50  0000 L CNN
-F 1 "LED.AMBER" H 10475 3550 50  0000 L CNN
-F 2 "LEDs:LED_1206" V 10650 3650 50  0001 C CNN
-F 3 "" V 10650 3650 50  0000 C CNN
-	1    10650 3650
-	0    1    1    0   
-$EndComp
 Wire Wire Line
 	9950 3550 9950 3400
-Wire Wire Line
-	10650 3400 10650 3550
 $Comp
 L GND #PWR036
 U 1 1 5C42325A
-P 10300 3250
-F 0 "#PWR036" H 10300 3000 50  0001 C CNN
-F 1 "GND" H 10300 3100 50  0000 C CNN
-F 2 "" H 10300 3250 50  0001 C CNN
-F 3 "" H 10300 3250 50  0001 C CNN
-	1    10300 3250
+P 10100 3200
+F 0 "#PWR036" H 10100 2950 50  0001 C CNN
+F 1 "GND" H 10100 3050 50  0000 C CNN
+F 2 "" H 10100 3200 50  0001 C CNN
+F 3 "" H 10100 3200 50  0001 C CNN
+	1    10100 3200
 	-1   0    0    1   
 $EndComp
 Wire Wire Line
@@ -685,11 +514,6 @@ F 3 "" V 10300 3650 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 Wire Wire Line
-	10300 3250 10300 3550
-Wire Wire Line
-	9950 3400 10650 3400
-Connection ~ 10300 3400
-Wire Wire Line
 	9950 3950 9950 4100
 Wire Wire Line
 	9950 4100 9500 4100
@@ -697,79 +521,22 @@ Wire Wire Line
 	10300 3950 10300 4200
 Wire Wire Line
 	10300 4200 9500 4200
-Wire Wire Line
-	10650 3950 10650 4300
-Wire Wire Line
-	10650 4300 9500 4300
 Text GLabel 9500 4100 0    39   BiDi Italic 8
 LEDGRN
 Text GLabel 9500 4200 0    39   BiDi Italic 8
 LEDRED
-Text GLabel 9500 4300 0    39   BiDi Italic 8
-LEDAMBER
-Text Notes 8750 5050 0    59   ~ 12
-AMBER LED (EXPANSION MEMORY ACCESS SRAM)
-Text Notes 8750 4650 0    59   ~ 12
+Text Notes 8750 4450 0    59   ~ 12
 GREEN LED (CARTRIDGE SWITCHING)
-Text Notes 8750 4850 0    59   ~ 12
+Text Notes 8750 4650 0    59   ~ 12
 RED LED (BOARD OK)
 Text GLabel 6200 2950 2    39   BiDi Italic 8
 LEDGRN
 Text GLabel 6200 3050 2    39   BiDi Italic 8
 LEDRED
-Text GLabel 6200 3250 2    39   BiDi Italic 8
-LEDAMBER
-Text GLabel 7050 2150 2    39   Output ~ 8
-UART_TX_TTL
-Text GLabel 7050 2250 2    39   Input ~ 8
-UART_RX_TTL
-Wire Wire Line
-	6200 2150 7050 2150
-Wire Wire Line
-	6200 2250 7050 2250
-$Comp
-L R_Small R9
-U 1 1 5C434D22
-P 6650 1950
-F 0 "R9" H 6680 1970 50  0000 L CNN
-F 1 "10k" H 6680 1910 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 6650 1950 50  0001 C CNN
-F 3 "" H 6650 1950 50  0000 C CNN
-	1    6650 1950
-	1    0    0    -1  
-$EndComp
-$Comp
-L R_Small R10
-U 1 1 5C434E28
-P 6900 1950
-F 0 "R10" H 6930 1970 50  0000 L CNN
-F 1 "10k" H 6930 1910 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 6900 1950 50  0001 C CNN
-F 3 "" H 6900 1950 50  0000 C CNN
-	1    6900 1950
-	1    0    0    -1  
-$EndComp
-Wire Wire Line
-	6900 2050 6900 2150
-Connection ~ 6900 2150
-Wire Wire Line
-	6650 2050 6650 2250
-Connection ~ 6650 2250
-Wire Wire Line
-	6650 1850 6650 1700
-Wire Wire Line
-	6650 1700 7050 1700
-Wire Wire Line
-	6900 1700 6900 1850
-Connection ~ 6900 1700
-Text GLabel 7050 1700 2    39   Input ~ 0
-VCC3V3
 Text GLabel 6200 2650 2    39   BiDi ~ 0
-SWDCLK
+SWDCLK_CART
 Text GLabel 6200 2550 2    39   BiDi ~ 0
-SWDIO
-Text GLabel 6200 4950 2    39   BiDi ~ 0
-TP1
+SWDIO_CART
 NoConn ~ 6200 1950
 NoConn ~ 6200 1850
 NoConn ~ 6200 1750
@@ -906,8 +673,6 @@ Wire Wire Line
 	3600 2750 3600 3050
 Wire Wire Line
 	3600 3050 2950 3050
-Text GLabel 6200 5450 2    39   BiDi ~ 0
-mxA16
 NoConn ~ 4400 3250
 NoConn ~ 4400 3350
 NoConn ~ 4400 3450
@@ -936,80 +701,11 @@ NoConn ~ 6200 2750
 NoConn ~ 4400 3150
 NoConn ~ 4400 3050
 NoConn ~ 4400 2950
-Text GLabel 6200 5550 2    39   BiDi ~ 0
-mxA17
-Text GLabel 6200 5650 2    39   BiDi ~ 0
-mxA18
-Text GLabel 6200 5950 2    39   BiDi ~ 0
-mPBISEL
-Text GLabel 6200 5350 2    39   BiDi ~ 0
-mxA15
-Text GLabel 6200 5250 2    39   BiDi ~ 0
-mxA14
-Text GLabel 7400 5750 2    39   BiDi ~ 0
-~mCHIP0
-Text GLabel 7400 5850 2    39   BiDi ~ 0
-~mCHIP1
-$Comp
-L R_Small R11
-U 1 1 5C5D7367
-P 6900 5500
-F 0 "R11" H 6930 5520 50  0000 L CNN
-F 1 "10K" H 6930 5460 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 6900 5500 50  0001 C CNN
-F 3 "" H 6900 5500 50  0001 C CNN
-	1    6900 5500
-	1    0    0    -1  
-$EndComp
-$Comp
-L R_Small R12
-U 1 1 5C5D73FE
-P 7150 5500
-F 0 "R12" H 7180 5520 50  0000 L CNN
-F 1 "10K" H 7180 5460 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 7150 5500 50  0001 C CNN
-F 3 "" H 7150 5500 50  0001 C CNN
-	1    7150 5500
-	1    0    0    -1  
-$EndComp
-Text GLabel 7400 5250 2    39   Input ~ 0
-VCC3V3
-Wire Wire Line
-	6200 5750 7400 5750
-Wire Wire Line
-	6200 5850 7400 5850
-Wire Wire Line
-	7400 5250 6900 5250
-Wire Wire Line
-	6900 5250 6900 5400
-Wire Wire Line
-	6900 5600 6900 5750
-Connection ~ 6900 5750
-Wire Wire Line
-	7150 5250 7150 5400
-Connection ~ 7150 5250
-Wire Wire Line
-	7150 5600 7150 5850
-Connection ~ 7150 5850
-Text GLabel 6900 6050 2    39   BiDi ~ 0
-mSPARE1
-Text GLabel 6900 6150 2    39   BiDi ~ 0
-mSPARE2
-Wire Wire Line
-	6200 6050 6900 6050
-Wire Wire Line
-	6200 6150 6900 6150
-Text GLabel 6200 3950 2    39   BiDi ~ 0
-~mD8XX-DFXX
 NoConn ~ 6200 1650
 NoConn ~ 6200 1550
 NoConn ~ 6200 1450
 NoConn ~ 6200 1350
 NoConn ~ 6200 1250
-Text GLabel 6200 4050 2    39   BiDi ~ 0
-~mIRQ
-Text GLabel 6200 4150 2    39   BiDi ~ 0
-~mREF
 $Comp
 L STM32F407VGTx U13
 U 1 1 5C61E27E
@@ -1021,4 +717,33 @@ F 3 "" H 5300 3650 50  0001 C CNN
 	1    5300 3650
 	1    0    0    -1  
 $EndComp
+NoConn ~ 6200 2250
+NoConn ~ 6200 2150
+NoConn ~ 6200 3250
+NoConn ~ 6200 3450
+NoConn ~ 6200 3550
+NoConn ~ 6200 3650
+NoConn ~ 6200 3750
+NoConn ~ 6200 3850
+NoConn ~ 6200 3950
+NoConn ~ 6200 4050
+NoConn ~ 6200 4150
+NoConn ~ 6200 4950
+NoConn ~ 6200 5250
+NoConn ~ 6200 5350
+NoConn ~ 6200 5450
+NoConn ~ 6200 5550
+NoConn ~ 6200 5650
+NoConn ~ 6200 5750
+NoConn ~ 6200 5850
+NoConn ~ 6200 5950
+NoConn ~ 6200 6050
+NoConn ~ 6200 6150
+Wire Wire Line
+	9950 3400 10300 3400
+Wire Wire Line
+	10300 3400 10300 3550
+Wire Wire Line
+	10100 3200 10100 3400
+Connection ~ 10100 3400
 $EndSCHEMATC
