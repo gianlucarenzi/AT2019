@@ -1,0 +1,50 @@
+# Makefile.common
+
+######################################
+# building variables
+######################################
+# debug build?
+DEBUG = 0
+# optimization
+#OPT = -Og
+OPT = -O2
+
+
+#######################################
+# paths
+#######################################
+# Build path
+BUILD_DIR = build
+
+######################################
+# Library sources
+######################################
+LIBRARY_C_SOURCES = \
+	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim.c \
+	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_tim_ex.c \
+	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_uart.c \
+	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc.c \
+	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_rcc_ex.c \
+	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash.c \
+	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ex.c \
+	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_flash_ramfunc.c \
+	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_gpio.c \
+	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma_ex.c \
+	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_dma.c \
+	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr.c \
+	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_pwr_ex.c \
+	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_cortex.c \
+	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal.c \
+	Drivers/STM32F4xx_HAL_Driver/Src/stm32f4xx_hal_exti.c \
+
+
+LIBRARY_C_INCLUDES = \
+	-IInc \
+	-IDrivers/STM32F4xx_HAL_Driver/Inc \
+	-IDrivers/STM32F4xx_HAL_Driver/Inc/Legacy \
+	-IDrivers/CMSIS/Device/ST/STM32F4xx/Include \
+	-IDrivers/CMSIS/Include \
+	-IDrivers/CMSIS/Include
+
+
+# End of Makefile.common
