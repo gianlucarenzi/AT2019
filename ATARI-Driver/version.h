@@ -1,1 +1,0 @@
-#define MEMSIZEK 512
