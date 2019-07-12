@@ -1,0 +1,1 @@
+reset && gcc -Wall -O2 main.c -o abexvideo `sdl-config --cflags --libs`
