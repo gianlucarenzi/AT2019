@@ -3,7 +3,6 @@ CL ?= cl65
 MACH ?= atari
 TARGET ?= megaram.sys
 EMULATOR ?= atari800
-MEMSIZEK ?= 512
 DISABLE_EXPANSION ?= no
 
 # Usually this software can run on emulator and using the -retrobit switch
@@ -20,7 +19,7 @@ else
 	EMUSWITCHES = -win-width 800 \
 	-win-height 600 \
 	-xlxe_rom ~/ATARI/ATARIXL.ROM \
-	-retrobit $(MEMSIZEK) \
+	-retrobit \
 	-scanlines 50 \
 	-scanlinesint \
 	$(TARGET)
@@ -36,7 +35,7 @@ ASM_SOURCES =
 all: $(TARGET)
 
 $(TARGET): memsize megaram.c
-	$(CL) -t $(MACH) $(C_SOURCES) $(ASM_SOURCES) -o $(TARGET)
+	$(CL) -Oi -t $(MACH) $(C_SOURCES) $(ASM_SOURCES) -o $(TARGET)
 
 # Build MEMSIZEK C variable
 memsize:

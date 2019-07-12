@@ -15,16 +15,20 @@
 #define PLP()	__asm__("plp")
 #define PHP()	__asm__("php")
 #define ArraySize(a)	(sizeof(a)/sizeof(a[0]))
+#define POKE(addr,val)     (*(unsigned char*) (addr) = (val))
+#define PEEK(addr)         (*(unsigned char*) (addr))
+#define peek(a)		PEEK(a)
+#define poke(a,b)	POKE(a,b)
 
-static unsigned char peek(unsigned char * addr)
-{
-	return *(addr);
-}
+//static unsigned char peek(unsigned char * addr)
+//{
+//	return *(addr);
+//}
 
-static void poke(unsigned char *addr, unsigned char val)
-{
-	*(addr) = val;
-}
+//static void poke(unsigned char *addr, unsigned char val)
+//{
+//	*(addr) = val;
+//}
 
 #define KB(a)	((a)*1024L)
 #define MB(a)	(KB(a)*1024L)
@@ -34,7 +38,12 @@ static void poke(unsigned char *addr, unsigned char val)
 	#define MEMORY_SIZE KB(MEMSIZEK)
 #endif
 
-static unsigned char memory_banks[MEMSIZEK];
+static void asm_delay(int l)
+{
+	int c;
+	for (c = 0; c < l; c++)
+		__asm__("nop");
+}
 
 int main(void)
 {
@@ -47,15 +56,12 @@ int main(void)
 	unsigned char * nmien = (unsigned char *) 0xD40E;
 	unsigned char * portb = (unsigned char *) 0xD301;
 	unsigned char * addr =  NULL;
-	unsigned char * bankctl = (unsigned char *) 0xD531;
-	unsigned char * banksel = (unsigned char *) 0xD530;
-
-	int numbanks = MEMSIZEK / 16;
-	int numbanks_good = 0;
+	unsigned int l;
+	unsigned char dat;
+	int count;
 
 	clrscr();
-	printf("Mega2/4 RAM Expansion Hardware\n");
-	printf("-- Max Numbanks: %d\n", numbanks);
+	printf("Atari XL/XE Hardware test\n");
 	/* 0xc000 - 0xcfff copy
 	 * 0xd800 - 0xffff copy
 	 */
@@ -87,48 +93,32 @@ int main(void)
 	osrom = (unsigned char *) (0xE000 + ('A' - 32) * 8);
 	for (reg = 0; reg < ArraySize(tab); reg++)
 		*(osrom + reg) = tab[reg];
-	/* Setcolor */
-	addr = (unsigned char *) 710;
-	poke(addr, peek(addr) - 1);
+	poke(710, peek(710)-2);
 
-	/* Enable expansion. If you enable bankswitching the on-board 16K
-	 * from 0x4000 - 0x7fff will be never used anymore */
-	poke (bankctl, 1);
-	printf("RAM EXPANSION Checking...\n");
+	printf("Accessing RetroBit Video Hardware\n");
 
-	srand(0xfeedf00d);
-	for (reg = 0; reg < numbanks; reg++)
-	{
-		unsigned char r;
-		r = (unsigned char) rand() & 0xff;
-		/* Select BANK */
-		poke (banksel, reg);
-		/* Write a byte at the same address of each bank */
-		memory_banks[reg] = r;
-		/* printf("WBANK    : %d - WR: 0x%02x\n", reg, r); */
-		poke (osram, memory_banks[reg]);
-	}
+	osrom = (unsigned char *) 0xD500;
+	m_portb = peek(559);
+	poke(559,0);
+	// No DMA here. So speed up to the max!
+	poke(0xd501, 0xff); // # of colors for background $D501
+	for (l = 0; l <= 0xff; l++)
+		poke(0xd502, colormap[l]); // $D501 autoincrement address for palette
 
-	/* Now read all data back */
-	for (reg = 0; reg < numbanks; reg++)
-	{
-		unsigned char rdb, rd;
-		/* Select BANK */
-		poke (banksel, reg);
-		rdb = peek(osram);
-		/* printf("RBANK    : %d - RD: 0x%02x\n", reg, rdb); */
-		if (rdb != memory_banks[reg])
-		{
-			printf("MEMORY ERROR! NEED: 0x%02x\n", memory_banks[reg]);
-			break;
-		}
-		numbanks_good++;
-	}
+	poke(0xd503, 0xff); // colormap for sprite $D503
+	for (l = 0; l <= 0xff; l++)
+		poke(0xd504, spritecolormap[l]); // $D504 autoincrement address for palette
 
-	if (numbanks_good > 0)
-		printf("%dK GOOD\n", numbanks_good * 16);
-	else
-		printf("NO MEMORY EXPANSION FOUND\n");
+	poke(0xd504, 64);   // sprite is 64x64
+	for (l = 0; l < 64; l++)
+		poke(0xd505, spritedata[l]);
+
+	int x = 100;
+	int y = 100;
+	poke(0xd506, x); // sprite position
+	poke(0xd507, y);
+
+	poke(559,m_portb);
 
 	printf("Done! Press any key to exit...\n");
 	c = cgetc();
