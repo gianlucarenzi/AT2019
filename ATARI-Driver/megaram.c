@@ -100,7 +100,14 @@ int main(void)
 	osrom = (unsigned char *) 0xD500;
 	m_portb = peek(559);
 	poke(559,0);
-	// No DMA here. So speed up to the max!
+
+	poke(0xd501, 0xff); // # of colors for background $D501
+	for (l = 0; l <= 0xff; l++) {
+		poke(0xd502, l); // $D501 autoincrement address for palette
+		printf("%02X\n", peek(0xd503));
+	}
+
+#if 0
 	poke(0xd501, 0xff); // # of colors for background $D501
 	for (l = 0; l <= 0xff; l++)
 		poke(0xd502, colormap[l]); // $D501 autoincrement address for palette
@@ -117,6 +124,7 @@ int main(void)
 	int y = 100;
 	poke(0xd506, x); // sprite position
 	poke(0xd507, y);
+#endif
 
 	poke(559,m_portb);
 

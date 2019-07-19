@@ -1,0 +1,131 @@
+# We have two channels
+# ONE from MCU to VIDEO CARD
+# and from VIDEO CARD to MCU
+
+VDPCONTROL 0xD500
+----------
+
+bit 7: (READ) 
+       High VIDEO CARD BURST READY
+       Low  VIDEO CARD BURST BUSY (the MCU must wait)
+
+bit 6: (WRITE)
+       High START BURST SESSION
+       Low BURST SESSION IDLE (of 224 data $E0) From $D520 up to $D5FF
+
+bit 0-5:
+       000000 (0) SPRITE #0
+       000001 (1) SPRITE #1
+       000010 (2) SPRITE #2
+       ......
+       011111 (31) SPRITE #31
+       100000 (32) UNUSED
+       100001 ...
+       ...... ...
+       111101 (61) UNUSED
+       111110 (62) BACKGROUND COLORMAP
+       111111 (63) BACKGROUND BITMAP
+
+VDPBURSTSIZE 0xD501
+------------
+
+00000000 = $00 224 ($E0) burst
+........
+11011111 = $DF (223) Remaining BURST
+
+VDPFILLBACKGROUND 0xD502
+-----------------
+
+Fill the background with the corrispondent color...
+
+VDPSETCOLORKEY_R 0xD503
+----------------
+
+VDPSETCOLORKEY_G 0xD504
+----------------
+
+VDPSETCOLORKEY_B 0xD505
+----------------
+
+
+/**
+ * Code Example
+ * ------------
+ *
+ * Black Background
+ * an animated sprite (4 frames) moving in the screen...
+ *
+
+#define BURSTSIZE 0xE0
+
+static uint8_t colormap[256][3] = {
+	{0x00, 0x00, 0x00},
+	{0xff, 0xea, 0x0f},
+	....
+	....
+}; 
+
+#define KEY_R 0xff
+#define KEY_G 0x00
+#define KEY_B 0xff
+
+static void do_burst(uint16_t size, uint8_t *data)
+{
+	// Wait for ready
+	while (!(peek(0xd500) & 0x80))
+		;
+
+	uint8_t burstno = size / BURSTSIZE;
+	uint8_t rembusrt = size - (burstno * BURSTSIZE);
+	// Pointer of 
+	uint8_t *ptr = data;
+
+	poke(0xd501, BURSTSIZE); // 224 bytes/burst
+	for (i = 0; i < burstno; i++)
+	{
+		memcpy(0xd500 + 0x20, ptr, BURSTSIZE);
+		poke(0xd500, 1 << 6); // start burst
+		// Wait end of the burst
+		while (!(peek(0xd500) & 0x80))
+			;
+		ptr += BURSTSIZE;
+	}
+
+	if (remburst > 0)
+	{
+		poke(0xd501, remburst);
+		memcpy(0xd500 + 0x20, ptr, remburst);
+		poke(0xd500, 1 << 6); // start burst
+		// Wait end of the burst
+		while (!(peek(0xd500) & 0x80))
+			;
+	}
+}
+
+static void load_colormap(uint8_t *cmap)
+{
+	//select colormap register
+	poke(0xd500, 62); // background colormap
+	do_burst( 256 * 3, cmap ); // 256 RGB 24bit colors
+}
+
+static void load_bitmap(uint8_t *bitmap, uint16_t size)
+{
+	//select background register
+	poke(0xd500, 63); // background bitmap
+	do_burst( size, bitmap );
+}
+
+static void load_sprite(uint8_t index, uint8_t *bitmap, uint16_t size)
+{
+
+#define MAX_SPRITE_SIZE (32 * 32)
+
+	uint8_t sprite_size = size > MAX_SPRITE_SIZE ? MAX_SPRITE_SIZE : size;
+	uint8_t idx = index > 32 ? 32 : index;
+	if (idx == 0)
+		return; // Bad sprite index (must be 1...32)
+	idx--;
+	poke(0xd500, idx); // Select sprite #
+	do_burst( sprite_size, bitmap );
+}
