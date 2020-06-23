@@ -11,6 +11,7 @@
 #include <6502.h>
 #include <stdlib.h>
 #include "version.h"
+#include "c64.h"
 
 #define PLP()	__asm__("plp")
 #define PHP()	__asm__("php")
@@ -20,16 +21,6 @@
 #define peek(a)		PEEK(a)
 #define poke(a,b)	POKE(a,b)
 
-//static unsigned char peek(unsigned char * addr)
-//{
-//	return *(addr);
-//}
-
-//static void poke(unsigned char *addr, unsigned char val)
-//{
-//	*(addr) = val;
-//}
-
 #define KB(a)	((a)*1024L)
 #define MB(a)	(KB(a)*1024L)
 #ifndef MEMSIZEK
@@ -38,11 +29,30 @@
 	#define MEMORY_SIZE KB(MEMSIZEK)
 #endif
 
+static int nmien_reg = 0;
+static unsigned char * nmien = (unsigned char *) 0xD40E;
+#define ENTER_CRITICAL() \
+	PHP(); \
+	SEI(); \
+	nmien_reg = peek(nmien); \
+	poke(nmien, 0);
+
+#define EXIT_CRITICAL() \
+	poke(nmien, nmien_reg); \
+	PLP();
+
 static void asm_delay(int l)
 {
 	int c;
 	for (c = 0; c < l; c++)
 		__asm__("nop");
+}
+
+static void delay(int l)
+{
+	int c;
+	for (c = 0; c < l; c++)
+		asm_delay(255);
 }
 
 int main(void)
@@ -53,15 +63,15 @@ int main(void)
 	int tab[] = { 0x00, 0x018, 0x3C, 0x66, 0x7E, 0x66, 0x66, 0x00 };
 	unsigned char * osram = (unsigned char *) 0x4000;
 	unsigned char * osrom = (unsigned char *) 0xC000;
-	unsigned char * nmien = (unsigned char *) 0xD40E;
 	unsigned char * portb = (unsigned char *) 0xD301;
 	unsigned char * addr =  NULL;
 	unsigned int l;
 	unsigned char dat;
 	int count;
+	unsigned int cc;
 
+	srand(0xdeadbeef);
 	clrscr();
-	printf("Atari XL/XE Hardware test\n");
 	/* 0xc000 - 0xcfff copy
 	 * 0xd800 - 0xffff copy
 	 */
@@ -69,10 +79,7 @@ int main(void)
 	osrom = (unsigned char *) 0xD800;
 	memcpy(osram + 0x1000, osrom, 0x2800); /* 0xd800 - 0xffff */
 
-	PHP();             /* save processor status */
-	SEI();             /* disable IRQs */
-	reg = peek(nmien);
-	poke(nmien, 0);    /* disable NMIs */
+	ENTER_CRITICAL();
 
 	m_portb = peek(portb);
 	m_portb = m_portb & 0xFE;  /* turn off ROMs */
@@ -86,50 +93,36 @@ int main(void)
 	osrom = (unsigned char *) 0xD800;
 	memcpy(osrom, osram + 0x1000, 0x2800);
 
-	poke(nmien, reg); /* re-enalbe NMIs */
-	PLP();            /* restore processor status */
+	// chars from 32 to 63 '@ABC...[\]^_
+	osrom = (unsigned char *) (0xE000 + ('@' - 32) * 8);
+	count = 32;
+	for (reg = 0; reg < (count * 8); reg++)
+		*(osrom + reg) = c64_font[reg];
 
-	/* Change the 'A' and the background color to a darker one... */
-	osrom = (unsigned char *) (0xE000 + ('A' - 32) * 8);
-	for (reg = 0; reg < ArraySize(tab); reg++)
-		*(osrom + reg) = tab[reg];
-	poke(710, peek(710)-2);
+	// chars from 0 to 31 ' !"#...
+	osrom = (unsigned char *) 0xE000;
+	for (reg = 0; reg < (count * 8); reg++)
+		*(osrom + reg) = c64_font[reg + (32 * 8)];
 
-	printf("Accessing RetroBit Video Hardware\n");
+	// chars from 64 to 95...
+	osrom = (unsigned char *) (0xE000 + (64 * 8));
+	for (reg = 0; reg < (count * 8); reg++)
+		*(osrom + reg) = c64_font[reg + (64 * 8)];
 
-	osrom = (unsigned char *) 0xD500;
-	m_portb = peek(559);
-	poke(559,0);
+	poke(709, 14);
+	poke(712, 110);
+	poke(710, 120);
 
-	poke(0xd501, 0xff); // # of colors for background $D501
-	for (l = 0; l <= 0xff; l++) {
-		poke(0xd502, l); // $D501 autoincrement address for palette
-		printf("%02X\n", peek(0xd503));
-	}
+	EXIT_CRITICAL();
 
-#if 0
-	poke(0xd501, 0xff); // # of colors for background $D501
-	for (l = 0; l <= 0xff; l++)
-		poke(0xd502, colormap[l]); // $D501 autoincrement address for palette
-
-	poke(0xd503, 0xff); // colormap for sprite $D503
-	for (l = 0; l <= 0xff; l++)
-		poke(0xd504, spritecolormap[l]); // $D504 autoincrement address for palette
-
-	poke(0xd504, 64);   // sprite is 64x64
-	for (l = 0; l < 64; l++)
-		poke(0xd505, spritedata[l]);
-
-	int x = 100;
-	int y = 100;
-	poke(0xd506, x); // sprite position
-	poke(0xd507, y);
-#endif
-
-	poke(559,m_portb);
-
-	printf("Done! Press any key to exit...\n");
+	printf("\n    **** COMMODORE 64 BASIC V2 ****\n\n");
+	printf(" 64K RAM SYSTEM  38911 BASIC BYTES FREE\n\n");
+	printf("READY.\n");
+	printf("LOAD\"$\",8\n");
+	printf("\nSEARCHING FOR $\nLOADING\n");
+	printf("\nREADY.\nRUN\n");
+	delay(100);
+	for (;;) poke((unsigned char *) 0xD01A, rand());
 	c = cgetc();
-
 	return(0);
 }
