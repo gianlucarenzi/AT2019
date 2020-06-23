@@ -1,199 +1,6 @@
-EESchema Schematic File Version 2
-LIBS:MCU_STC
-LIBS:Timer_RTC
-LIBS:Relay_SolidState
-LIBS:Relay
-LIBS:RF_AM_FM
-LIBS:Memory_Flash
-LIBS:MCU_Module
-LIBS:74xx
-LIBS:Transistor_FET
-LIBS:Regulator_Switching
-LIBS:Logic_LevelTranslator
-LIBS:Isolator
-LIBS:Interface
-LIBS:Converter_ACDC
-LIBS:Battery_Management
-LIBS:Amplifier_Operational
-LIBS:RF_Module
-LIBS:Interface_HDMI
-LIBS:power
-LIBS:Sensor_Temperature
-LIBS:Timer_PLL
-LIBS:Sensor_Pressure
-LIBS:Sensor_Motion
-LIBS:Oscillator
-LIBS:MCU_Microchip_SAME
-LIBS:MCU_Microchip_SAMD
-LIBS:Interface_Expansion
-LIBS:Interface_Ethernet
-LIBS:Interface_CAN_LIN
-LIBS:Amplifier_Difference
-LIBS:Sensor_Magnetic
-LIBS:Power_Management
-LIBS:Memory_RAM
-LIBS:MCU_Microchip_PIC18
-LIBS:Interface_USB
-LIBS:Audio
-LIBS:Analog_Switch
-LIBS:Amplifier_Current
-LIBS:Regulator_Linear
-LIBS:Device
-LIBS:Analog_ADC
-LIBS:MCU_Microchip_PIC16
-LIBS:Connector
-LIBS:Power_Protection
-LIBS:Jumper
-LIBS:Diode
-LIBS:Switch
-LIBS:Sensor_Current
-LIBS:Sensor
-LIBS:Regulator_Controller
-LIBS:Driver_FET
-LIBS:Amplifier_Audio
-LIBS:RF_Filter
-LIBS:Driver_Haptic
-LIBS:RF_GSM
-LIBS:Filter
-LIBS:Converter_DCDC
-LIBS:Analog
-LIBS:RF_GPS
-LIBS:Driver_Motor
-LIBS:Driver_LED
-LIBS:Sensor_Optical
-LIBS:RF
-LIBS:Power_Supervisor
-LIBS:LED
-LIBS:Simulation_SPICE
-LIBS:CPU_NXP_IMX
-LIBS:Sensor_Touch
-LIBS:Memory_UniqueID
-LIBS:Display_Character
-LIBS:Mechanical
-LIBS:MCU_Microchip_ATmega
-LIBS:Comparator
-LIBS:Memory_EEPROM
-LIBS:RF_Switch
-LIBS:Transformer
-LIBS:Timer
-LIBS:RF_Amplifier
-LIBS:Sensor_Humidity
-LIBS:MCU_Texas_MSP430
-LIBS:MCU_Texas
-LIBS:DSP_AnalogDevices
-LIBS:74xGxx
-LIBS:Reference_Voltage
-LIBS:Sensor_Proximity
-LIBS:RF_Mixer
-LIBS:MCU_ST_STM8
-LIBS:Interface_Telecom
-LIBS:CPU
-LIBS:4xxx_IEEE
-LIBS:FPGA_Lattice
-LIBS:Analog_DAC
-LIBS:Interface_UART
-LIBS:4xxx
-LIBS:MCU_Microchip_ATtiny
-LIBS:Sensor_Audio
-LIBS:MCU_Cypress
-LIBS:MCU_SiFive
-LIBS:MCU_Nordic
-LIBS:MCU_NXP_Kinetis
-LIBS:Driver_Display
-LIBS:MCU_NXP_S08
-LIBS:Valve
-LIBS:Triac_Thyristor
-LIBS:Transistor_IGBT
-LIBS:Regulator_SwitchedCapacitor
-LIBS:Fiber_Optic
-LIBS:Diode_Laser
-LIBS:Reference_Current
-LIBS:Transistor_BJT
-LIBS:Memory_NVRAM
-LIBS:MCU_NXP_LPC
-LIBS:74xx_IEEE
-LIBS:pspice
-LIBS:Video
-LIBS:Transistor_Array
-LIBS:Sensor_Voltage
-LIBS:Sensor_Gas
-LIBS:Security
-LIBS:Regulator_Current
-LIBS:RF_ZigBee
-LIBS:RF_WiFi
-LIBS:RF_RFID
-LIBS:RF_Bluetooth
-LIBS:Potentiometer_Digital
-LIBS:Motor
-LIBS:Memory_ROM
-LIBS:Memory_EPROM
-LIBS:MCU_SiliconLabs
-LIBS:MCU_ST_STM32L4
-LIBS:MCU_ST_STM32L4+
-LIBS:MCU_ST_STM32L1
-LIBS:MCU_ST_STM32L0
-LIBS:MCU_ST_STM32H7
-LIBS:MCU_ST_STM32F7
-LIBS:MCU_ST_STM32F4
-LIBS:MCU_ST_STM32F3
-LIBS:MCU_ST_STM32F2
-LIBS:MCU_ST_STM32F1
-LIBS:MCU_ST_STM32F0
-LIBS:MCU_Parallax
-LIBS:MCU_NXP_MCore
-LIBS:MCU_NXP_MAC7100
-LIBS:MCU_NXP_HCS12
-LIBS:MCU_NXP_HC12
-LIBS:MCU_NXP_HC11
-LIBS:MCU_NXP_ColdFire
-LIBS:MCU_Microchip_SAML
-LIBS:MCU_Microchip_PIC32
-LIBS:MCU_Microchip_PIC24
-LIBS:MCU_Microchip_PIC12
-LIBS:MCU_Microchip_PIC10
-LIBS:MCU_Microchip_AVR
-LIBS:MCU_Microchip_8051
-LIBS:MCU_Intel
-LIBS:MCU_Espressif
-LIBS:MCU_AnalogDevices
-LIBS:Logic_Programmable
-LIBS:Isolator_Analog
-LIBS:Interface_Optical
-LIBS:Interface_LineDriver
-LIBS:Interface_HID
-LIBS:Interface_CurrentLoop
-LIBS:Graphic
-LIBS:GPU
-LIBS:FPGA_Xilinx_Virtex7
-LIBS:FPGA_Xilinx_Virtex6
-LIBS:FPGA_Xilinx_Virtex5
-LIBS:FPGA_Xilinx_Spartan6
-LIBS:FPGA_Xilinx_Kintex7
-LIBS:FPGA_Xilinx_Artix7
-LIBS:FPGA_Xilinx
-LIBS:FPGA_Microsemi
-LIBS:Driver_Relay
-LIBS:Display_Graphic
-LIBS:Diode_Bridge
-LIBS:DSP_Texas
-LIBS:DSP_Motorola
-LIBS:DSP_Microchip_DSPIC33
-LIBS:DSP_Freescale
-LIBS:Connector_Generic_Shielded
-LIBS:Connector_Generic_MountingPin
-LIBS:Connector_Generic
-LIBS:CPU_PowerPC
-LIBS:CPU_NXP_68000
-LIBS:CPU_NXP_6800
-LIBS:CPLD_Xilinx
-LIBS:CPLD_Altera
-LIBS:Amplifier_Video
-LIBS:Amplifier_Instrumentation
-LIBS:Amplifier_Buffer
-LIBS:ft232rl
-LIBS:AmigaComponents
+EESchema Schematic File Version 4
 LIBS:atari23MTS_Upgrade-cache
-EELAYER 25 0
+EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -208,7 +15,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L ATARICARTRIDGE CART2
+L AmigaComponents:ATARICARTRIDGE CART2
 U 1 1 5C2FF23F
 P 1850 2200
 F 0 "CART2" H 2300 3050 50  0000 C CNN
@@ -219,7 +26,7 @@ F 3 "" H 1850 2200 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L ECIBUS ECI2
+L AmigaComponents:ECIBUS ECI2
 U 1 1 5C2FF2C0
 P 4950 2250
 F 0 "ECI2" H 5400 2700 50  0000 C CNN
@@ -320,12 +127,12 @@ Text GLabel 4050 2000 0    39   BiDi ~ 0
 Text Notes 700  1050 0    59   ~ 12
 EXPANSION BUS PASS THRU
 $Comp
-L 74LVC2G74 U12
+L 74xGxx1:74LVC2G74 U12
 U 1 1 5C5D431D
 P 9750 3950
 F 0 "U12" H 9650 4150 50  0000 C CNN
 F 1 "74LVC2G74" H 9950 3750 50  0000 C CNN
-F 2 "Housings_SSOP:TSSOP-8_3x3mm_Pitch0.65mm" H 9750 3950 50  0001 C CNN
+F 2 "Package_SO:TSSOP-8_3x3mm_P0.65mm" H 9750 3950 50  0001 C CNN
 F 3 "" H 9750 3950 50  0001 C CNN
 	1    9750 3950
 	1    0    0    -1  
@@ -355,12 +162,12 @@ mD6
 Text GLabel 7000 2750 0    39   BiDi ~ 8
 mD7
 $Comp
-L 74LVC2G32 U10
+L 74xGxx1:74LVC2G32 U10
 U 1 1 5C5D66FE
 P 8650 5250
 F 0 "U10" H 8550 5400 50  0000 C CNN
 F 1 "74LVC2G32" H 8650 5100 50  0000 C CNN
-F 2 "Housings_SSOP:TSSOP-8_3x3mm_Pitch0.65mm" H 8650 5250 50  0001 C CNN
+F 2 "Package_SO:TSSOP-8_3x3mm_P0.65mm" H 8650 5250 50  0001 C CNN
 F 3 "" H 8650 5250 50  0001 C CNN
 	1    8650 5250
 	-1   0    0    1   
@@ -377,23 +184,23 @@ PBIDEV
 Text GLabel 8300 3900 0    39   BiDi ~ 0
 PBIDEV
 $Comp
-L 74LVC2G08 U11
+L 74xGxx1:74LVC2G08 U11
 U 1 1 5C5E39BC
 P 8850 3850
 F 0 "U11" H 8750 4000 50  0000 C CNN
 F 1 "74LVC2G08" H 8850 3700 50  0000 C CNN
-F 2 "Housings_SSOP:TSSOP-8_3x3mm_Pitch0.65mm" H 8850 3850 50  0001 C CNN
+F 2 "Package_SO:TSSOP-8_3x3mm_P0.65mm" H 8850 3850 50  0001 C CNN
 F 3 "" H 8850 3850 50  0001 C CNN
 	1    8850 3850
 	1    0    0    -1  
 $EndComp
 $Comp
-L 74LVC2G08 U11
+L 74xGxx1:74LVC2G08 U11
 U 2 1 5C5E3CD3
 P 8850 4300
 F 0 "U11" H 8750 4450 50  0000 C CNN
 F 1 "74LVC2G08" H 8850 4150 50  0000 C CNN
-F 2 "Housings_SSOP:TSSOP-8_3x3mm_Pitch0.65mm" H 8850 4300 50  0001 C CNN
+F 2 "Package_SO:TSSOP-8_3x3mm_P0.65mm" H 8850 4300 50  0001 C CNN
 F 3 "" H 8850 4300 50  0001 C CNN
 	2    8850 4300
 	1    0    0    -1  
@@ -403,12 +210,12 @@ mPBISEL will go high when accessing $D1FF
 Text GLabel 8550 4350 0    39   BiDi ~ 0
 mPBISEL
 $Comp
-L 74HCT04 U9
+L 74xx1:74HCT04 U9
 U 1 1 5C5E40DA
 P 7350 4050
 F 0 "U9" H 7350 4100 50  0000 C CNN
 F 1 "74HCT04" H 7350 4000 50  0000 C CNN
-F 2 "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm" H 7350 4050 50  0001 C CNN
+F 2 "Package_SO:SSOP-14_5.3x6.2mm_P0.65mm" H 7350 4050 50  0001 C CNN
 F 3 "" H 7350 4050 50  0001 C CNN
 	1    7350 4050
 	1    0    0    -1  
@@ -418,73 +225,73 @@ mW/~R
 Text Notes 6900 4600 0    59   ~ 12
 LATCH CLOCK will be enable only when WRITING
 $Comp
-L 74HCT04 U9
+L 74xx1:74HCT04 U9
 U 2 1 5C5E4378
 P 2800 4750
 F 0 "U9" H 2800 4800 50  0000 C CNN
 F 1 "74HCT04" H 2800 4700 50  0000 C CNN
-F 2 "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm" H 2800 4750 50  0001 C CNN
+F 2 "Package_SO:SSOP-14_5.3x6.2mm_P0.65mm" H 2800 4750 50  0001 C CNN
 F 3 "" H 2800 4750 50  0001 C CNN
 	2    2800 4750
 	1    0    0    -1  
 $EndComp
 $Comp
-L 74HCT04 U9
+L 74xx1:74HCT04 U9
 U 3 1 5C5E43E6
 P 5900 4500
 F 0 "U9" H 5900 4550 50  0000 C CNN
 F 1 "74HCT04" H 5900 4450 50  0000 C CNN
-F 2 "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm" H 5900 4500 50  0001 C CNN
+F 2 "Package_SO:SSOP-14_5.3x6.2mm_P0.65mm" H 5900 4500 50  0001 C CNN
 F 3 "" H 5900 4500 50  0001 C CNN
 	3    5900 4500
 	1    0    0    -1  
 $EndComp
 $Comp
-L 74HCT04 U9
+L 74xx1:74HCT04 U9
 U 4 1 5C5E4437
 P 5900 4950
 F 0 "U9" H 5900 5000 50  0000 C CNN
 F 1 "74HCT04" H 5900 4900 50  0000 C CNN
-F 2 "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm" H 5900 4950 50  0001 C CNN
+F 2 "Package_SO:SSOP-14_5.3x6.2mm_P0.65mm" H 5900 4950 50  0001 C CNN
 F 3 "" H 5900 4950 50  0001 C CNN
 	4    5900 4950
 	1    0    0    -1  
 $EndComp
 $Comp
-L 74HCT04 U9
+L 74xx1:74HCT04 U9
 U 5 1 5C5E44D6
 P 5100 4050
 F 0 "U9" H 5100 4100 50  0000 C CNN
 F 1 "74HCT04" H 5100 4000 50  0000 C CNN
-F 2 "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm" H 5100 4050 50  0001 C CNN
+F 2 "Package_SO:SSOP-14_5.3x6.2mm_P0.65mm" H 5100 4050 50  0001 C CNN
 F 3 "" H 5100 4050 50  0001 C CNN
 	5    5100 4050
 	1    0    0    -1  
 $EndComp
 $Comp
-L 74HCT04 U9
+L 74xx1:74HCT04 U9
 U 6 1 5C5E455B
 P 5100 4500
 F 0 "U9" H 5100 4550 50  0000 C CNN
 F 1 "74HCT04" H 5100 4450 50  0000 C CNN
-F 2 "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm" H 5100 4500 50  0001 C CNN
+F 2 "Package_SO:SSOP-14_5.3x6.2mm_P0.65mm" H 5100 4500 50  0001 C CNN
 F 3 "" H 5100 4500 50  0001 C CNN
 	6    5100 4500
 	1    0    0    -1  
 $EndComp
 $Comp
-L 74HCT04 U9
+L 74xx1:74HCT04 U9
 U 7 1 5C5E4621
 P 4800 5500
 F 0 "U9" H 4800 5550 50  0000 C CNN
 F 1 "74HCT04" H 4800 5450 50  0000 C CNN
-F 2 "Housings_SSOP:SSOP-14_5.3x6.2mm_Pitch0.65mm" H 4800 5500 50  0001 C CNN
+F 2 "Package_SO:SSOP-14_5.3x6.2mm_P0.65mm" H 4800 5500 50  0001 C CNN
 F 3 "" H 4800 5500 50  0001 C CNN
 	7    4800 5500
 	-1   0    0    1   
 $EndComp
 $Comp
-L GND #PWR037
+L power1:GND #PWR037
 U 1 1 5C5E4A20
 P 4550 4500
 F 0 "#PWR037" H 4550 4250 50  0001 C CNN
@@ -513,89 +320,105 @@ Text GLabel 3100 4750 2    39   BiDi ~ 0
 Text Notes 2450 5050 0    39   ~ 8
 RAM CHIP SELECT 0-1
 $Comp
-L CONN_01X02 P7
+L atari23MTS_Upgrade-rescue:CONN_01X02 P7
 U 1 1 5CA88462
 P 7650 1850
+AR Path="/5CA88462" Ref="P7"  Part="1" 
+AR Path="/5C2FF215/5CA88462" Ref="P7"  Part="1" 
 F 0 "P7" H 7650 2000 50  0000 C CNN
 F 1 "CONN_01X02" V 7750 1850 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 7650 1850 50  0000 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 7650 1850 50  0000 C CNN
 F 3 "" H 7650 1850 50  0000 C CNN
 	1    7650 1850
 	0    -1   -1   0   
 $EndComp
 $Comp
-L CONN_01X02 P8
+L atari23MTS_Upgrade-rescue:CONN_01X02 P8
 U 1 1 5CA884BD
 P 7900 1950
+AR Path="/5CA884BD" Ref="P8"  Part="1" 
+AR Path="/5C2FF215/5CA884BD" Ref="P8"  Part="1" 
 F 0 "P8" H 7900 2100 50  0000 C CNN
 F 1 "CONN_01X02" V 8000 1950 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 7900 1950 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 7900 1950 50  0001 C CNN
 F 3 "" H 7900 1950 50  0000 C CNN
 	1    7900 1950
 	0    -1   -1   0   
 $EndComp
 $Comp
-L CONN_01X02 P9
+L atari23MTS_Upgrade-rescue:CONN_01X02 P9
 U 1 1 5CA88508
 P 8150 2050
+AR Path="/5CA88508" Ref="P9"  Part="1" 
+AR Path="/5C2FF215/5CA88508" Ref="P9"  Part="1" 
 F 0 "P9" H 8150 2200 50  0000 C CNN
 F 1 "CONN_01X02" V 8250 2050 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 8150 2050 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 8150 2050 50  0001 C CNN
 F 3 "" H 8150 2050 50  0000 C CNN
 	1    8150 2050
 	0    -1   -1   0   
 $EndComp
 $Comp
-L CONN_01X02 P10
+L atari23MTS_Upgrade-rescue:CONN_01X02 P10
 U 1 1 5CA8867E
 P 8400 2150
+AR Path="/5CA8867E" Ref="P10"  Part="1" 
+AR Path="/5C2FF215/5CA8867E" Ref="P10"  Part="1" 
 F 0 "P10" H 8400 2300 50  0000 C CNN
 F 1 "CONN_01X02" V 8500 2150 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 8400 2150 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 8400 2150 50  0001 C CNN
 F 3 "" H 8400 2150 50  0000 C CNN
 	1    8400 2150
 	0    -1   -1   0   
 $EndComp
 $Comp
-L CONN_01X02 P11
+L atari23MTS_Upgrade-rescue:CONN_01X02 P11
 U 1 1 5CA886CB
 P 8650 2250
+AR Path="/5CA886CB" Ref="P11"  Part="1" 
+AR Path="/5C2FF215/5CA886CB" Ref="P11"  Part="1" 
 F 0 "P11" H 8650 2400 50  0000 C CNN
 F 1 "CONN_01X02" V 8750 2250 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 8650 2250 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 8650 2250 50  0001 C CNN
 F 3 "" H 8650 2250 50  0000 C CNN
 	1    8650 2250
 	0    -1   -1   0   
 $EndComp
 $Comp
-L CONN_01X02 P12
+L atari23MTS_Upgrade-rescue:CONN_01X02 P12
 U 1 1 5CA88715
 P 8900 2350
+AR Path="/5CA88715" Ref="P12"  Part="1" 
+AR Path="/5C2FF215/5CA88715" Ref="P12"  Part="1" 
 F 0 "P12" H 8900 2500 50  0000 C CNN
 F 1 "CONN_01X02" V 9000 2350 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 8900 2350 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 8900 2350 50  0001 C CNN
 F 3 "" H 8900 2350 50  0000 C CNN
 	1    8900 2350
 	0    -1   -1   0   
 $EndComp
 $Comp
-L CONN_01X02 P13
+L atari23MTS_Upgrade-rescue:CONN_01X02 P13
 U 1 1 5CA88770
 P 9150 2450
+AR Path="/5CA88770" Ref="P13"  Part="1" 
+AR Path="/5C2FF215/5CA88770" Ref="P13"  Part="1" 
 F 0 "P13" H 9150 2600 50  0000 C CNN
 F 1 "CONN_01X02" V 9250 2450 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 9150 2450 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 9150 2450 50  0001 C CNN
 F 3 "" H 9150 2450 50  0000 C CNN
 	1    9150 2450
 	0    -1   -1   0   
 $EndComp
 $Comp
-L CONN_01X02 P14
+L atari23MTS_Upgrade-rescue:CONN_01X02 P14
 U 1 1 5CA887C4
 P 9400 2550
+AR Path="/5CA887C4" Ref="P14"  Part="1" 
+AR Path="/5C2FF215/5CA887C4" Ref="P14"  Part="1" 
 F 0 "P14" H 9400 2700 50  0000 C CNN
 F 1 "CONN_01X02" V 9500 2550 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 9400 2550 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 9400 2550 50  0001 C CNN
 F 3 "" H 9400 2550 50  0000 C CNN
 	1    9400 2550
 	0    -1   -1   0   

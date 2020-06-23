@@ -1,199 +1,6 @@
-EESchema Schematic File Version 2
-LIBS:MCU_STC
-LIBS:Timer_RTC
-LIBS:Relay_SolidState
-LIBS:Relay
-LIBS:RF_AM_FM
-LIBS:Memory_Flash
-LIBS:MCU_Module
-LIBS:74xx
-LIBS:Transistor_FET
-LIBS:Regulator_Switching
-LIBS:Logic_LevelTranslator
-LIBS:Isolator
-LIBS:Interface
-LIBS:Converter_ACDC
-LIBS:Battery_Management
-LIBS:Amplifier_Operational
-LIBS:RF_Module
-LIBS:Interface_HDMI
-LIBS:power
-LIBS:Sensor_Temperature
-LIBS:Timer_PLL
-LIBS:Sensor_Pressure
-LIBS:Sensor_Motion
-LIBS:Oscillator
-LIBS:MCU_Microchip_SAME
-LIBS:MCU_Microchip_SAMD
-LIBS:Interface_Expansion
-LIBS:Interface_Ethernet
-LIBS:Interface_CAN_LIN
-LIBS:Amplifier_Difference
-LIBS:Sensor_Magnetic
-LIBS:Power_Management
-LIBS:Memory_RAM
-LIBS:MCU_Microchip_PIC18
-LIBS:Interface_USB
-LIBS:Audio
-LIBS:Analog_Switch
-LIBS:Amplifier_Current
-LIBS:Regulator_Linear
-LIBS:Device
-LIBS:Analog_ADC
-LIBS:MCU_Microchip_PIC16
-LIBS:Connector
-LIBS:Power_Protection
-LIBS:Jumper
-LIBS:Diode
-LIBS:Switch
-LIBS:Sensor_Current
-LIBS:Sensor
-LIBS:Regulator_Controller
-LIBS:Driver_FET
-LIBS:Amplifier_Audio
-LIBS:RF_Filter
-LIBS:Driver_Haptic
-LIBS:RF_GSM
-LIBS:Filter
-LIBS:Converter_DCDC
-LIBS:Analog
-LIBS:RF_GPS
-LIBS:Driver_Motor
-LIBS:Driver_LED
-LIBS:Sensor_Optical
-LIBS:RF
-LIBS:Power_Supervisor
-LIBS:LED
-LIBS:Simulation_SPICE
-LIBS:CPU_NXP_IMX
-LIBS:Sensor_Touch
-LIBS:Memory_UniqueID
-LIBS:Display_Character
-LIBS:Mechanical
-LIBS:MCU_Microchip_ATmega
-LIBS:Comparator
-LIBS:Memory_EEPROM
-LIBS:RF_Switch
-LIBS:Transformer
-LIBS:Timer
-LIBS:RF_Amplifier
-LIBS:Sensor_Humidity
-LIBS:MCU_Texas_MSP430
-LIBS:MCU_Texas
-LIBS:DSP_AnalogDevices
-LIBS:74xGxx
-LIBS:Reference_Voltage
-LIBS:Sensor_Proximity
-LIBS:RF_Mixer
-LIBS:MCU_ST_STM8
-LIBS:Interface_Telecom
-LIBS:CPU
-LIBS:4xxx_IEEE
-LIBS:FPGA_Lattice
-LIBS:Analog_DAC
-LIBS:Interface_UART
-LIBS:4xxx
-LIBS:MCU_Microchip_ATtiny
-LIBS:Sensor_Audio
-LIBS:MCU_Cypress
-LIBS:MCU_SiFive
-LIBS:MCU_Nordic
-LIBS:MCU_NXP_Kinetis
-LIBS:Driver_Display
-LIBS:MCU_NXP_S08
-LIBS:Valve
-LIBS:Triac_Thyristor
-LIBS:Transistor_IGBT
-LIBS:Regulator_SwitchedCapacitor
-LIBS:Fiber_Optic
-LIBS:Diode_Laser
-LIBS:Reference_Current
-LIBS:Transistor_BJT
-LIBS:Memory_NVRAM
-LIBS:MCU_NXP_LPC
-LIBS:74xx_IEEE
-LIBS:pspice
-LIBS:Video
-LIBS:Transistor_Array
-LIBS:Sensor_Voltage
-LIBS:Sensor_Gas
-LIBS:Security
-LIBS:Regulator_Current
-LIBS:RF_ZigBee
-LIBS:RF_WiFi
-LIBS:RF_RFID
-LIBS:RF_Bluetooth
-LIBS:Potentiometer_Digital
-LIBS:Motor
-LIBS:Memory_ROM
-LIBS:Memory_EPROM
-LIBS:MCU_SiliconLabs
-LIBS:MCU_ST_STM32L4
-LIBS:MCU_ST_STM32L4+
-LIBS:MCU_ST_STM32L1
-LIBS:MCU_ST_STM32L0
-LIBS:MCU_ST_STM32H7
-LIBS:MCU_ST_STM32F7
-LIBS:MCU_ST_STM32F4
-LIBS:MCU_ST_STM32F3
-LIBS:MCU_ST_STM32F2
-LIBS:MCU_ST_STM32F1
-LIBS:MCU_ST_STM32F0
-LIBS:MCU_Parallax
-LIBS:MCU_NXP_MCore
-LIBS:MCU_NXP_MAC7100
-LIBS:MCU_NXP_HCS12
-LIBS:MCU_NXP_HC12
-LIBS:MCU_NXP_HC11
-LIBS:MCU_NXP_ColdFire
-LIBS:MCU_Microchip_SAML
-LIBS:MCU_Microchip_PIC32
-LIBS:MCU_Microchip_PIC24
-LIBS:MCU_Microchip_PIC12
-LIBS:MCU_Microchip_PIC10
-LIBS:MCU_Microchip_AVR
-LIBS:MCU_Microchip_8051
-LIBS:MCU_Intel
-LIBS:MCU_Espressif
-LIBS:MCU_AnalogDevices
-LIBS:Logic_Programmable
-LIBS:Isolator_Analog
-LIBS:Interface_Optical
-LIBS:Interface_LineDriver
-LIBS:Interface_HID
-LIBS:Interface_CurrentLoop
-LIBS:Graphic
-LIBS:GPU
-LIBS:FPGA_Xilinx_Virtex7
-LIBS:FPGA_Xilinx_Virtex6
-LIBS:FPGA_Xilinx_Virtex5
-LIBS:FPGA_Xilinx_Spartan6
-LIBS:FPGA_Xilinx_Kintex7
-LIBS:FPGA_Xilinx_Artix7
-LIBS:FPGA_Xilinx
-LIBS:FPGA_Microsemi
-LIBS:Driver_Relay
-LIBS:Display_Graphic
-LIBS:Diode_Bridge
-LIBS:DSP_Texas
-LIBS:DSP_Motorola
-LIBS:DSP_Microchip_DSPIC33
-LIBS:DSP_Freescale
-LIBS:Connector_Generic_Shielded
-LIBS:Connector_Generic_MountingPin
-LIBS:Connector_Generic
-LIBS:CPU_PowerPC
-LIBS:CPU_NXP_68000
-LIBS:CPU_NXP_6800
-LIBS:CPLD_Xilinx
-LIBS:CPLD_Altera
-LIBS:Amplifier_Video
-LIBS:Amplifier_Instrumentation
-LIBS:Amplifier_Buffer
-LIBS:ft232rl
-LIBS:AmigaComponents
+EESchema Schematic File Version 4
 LIBS:atari23MTS_Upgrade-cache
-EELAYER 25 0
+EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -217,7 +24,7 @@ NoConn ~ 4400 1750
 Text GLabel 4400 1850 0    39   Input ~ 0
 VCC3V3
 $Comp
-L Crystal_Small XT2
+L Device1:Crystal_Small XT2
 U 1 1 5C421B52
 P 2500 2700
 F 0 "XT2" H 2500 2800 50  0000 C CNN
@@ -228,29 +35,29 @@ F 3 "" H 2500 2700 50  0000 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L C_Small C16
+L Device1:C_Small C16
 U 1 1 5C421C91
 P 2100 2350
 F 0 "C16" H 2110 2420 50  0000 L CNN
 F 1 "20p" H 2110 2270 50  0000 L CNN
-F 2 "Capacitors_SMD:C_1206_HandSoldering" H 2100 2350 50  0001 C CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 2100 2350 50  0001 C CNN
 F 3 "" H 2100 2350 50  0000 C CNN
 	1    2100 2350
 	0    1    1    0   
 $EndComp
 $Comp
-L C_Small C17
+L Device1:C_Small C17
 U 1 1 5CA87C42
 P 2100 3050
 F 0 "C17" H 2110 3120 50  0000 L CNN
 F 1 "20p" H 2110 2970 50  0000 L CNN
-F 2 "Capacitors_SMD:C_1206_HandSoldering" H 2100 3050 50  0001 C CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 2100 3050 50  0001 C CNN
 F 3 "" H 2100 3050 50  0000 C CNN
 	1    2100 3050
 	0    1    1    0   
 $EndComp
 $Comp
-L GND #PWR044
+L power1:GND #PWR044
 U 1 1 5CA87C43
 P 1750 2700
 F 0 "#PWR044" H 1750 2450 50  0001 C CNN
@@ -261,78 +68,78 @@ F 3 "" H 1750 2700 50  0001 C CNN
 	0    1    1    0   
 $EndComp
 $Comp
-L C_Small C18
+L Device1:C_Small C18
 U 1 1 5C421E29
 P 8600 850
 F 0 "C18" H 8610 920 50  0000 L CNN
 F 1 "100n" H 8610 770 50  0000 L CNN
-F 2 "Capacitors_SMD:C_1206_HandSoldering" H 8600 850 50  0001 C CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 8600 850 50  0001 C CNN
 F 3 "" H 8600 850 50  0000 C CNN
 	1    8600 850 
 	0    1    1    0   
 $EndComp
 $Comp
-L C_Small C19
+L Device1:C_Small C19
 U 1 1 5C421EE5
 P 8600 1200
 F 0 "C19" H 8610 1270 50  0000 L CNN
 F 1 "100n" H 8610 1120 50  0000 L CNN
-F 2 "Capacitors_SMD:C_1206_HandSoldering" H 8600 1200 50  0001 C CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 8600 1200 50  0001 C CNN
 F 3 "" H 8600 1200 50  0000 C CNN
 	1    8600 1200
 	0    1    1    0   
 $EndComp
 $Comp
-L C_Small C20
+L Device1:C_Small C20
 U 1 1 5C421F19
 P 8600 1550
 F 0 "C20" H 8610 1620 50  0000 L CNN
 F 1 "100n" H 8610 1470 50  0000 L CNN
-F 2 "Capacitors_SMD:C_1206_HandSoldering" H 8600 1550 50  0001 C CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 8600 1550 50  0001 C CNN
 F 3 "" H 8600 1550 50  0000 C CNN
 	1    8600 1550
 	0    1    1    0   
 $EndComp
 $Comp
-L C_Small C21
+L Device1:C_Small C21
 U 1 1 5CA87C47
 P 8600 1900
 F 0 "C21" H 8610 1970 50  0000 L CNN
 F 1 "100n" H 8610 1820 50  0000 L CNN
-F 2 "Capacitors_SMD:C_1206_HandSoldering" H 8600 1900 50  0001 C CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 8600 1900 50  0001 C CNN
 F 3 "" H 8600 1900 50  0000 C CNN
 	1    8600 1900
 	0    1    1    0   
 $EndComp
 $Comp
-L C_Small C22
+L Device1:C_Small C22
 U 1 1 5C421F82
 P 8600 2250
 F 0 "C22" H 8610 2320 50  0000 L CNN
 F 1 "100n" H 8610 2170 50  0000 L CNN
-F 2 "Capacitors_SMD:C_1206_HandSoldering" H 8600 2250 50  0001 C CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 8600 2250 50  0001 C CNN
 F 3 "" H 8600 2250 50  0000 C CNN
 	1    8600 2250
 	0    1    1    0   
 $EndComp
 $Comp
-L C_Small C23
+L Device1:C_Small C23
 U 1 1 5C421FB7
 P 8600 2600
 F 0 "C23" H 8610 2670 50  0000 L CNN
 F 1 "100n" H 8610 2520 50  0000 L CNN
-F 2 "Capacitors_SMD:C_1206_HandSoldering" H 8600 2600 50  0001 C CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 8600 2600 50  0001 C CNN
 F 3 "" H 8600 2600 50  0000 C CNN
 	1    8600 2600
 	0    1    1    0   
 $EndComp
 $Comp
-L C_Small C24
+L Device1:C_Small C24
 U 1 1 5C421FF7
 P 8600 2950
 F 0 "C24" H 8610 3020 50  0000 L CNN
 F 1 "100n" H 8610 2870 50  0000 L CNN
-F 2 "Capacitors_SMD:C_1206_HandSoldering" H 8600 2950 50  0001 C CNN
+F 2 "Capacitor_SMD:C_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 8600 2950 50  0001 C CNN
 F 3 "" H 8600 2950 50  0000 C CNN
 	1    8600 2950
 	0    1    1    0   
@@ -393,7 +200,7 @@ Wire Wire Line
 	8100 1200 8500 1200
 Connection ~ 8300 1200
 $Comp
-L GND #PWR045
+L power1:GND #PWR045
 U 1 1 5CA87C4B
 P 8850 1900
 F 0 "#PWR045" H 8850 1650 50  0001 C CNN
@@ -490,23 +297,23 @@ Text GLabel 6200 5050 2    39   BiDi ~ 0
 Text GLabel 6200 5150 2    39   BiDi ~ 0
 mR/~W
 $Comp
-L R_Small R16
+L Device1:R_Small R16
 U 1 1 5C422FC6
 P 9950 3850
 F 0 "R16" H 9980 3870 50  0000 L CNN
 F 1 "220" H 9980 3810 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 9950 3850 50  0001 C CNN
+F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 9950 3850 50  0001 C CNN
 F 3 "" H 9950 3850 50  0000 C CNN
 	1    9950 3850
 	1    0    0    -1  
 $EndComp
 $Comp
-L Led_Small D5
+L atari23MTS_Upgrade-rescue:Led_Small D5
 U 1 1 5C423143
 P 9950 3650
 F 0 "D5" H 9900 3775 50  0000 L CNN
 F 1 "LED.GREEN" H 9775 3550 50  0000 L CNN
-F 2 "LEDs:LED_1206" V 9950 3650 50  0001 C CNN
+F 2 "LED_SMD:LED_1206_3216Metric_Pad1.42x1.75mm_HandSolder" V 9950 3650 50  0001 C CNN
 F 3 "" V 9950 3650 50  0000 C CNN
 	1    9950 3650
 	0    1    1    0   
@@ -514,7 +321,7 @@ $EndComp
 Wire Wire Line
 	9950 3550 9950 3400
 $Comp
-L GND #PWR046
+L power1:GND #PWR046
 U 1 1 5C42325A
 P 9950 3400
 F 0 "#PWR046" H 9950 3150 50  0001 C CNN
@@ -540,7 +347,7 @@ Wire Wire Line
 	5200 6450 5200 6650
 Connection ~ 5200 6650
 $Comp
-L GND #PWR047
+L power1:GND #PWR047
 U 1 1 5C4234AD
 P 5300 6850
 F 0 "#PWR047" H 5300 6600 50  0001 C CNN
@@ -569,23 +376,23 @@ NoConn ~ 6200 1850
 NoConn ~ 6200 1750
 NoConn ~ 700  4150
 $Comp
-L R_Small R11
+L Device1:R_Small R11
 U 1 1 5C43FC39
 P 2850 3050
 F 0 "R11" H 2880 3070 50  0000 L CNN
 F 1 "220" H 2880 3010 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 2850 3050 50  0001 C CNN
+F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 2850 3050 50  0001 C CNN
 F 3 "" H 2850 3050 50  0000 C CNN
 	1    2850 3050
 	0    1    1    0   
 $EndComp
 $Comp
-L R_Small R10
+L Device1:R_Small R10
 U 1 1 5CA87C51
 P 2850 2350
 F 0 "R10" H 2880 2370 50  0000 L CNN
 F 1 "0" H 2880 2310 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 2850 2350 50  0001 C CNN
+F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 2850 2350 50  0001 C CNN
 F 3 "" H 2850 2350 50  0000 C CNN
 	1    2850 2350
 	0    1    1    0   
@@ -640,12 +447,12 @@ NoConn ~ 6200 1450
 NoConn ~ 6200 1350
 NoConn ~ 6200 1250
 $Comp
-L STM32F407VGTx U14
+L MCU_ST_STM32F41:STM32F407VGTx U14
 U 1 1 5CA87C52
 P 5300 3650
 F 0 "U14" H 4600 6200 50  0000 L CNN
 F 1 "STM32F407VGTx" H 5800 6200 50  0000 L CNN
-F 2 "Housings_QFP:TQFP-100_14x14mm_Pitch0.5mm" H 4600 1050 50  0001 R CNN
+F 2 "Package_QFP:TQFP-100-1EP_14x14mm_P0.5mm_EP5x5mm" H 4600 1050 50  0001 R CNN
 F 3 "" H 5300 3650 50  0001 C CNN
 	1    5300 3650
 	1    0    0    -1  
@@ -654,12 +461,12 @@ NoConn ~ 6200 4950
 NoConn ~ 6200 5250
 NoConn ~ 6200 5350
 $Comp
-L R_Small R12
+L Device1:R_Small R12
 U 1 1 5CA875A2
 P 6450 1900
 F 0 "R12" H 6480 1920 50  0000 L CNN
 F 1 "10K" H 6480 1860 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 6450 1900 50  0001 C CNN
+F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 6450 1900 50  0001 C CNN
 F 3 "" H 6450 1900 50  0000 C CNN
 	1    6450 1900
 	1    0    0    -1  
@@ -667,7 +474,7 @@ $EndComp
 Wire Wire Line
 	6450 1800 6450 1650
 $Comp
-L GND #PWR048
+L power1:GND #PWR048
 U 1 1 5CA875AF
 P 6450 1650
 F 0 "#PWR048" H 6450 1400 50  0001 C CNN
@@ -678,12 +485,12 @@ F 3 "" H 6450 1650 50  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L R_Small R13
+L Device1:R_Small R13
 U 1 1 5CA87673
 P 6950 2000
 F 0 "R13" H 6980 2020 50  0000 L CNN
 F 1 "10K" H 6980 1960 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 6950 2000 50  0001 C CNN
+F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 6950 2000 50  0001 C CNN
 F 3 "" H 6950 2000 50  0000 C CNN
 	1    6950 2000
 	1    0    0    -1  
@@ -691,7 +498,7 @@ $EndComp
 Wire Wire Line
 	6950 1900 6950 1750
 $Comp
-L GND #PWR049
+L power1:GND #PWR049
 U 1 1 5CA87680
 P 6950 1750
 F 0 "#PWR049" H 6950 1500 50  0001 C CNN
@@ -748,23 +555,23 @@ mB7
 Wire Wire Line
 	6200 6150 6750 6150
 $Comp
-L R_Small R15
+L Device1:R_Small R15
 U 1 1 5CA87656
 P 7850 6150
 F 0 "R15" V 7750 5900 50  0000 L CNN
 F 1 "0" H 7880 6110 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 7850 6150 50  0001 C CNN
+F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 7850 6150 50  0001 C CNN
 F 3 "" H 7850 6150 50  0001 C CNN
 	1    7850 6150
 	0    -1   -1   0   
 $EndComp
 $Comp
-L R_Small R14
+L Device1:R_Small R14
 U 1 1 5CA87774
 P 7850 5950
 F 0 "R14" V 7750 5700 50  0000 L CNN
 F 1 "0" H 7880 5910 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 7850 5950 50  0001 C CNN
+F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 7850 5950 50  0001 C CNN
 F 3 "" H 7850 5950 50  0001 C CNN
 	1    7850 5950
 	0    -1   -1   0   
@@ -772,7 +579,7 @@ $EndComp
 Wire Wire Line
 	6200 6050 6750 6050
 $Comp
-L GND #PWR050
+L power1:GND #PWR050
 U 1 1 5CA883BF
 P 7950 5950
 F 0 "#PWR050" H 7950 5700 50  0001 C CNN
@@ -783,7 +590,7 @@ F 3 "" H 7950 5950 50  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L GND #PWR051
+L power1:GND #PWR051
 U 1 1 5CA8840A
 P 7950 6150
 F 0 "#PWR051" H 7950 5900 50  0001 C CNN

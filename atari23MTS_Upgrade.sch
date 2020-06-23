@@ -1,199 +1,6 @@
-EESchema Schematic File Version 2
-LIBS:MCU_STC
-LIBS:Timer_RTC
-LIBS:Relay_SolidState
-LIBS:Relay
-LIBS:RF_AM_FM
-LIBS:Memory_Flash
-LIBS:MCU_Module
-LIBS:74xx
-LIBS:Transistor_FET
-LIBS:Regulator_Switching
-LIBS:Logic_LevelTranslator
-LIBS:Isolator
-LIBS:Interface
-LIBS:Converter_ACDC
-LIBS:Battery_Management
-LIBS:Amplifier_Operational
-LIBS:RF_Module
-LIBS:Interface_HDMI
-LIBS:power
-LIBS:Sensor_Temperature
-LIBS:Timer_PLL
-LIBS:Sensor_Pressure
-LIBS:Sensor_Motion
-LIBS:Oscillator
-LIBS:MCU_Microchip_SAME
-LIBS:MCU_Microchip_SAMD
-LIBS:Interface_Expansion
-LIBS:Interface_Ethernet
-LIBS:Interface_CAN_LIN
-LIBS:Amplifier_Difference
-LIBS:Sensor_Magnetic
-LIBS:Power_Management
-LIBS:Memory_RAM
-LIBS:MCU_Microchip_PIC18
-LIBS:Interface_USB
-LIBS:Audio
-LIBS:Analog_Switch
-LIBS:Amplifier_Current
-LIBS:Regulator_Linear
-LIBS:Device
-LIBS:Analog_ADC
-LIBS:MCU_Microchip_PIC16
-LIBS:Connector
-LIBS:Power_Protection
-LIBS:Jumper
-LIBS:Diode
-LIBS:Switch
-LIBS:Sensor_Current
-LIBS:Sensor
-LIBS:Regulator_Controller
-LIBS:Driver_FET
-LIBS:Amplifier_Audio
-LIBS:RF_Filter
-LIBS:Driver_Haptic
-LIBS:RF_GSM
-LIBS:Filter
-LIBS:Converter_DCDC
-LIBS:Analog
-LIBS:RF_GPS
-LIBS:Driver_Motor
-LIBS:Driver_LED
-LIBS:Sensor_Optical
-LIBS:RF
-LIBS:Power_Supervisor
-LIBS:LED
-LIBS:Simulation_SPICE
-LIBS:CPU_NXP_IMX
-LIBS:Sensor_Touch
-LIBS:Memory_UniqueID
-LIBS:Display_Character
-LIBS:Mechanical
-LIBS:MCU_Microchip_ATmega
-LIBS:Comparator
-LIBS:Memory_EEPROM
-LIBS:RF_Switch
-LIBS:Transformer
-LIBS:Timer
-LIBS:RF_Amplifier
-LIBS:Sensor_Humidity
-LIBS:MCU_Texas_MSP430
-LIBS:MCU_Texas
-LIBS:DSP_AnalogDevices
-LIBS:74xGxx
-LIBS:Reference_Voltage
-LIBS:Sensor_Proximity
-LIBS:RF_Mixer
-LIBS:MCU_ST_STM8
-LIBS:Interface_Telecom
-LIBS:CPU
-LIBS:4xxx_IEEE
-LIBS:FPGA_Lattice
-LIBS:Analog_DAC
-LIBS:Interface_UART
-LIBS:4xxx
-LIBS:MCU_Microchip_ATtiny
-LIBS:Sensor_Audio
-LIBS:MCU_Cypress
-LIBS:MCU_SiFive
-LIBS:MCU_Nordic
-LIBS:MCU_NXP_Kinetis
-LIBS:Driver_Display
-LIBS:MCU_NXP_S08
-LIBS:Valve
-LIBS:Triac_Thyristor
-LIBS:Transistor_IGBT
-LIBS:Regulator_SwitchedCapacitor
-LIBS:Fiber_Optic
-LIBS:Diode_Laser
-LIBS:Reference_Current
-LIBS:Transistor_BJT
-LIBS:Memory_NVRAM
-LIBS:MCU_NXP_LPC
-LIBS:74xx_IEEE
-LIBS:pspice
-LIBS:Video
-LIBS:Transistor_Array
-LIBS:Sensor_Voltage
-LIBS:Sensor_Gas
-LIBS:Security
-LIBS:Regulator_Current
-LIBS:RF_ZigBee
-LIBS:RF_WiFi
-LIBS:RF_RFID
-LIBS:RF_Bluetooth
-LIBS:Potentiometer_Digital
-LIBS:Motor
-LIBS:Memory_ROM
-LIBS:Memory_EPROM
-LIBS:MCU_SiliconLabs
-LIBS:MCU_ST_STM32L4
-LIBS:MCU_ST_STM32L4+
-LIBS:MCU_ST_STM32L1
-LIBS:MCU_ST_STM32L0
-LIBS:MCU_ST_STM32H7
-LIBS:MCU_ST_STM32F7
-LIBS:MCU_ST_STM32F4
-LIBS:MCU_ST_STM32F3
-LIBS:MCU_ST_STM32F2
-LIBS:MCU_ST_STM32F1
-LIBS:MCU_ST_STM32F0
-LIBS:MCU_Parallax
-LIBS:MCU_NXP_MCore
-LIBS:MCU_NXP_MAC7100
-LIBS:MCU_NXP_HCS12
-LIBS:MCU_NXP_HC12
-LIBS:MCU_NXP_HC11
-LIBS:MCU_NXP_ColdFire
-LIBS:MCU_Microchip_SAML
-LIBS:MCU_Microchip_PIC32
-LIBS:MCU_Microchip_PIC24
-LIBS:MCU_Microchip_PIC12
-LIBS:MCU_Microchip_PIC10
-LIBS:MCU_Microchip_AVR
-LIBS:MCU_Microchip_8051
-LIBS:MCU_Intel
-LIBS:MCU_Espressif
-LIBS:MCU_AnalogDevices
-LIBS:Logic_Programmable
-LIBS:Isolator_Analog
-LIBS:Interface_Optical
-LIBS:Interface_LineDriver
-LIBS:Interface_HID
-LIBS:Interface_CurrentLoop
-LIBS:Graphic
-LIBS:GPU
-LIBS:FPGA_Xilinx_Virtex7
-LIBS:FPGA_Xilinx_Virtex6
-LIBS:FPGA_Xilinx_Virtex5
-LIBS:FPGA_Xilinx_Spartan6
-LIBS:FPGA_Xilinx_Kintex7
-LIBS:FPGA_Xilinx_Artix7
-LIBS:FPGA_Xilinx
-LIBS:FPGA_Microsemi
-LIBS:Driver_Relay
-LIBS:Display_Graphic
-LIBS:Diode_Bridge
-LIBS:DSP_Texas
-LIBS:DSP_Motorola
-LIBS:DSP_Microchip_DSPIC33
-LIBS:DSP_Freescale
-LIBS:Connector_Generic_Shielded
-LIBS:Connector_Generic_MountingPin
-LIBS:Connector_Generic
-LIBS:CPU_PowerPC
-LIBS:CPU_NXP_68000
-LIBS:CPU_NXP_6800
-LIBS:CPLD_Xilinx
-LIBS:CPLD_Altera
-LIBS:Amplifier_Video
-LIBS:Amplifier_Instrumentation
-LIBS:Amplifier_Buffer
-LIBS:ft232rl
-LIBS:AmigaComponents
+EESchema Schematic File Version 4
 LIBS:atari23MTS_Upgrade-cache
-EELAYER 25 0
+EELAYER 26 0
 EELAYER END
 $Descr A4 11693 8268
 encoding utf-8
@@ -217,9 +24,9 @@ Wire Wire Line
 	2050 6900 2050 6950
 Connection ~ 2050 6650
 Wire Wire Line
-	1700 6650 2050 6650
+	1700 6650 1800 6650
 Wire Wire Line
-	2050 6500 2050 6700
+	2050 6500 2050 6650
 Wire Notes Line
 	6200 1200 5200 1200
 Wire Notes Line
@@ -247,15 +54,11 @@ Wire Wire Line
 Wire Wire Line
 	7400 1800 7400 1600
 Wire Notes Line
-	950  2900 800  2900
-Wire Notes Line
 	800  2900 800  5150
 Wire Notes Line
 	800  5150 6600 5150
 Wire Notes Line
 	6600 5150 6600 2900
-Wire Notes Line
-	6600 2900 900  2900
 Wire Wire Line
 	3100 3500 3350 3500
 Wire Notes Line
@@ -283,7 +86,7 @@ Wire Notes Line
 Wire Notes Line
 	4500 550  550  550 
 Wire Wire Line
-	3900 1600 4050 1600
+	3900 1600 3950 1600
 Wire Wire Line
 	4050 950  4000 950 
 Wire Wire Line
@@ -292,22 +95,22 @@ Wire Wire Line
 	3750 850  3750 950 
 Connection ~ 1100 1600
 Wire Wire Line
-	1100 1400 1100 1650
+	1100 1400 1100 1600
 Wire Wire Line
-	1000 1600 1300 1600
+	1000 1600 1100 1600
 Connection ~ 3250 1600
 Wire Wire Line
 	3250 1600 3250 1700
 Connection ~ 2350 2000
 Wire Wire Line
-	2350 1900 2350 2100
+	2350 1900 2350 2000
 Connection ~ 2800 2000
 Wire Wire Line
 	3000 2000 3000 1950
 Wire Wire Line
 	2800 2000 2800 1950
 Wire Wire Line
-	1900 2000 3000 2000
+	1900 2000 2350 2000
 Wire Wire Line
 	1900 2000 1900 1950
 Connection ~ 3000 1600
@@ -317,9 +120,9 @@ Connection ~ 2800 1600
 Wire Wire Line
 	2800 1750 2800 1600
 Wire Wire Line
-	2650 1600 3400 1600
+	2650 1600 2800 1600
 $Comp
-L GND #PWR01
+L power1:GND #PWR01
 U 1 1 5C2A61A8
 P 2350 2100
 F 0 "#PWR01" H 2350 1850 50  0001 C CNN
@@ -330,18 +133,18 @@ F 3 "" H 2350 2100 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CP1_Small C2
+L Device1:CP1_Small C2
 U 1 1 5C2A61C4
 P 2800 1850
 F 0 "C2" H 2810 1920 50  0000 L CNN
 F 1 "22u" H 2810 1770 50  0000 L CNN
-F 2 "Capacitors_SMD:c_elec_5x5.3" H 2800 1850 50  0001 C CNN
+F 2 "Capacitor_SMD:CP_Elec_5x5.3" H 2800 1850 50  0001 C CNN
 F 3 "" H 2800 1850 60  0001 C CNN
 	1    2800 1850
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR02
+L power1:GND #PWR02
 U 1 1 5C2A6632
 P 3250 2100
 F 0 "#PWR02" H 3250 1850 50  0001 C CNN
@@ -352,7 +155,7 @@ F 3 "" H 3250 2100 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L VCC #PWR03
+L power1:VCC #PWR03
 U 1 1 5C2A6795
 P 1100 1400
 F 0 "#PWR03" H 1100 1250 50  0001 C CNN
@@ -377,40 +180,40 @@ NoConn ~ 6050 1350
 Text Notes 5300 1800 0    60   ~ 12
 MOUNTING HOLES
 $Comp
-L NCP1117ST33T3G-RESCUE-atari23MTS_Upgrade U1
+L atari23MTS_Upgrade-rescue:NCP1117ST33T3G-RESCUE-atari23MTS_Upgrade U1
 U 1 1 5C2B6EFC
 P 2350 1600
 F 0 "U1" H 2350 1850 50  0000 C CNN
 F 1 "NCP1117ST33T3G" H 2350 1800 50  0000 C CNN
-F 2 "TO_SOT_Packages_SMD:SOT-223" H 2350 1600 50  0001 C CNN
+F 2 "Package_TO_SOT_SMD:SOT-223" H 2350 1600 50  0001 C CNN
 F 3 "" H 2350 1600 60  0001 C CNN
 	1    2350 1600
 	1    0    0    -1  
 $EndComp
 $Comp
-L INDUCTOR_SMALL L1
+L atari23MTS_Upgrade-rescue:INDUCTOR_SMALL L1
 U 1 1 5C2B6EFD
 P 1550 1600
 F 0 "L1" H 1550 1700 50  0000 C CNN
 F 1 "INDUCTOR_SMALL" H 1550 1550 50  0001 C CNN
-F 2 "Choke_SMD:Choke_SMD_1206_Handsoldering" H 1550 1600 50  0001 C CNN
+F 2 "Inductor_SMD:L_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 1550 1600 50  0001 C CNN
 F 3 "" H 1550 1600 60  0001 C CNN
 	1    1550 1600
 	-1   0    0    1   
 $EndComp
 $Comp
-L INDUCTOR_SMALL L2
+L atari23MTS_Upgrade-rescue:INDUCTOR_SMALL L2
 U 1 1 5C2B6EFE
 P 3650 1600
 F 0 "L2" H 3650 1700 50  0000 C CNN
 F 1 "INDUCTOR_SMALL" H 3650 1550 50  0001 C CNN
-F 2 "Choke_SMD:Choke_SMD_1206_Handsoldering" H 3650 1600 50  0001 C CNN
+F 2 "Inductor_SMD:L_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 3650 1600 50  0001 C CNN
 F 3 "" H 3650 1600 60  0001 C CNN
 	1    3650 1600
 	-1   0    0    1   
 $EndComp
 $Comp
-L GND #PWR04
+L power1:GND #PWR04
 U 1 1 5C2B6EFF
 P 2350 2100
 F 0 "#PWR04" H 2350 1850 50  0001 C CNN
@@ -421,51 +224,51 @@ F 3 "" H 2350 2100 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CP1_Small C3
+L Device1:CP1_Small C3
 U 1 1 5C2B6F01
 P 3000 1850
 F 0 "C3" H 3010 1920 50  0000 L CNN
 F 1 "47u" H 3010 1770 50  0000 L CNN
-F 2 "Capacitors_SMD:c_elec_5x5.3" H 3000 1850 50  0001 C CNN
+F 2 "Capacitor_SMD:CP_Elec_5x5.3" H 3000 1850 50  0001 C CNN
 F 3 "" H 3000 1850 60  0001 C CNN
 	1    3000 1850
 	1    0    0    -1  
 $EndComp
 $Comp
-L CP1_Small C1
+L Device1:CP1_Small C1
 U 1 1 5C2B6F02
 P 1900 1850
 F 0 "C1" H 1910 1920 50  0000 L CNN
 F 1 "10u" H 1910 1770 50  0000 L CNN
-F 2 "Capacitors_SMD:c_elec_5x5.3" H 1900 1850 50  0001 C CNN
+F 2 "Capacitor_SMD:CP_Elec_5x5.3" H 1900 1850 50  0001 C CNN
 F 3 "" H 1900 1850 60  0001 C CNN
 	1    1900 1850
 	1    0    0    -1  
 $EndComp
 $Comp
-L Led_Small D1
+L atari23MTS_Upgrade-rescue:Led_Small D1
 U 1 1 5C2B6F03
 P 1100 1950
 F 0 "D1" H 1050 2075 50  0000 L CNN
 F 1 "LRED" V 1100 1700 50  0000 L CNN
-F 2 "LEDs:LED_1206" V 1100 1950 50  0001 C CNN
+F 2 "LED_SMD:LED_1206_3216Metric_Pad1.42x1.75mm_HandSolder" V 1100 1950 50  0001 C CNN
 F 3 "" H 1100 1950 60  0001 C CNN
 	1    1100 1950
 	0    -1   -1   0   
 $EndComp
 $Comp
-L Led_Small D2
+L atari23MTS_Upgrade-rescue:Led_Small D2
 U 1 1 5C2B6F04
 P 3250 2000
 F 0 "D2" V 3150 1750 50  0000 L CNN
 F 1 "LYELLOW" V 3250 1600 50  0000 L CNN
-F 2 "LEDs:LED_1206" V 3250 2000 50  0001 C CNN
+F 2 "LED_SMD:LED_1206_3216Metric_Pad1.42x1.75mm_HandSolder" V 3250 2000 50  0001 C CNN
 F 3 "" H 3250 2000 60  0001 C CNN
 	1    3250 2000
 	0    -1   -1   0   
 $EndComp
 $Comp
-L GND #PWR05
+L power1:GND #PWR05
 U 1 1 5C2B6F05
 P 3250 2100
 F 0 "#PWR05" H 3250 1850 50  0001 C CNN
@@ -476,7 +279,7 @@ F 3 "" H 3250 2100 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR06
+L power1:GND #PWR06
 U 1 1 5C2B6F06
 P 1100 2050
 F 0 "#PWR06" H 1100 1800 50  0001 C CNN
@@ -487,29 +290,29 @@ F 3 "" H 1100 2050 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L R_Small R1
+L Device1:R_Small R1
 U 1 1 5C2B6F07
 P 1100 1750
 F 0 "R1" H 1150 1800 50  0000 L CNN
 F 1 "330" H 1130 1710 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 1100 1750 50  0001 C CNN
+F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 1100 1750 50  0001 C CNN
 F 3 "" H 1100 1750 60  0001 C CNN
 	1    1100 1750
 	1    0    0    -1  
 $EndComp
 $Comp
-L R_Small R3
+L Device1:R_Small R3
 U 1 1 5C2B6F08
 P 3250 1800
 F 0 "R3" H 3300 1850 50  0000 L CNN
 F 1 "220" H 3280 1760 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 3250 1800 50  0001 C CNN
+F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 3250 1800 50  0001 C CNN
 F 3 "" H 3250 1800 60  0001 C CNN
 	1    3250 1800
 	1    0    0    -1  
 $EndComp
 $Comp
-L VCC #PWR07
+L power1:VCC #PWR07
 U 1 1 5C2B6F09
 P 1100 1400
 F 0 "#PWR07" H 1100 1250 50  0001 C CNN
@@ -520,7 +323,7 @@ F 3 "" H 1100 1400 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L VCC #PWR08
+L power1:VCC #PWR08
 U 1 1 5C2B6F0A
 P 3750 850
 F 0 "#PWR08" H 3750 700 50  0001 C CNN
@@ -531,7 +334,7 @@ F 3 "" H 3750 850 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L PWR_FLAG #FLG09
+L power1:PWR_FLAG #FLG09
 U 1 1 5C2B6F0B
 P 3750 950
 F 0 "#FLG09" H 3750 1025 50  0001 C CNN
@@ -546,7 +349,7 @@ Text GLabel 1000 1600 0    60   Input ~ 0
 Text GLabel 1900 1050 1    60   Input ~ 0
 VCC5V
 $Comp
-L GND #PWR010
+L power1:GND #PWR010
 U 1 1 5C2B6F0C
 P 4000 850
 F 0 "#PWR010" H 4000 600 50  0001 C CNN
@@ -557,7 +360,7 @@ F 3 "" H 4000 850 60  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L PWR_FLAG #FLG011
+L power1:PWR_FLAG #FLG011
 U 1 1 5C2B6F0D
 P 4050 950
 F 0 "#FLG011" H 4050 1025 50  0001 C CNN
@@ -572,18 +375,18 @@ VCC3V3
 Text Notes 3700 2350 0    60   ~ 12
 POWER SECTION
 $Comp
-L CONN_01X04 STLinkV2.2
+L atari23MTS_Upgrade-rescue:CONN_01X04 STLinkV2.2
 U 1 1 5C2B6F0E
 P 9800 4950
 F 0 "STLinkV2.2" V 10000 4950 50  0000 C CNN
 F 1 "CONN_01X04" V 9900 4950 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Angled_1x04" H 9800 4950 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Horizontal" H 9800 4950 50  0001 C CNN
 F 3 "" H 9800 4950 60  0001 C CNN
 	1    9800 4950
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR012
+L power1:GND #PWR012
 U 1 1 5C2B6F0F
 P 9600 4800
 F 0 "#PWR012" H 9600 4550 50  0001 C CNN
@@ -600,12 +403,12 @@ SWDIO_MEM
 Text GLabel 8650 5000 0    51   BiDi ~ 0
 SWDCLK_MEM
 $Comp
-L CONN_01X03 FT232RPi.1
+L atari23MTS_Upgrade-rescue:CONN_01X03 FT232RPi.1
 U 1 1 5C2B6F10
 P 8300 5500
 F 0 "FT232RPi.1" V 8500 5500 50  0000 C CNN
 F 1 "CONN_01X03" V 8400 5500 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x03" H 8300 5500 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 8300 5500 50  0001 C CNN
 F 3 "" H 8300 5500 60  0001 C CNN
 	1    8300 5500
 	-1   0    0    1   
@@ -615,7 +418,7 @@ UART_TX
 Text GLabel 9250 5500 2    60   Output ~ 0
 UART_RX
 $Comp
-L GND #PWR013
+L power1:GND #PWR013
 U 1 1 5C2B6F11
 P 8500 5600
 F 0 "#PWR013" H 8500 5350 50  0001 C CNN
@@ -626,12 +429,12 @@ F 3 "" H 8500 5600 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L CONN_01X01 P6
+L atari23MTS_Upgrade-rescue:CONN_01X01 P6
 U 1 1 5C2B6F21
 P 8000 4700
 F 0 "P6" H 8000 4800 50  0000 C CNN
 F 1 "CONN_01X01" H 7950 4550 50  0000 C CNN
-F 2 "Measurement_Points:Measurement_Point_Round-SMD-Pad_Small" H 8000 4700 50  0001 C CNN
+F 2 "TestPoint:TestPoint_Pad_D2.0mm" H 8000 4700 50  0001 C CNN
 F 3 "" H 8000 4700 60  0001 C CNN
 	1    8000 4700
 	-1   0    0    1   
@@ -639,7 +442,7 @@ $EndComp
 Text GLabel 8200 4700 2    60   Output ~ 0
 TP1
 $Comp
-L ATARICARTRIDGE CART1
+L AmigaComponents:ATARICARTRIDGE CART1
 U 1 1 5C2B6F23
 P 2200 4050
 F 0 "CART1" H 2650 4900 50  0000 C CNN
@@ -650,7 +453,7 @@ F 3 "" H 2200 4050 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L ECIBUS ECI1
+L AmigaComponents:ECIBUS ECI1
 U 1 1 5C2B6F24
 P 5350 4000
 F 0 "ECI1" H 5800 4450 50  0000 C CNN
@@ -665,7 +468,7 @@ Text GLabel 1300 4600 0    39   Input ~ 0
 Text GLabel 4450 4350 0    39   Input ~ 0
 +5VDC
 $Comp
-L GND #PWR014
+L power1:GND #PWR014
 U 1 1 5C2B6F25
 P 3350 3500
 F 0 "#PWR014" H 3350 3250 50  0001 C CNN
@@ -676,7 +479,7 @@ F 3 "" H 3350 3500 60  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L GND #PWR015
+L power1:GND #PWR015
 U 1 1 5C2B6F26
 P 6250 4350
 F 0 "#PWR015" H 6250 4100 50  0001 C CNN
@@ -759,18 +562,18 @@ ATARI CONNECTIONS
 Text GLabel 7400 1800 3    60   Input ~ 0
 BOOT0_CART
 $Comp
-L CONN_01X03 JP1
+L atari23MTS_Upgrade-rescue:CONN_01X03 JP1
 U 1 1 5C2B6F27
 P 7400 1400
 F 0 "JP1" H 7400 1600 50  0000 C CNN
 F 1 "CONN_01X03" V 7500 1400 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x03" H 7400 1400 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 7400 1400 50  0001 C CNN
 F 3 "" H 7400 1400 60  0001 C CNN
 	1    7400 1400
 	0    -1   -1   0   
 $EndComp
 $Comp
-L GND #PWR016
+L power1:GND #PWR016
 U 1 1 5C2B6F28
 P 7500 1600
 F 0 "#PWR016" H 7500 1350 50  0001 C CNN
@@ -785,7 +588,7 @@ VCC3V3
 Text Notes 6700 1150 0    60   ~ 12
 BOOTSEL CART
 $Comp
-L GND #PWR017
+L power1:GND #PWR017
 U 1 1 5C2B6F2A
 P 2050 6000
 F 0 "#PWR017" H 2050 5750 50  0001 C CNN
@@ -796,12 +599,12 @@ F 3 "" H 2050 6000 60  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L R_Small R2
+L Device1:R_Small R2
 U 1 1 5C2B6F2B
 P 2050 6800
 F 0 "R2" H 2080 6820 50  0000 L CNN
 F 1 "10K" H 2080 6760 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 2050 6800 50  0001 C CNN
+F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 2050 6800 50  0001 C CNN
 F 3 "" H 2050 6800 60  0001 C CNN
 	1    2050 6800
 	1    0    0    -1  
@@ -811,7 +614,7 @@ VCC3V3
 Text Notes 1000 5650 0    60   ~ 12
 RESET BUTTON CART
 $Comp
-L CONN_01X01 P2
+L atari23MTS_Upgrade-rescue:CONN_01X01 P2
 U 1 1 5C2B6F2C
 P 5350 1550
 F 0 "P2" H 5350 1650 50  0001 C CNN
@@ -821,9 +624,8 @@ F 3 "" H 5350 1550 60  0001 C CNN
 	1    5350 1550
 	0    1    1    0   
 $EndComp
-NoConn ~ 5350 1350
 $Comp
-L CONN_01X01 P3
+L atari23MTS_Upgrade-rescue:CONN_01X01 P3
 U 1 1 5C2B6F2D
 P 5600 1550
 F 0 "P3" H 5600 1650 50  0001 C CNN
@@ -833,9 +635,8 @@ F 3 "" H 5600 1550 60  0001 C CNN
 	1    5600 1550
 	0    1    1    0   
 $EndComp
-NoConn ~ 5600 1350
 $Comp
-L CONN_01X01 P4
+L atari23MTS_Upgrade-rescue:CONN_01X01 P4
 U 1 1 5C2B6F2E
 P 5800 1550
 F 0 "P4" H 5800 1650 50  0001 C CNN
@@ -845,9 +646,8 @@ F 3 "" H 5800 1550 60  0001 C CNN
 	1    5800 1550
 	0    1    1    0   
 $EndComp
-NoConn ~ 5800 1350
 $Comp
-L CONN_01X01 P5
+L atari23MTS_Upgrade-rescue:CONN_01X01 P5
 U 1 1 5C2B6F2F
 P 6050 1550
 F 0 "P5" H 6050 1650 50  0001 C CNN
@@ -857,7 +657,6 @@ F 3 "" H 6050 1550 60  0001 C CNN
 	1    6050 1550
 	0    1    1    0   
 $EndComp
-NoConn ~ 6050 1350
 Text Notes 5300 1800 0    60   ~ 12
 MOUNTING HOLES
 $Sheet
@@ -867,18 +666,18 @@ F0 "SRAM  & Level Shifters" 60
 F1 "sram-levelshifters.sch" 60
 $EndSheet
 $Comp
-L CONN_01X04 EXTPWR1
+L atari23MTS_Upgrade-rescue:CONN_01X04 EXTPWR1
 U 1 1 5C2F33D4
 P 2750 950
 F 0 "EXTPWR1" V 2950 950 50  0000 C CNN
 F 1 "CONN_01X04" V 2850 950 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Angled_1x04" H 2750 950 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Horizontal" H 2750 950 50  0001 C CNN
 F 3 "" H 2750 950 60  0001 C CNN
 	1    2750 950 
 	0    1    1    0   
 $EndComp
 $Comp
-L GND #PWR018
+L power1:GND #PWR018
 U 1 1 5C2F34E0
 P 2800 750
 F 0 "#PWR018" H 2800 500 50  0001 C CNN
@@ -889,7 +688,7 @@ F 3 "" H 2800 750 60  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L GND #PWR019
+L power1:GND #PWR019
 U 1 1 5C2F354E
 P 2700 750
 F 0 "#PWR019" H 2700 500 50  0001 C CNN
@@ -921,12 +720,12 @@ Text GLabel 1300 4500 0    39   BiDi ~ 0
 Text GLabel 1300 4700 0    39   BiDi ~ 0
 RD5
 $Comp
-L CONN_01X01 P1
+L atari23MTS_Upgrade-rescue:CONN_01X01 P1
 U 1 1 5C326A2F
 P 1050 850
 F 0 "P1" H 1050 950 50  0000 C CNN
 F 1 "CONN_01X01" H 1000 700 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x01" H 1050 850 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x01_P2.54mm_Vertical" H 1050 850 50  0001 C CNN
 F 3 "" H 1050 850 60  0001 C CNN
 	1    1050 850 
 	-1   0    0    1   
@@ -934,7 +733,7 @@ $EndComp
 Text GLabel 1400 850  2    60   Output ~ 0
 GND
 $Comp
-L GND #PWR020
+L power1:GND #PWR020
 U 1 1 5C3272A9
 P 1250 850
 F 0 "#PWR020" H 1250 600 50  0001 C CNN
@@ -945,7 +744,7 @@ F 3 "" H 1250 850 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR021
+L power1:GND #PWR021
 U 1 1 5C32789C
 P 1800 6000
 F 0 "#PWR021" H 1800 5750 50  0001 C CNN
@@ -956,20 +755,20 @@ F 3 "" H 1800 6000 60  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L CONN_01X02 DISABLE.MODE.1
+L atari23MTS_Upgrade-rescue:CONN_01X02 DISABLE.MODE.1
 U 1 1 5C3278F4
 P 1600 6200
 F 0 "DISABLE.MODE.1" V 1800 6200 50  0000 C CNN
 F 1 "CONN_01X02" V 1700 6200 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 1600 6200 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 1600 6200 50  0001 C CNN
 F 3 "" H 1600 6200 60  0001 C CNN
 	1    1600 6200
 	-1   0    0    1   
 $EndComp
 Wire Wire Line
-	1800 1600 2050 1600
+	1800 1600 1900 1600
 Wire Wire Line
-	1900 1050 1900 1750
+	1900 1050 1900 1300
 Connection ~ 1900 1600
 $Sheet
 S 100  26250 11600 8950
@@ -978,7 +777,7 @@ F0 "MCU_CART" 39
 F1 "cartridge_controller.sch" 39
 $EndSheet
 $Comp
-L PWR_FLAG #FLG022
+L power1:PWR_FLAG #FLG022
 U 1 1 5C5E7CE0
 P 1800 1300
 F 0 "#FLG022" H 1800 1375 50  0001 C CNN
@@ -992,7 +791,7 @@ Wire Wire Line
 	1800 1300 1900 1300
 Connection ~ 1900 1300
 $Comp
-L PWR_FLAG #FLG023
+L power1:PWR_FLAG #FLG023
 U 1 1 5C5E81B8
 P 3950 1450
 F 0 "#FLG023" H 3950 1525 50  0001 C CNN
@@ -1006,7 +805,7 @@ Wire Wire Line
 	3950 1450 3950 1600
 Connection ~ 3950 1600
 $Comp
-L SW_Push SW1
+L Switch1:SW_Push SW1
 U 1 1 5C5E99F3
 P 2050 6300
 F 0 "SW1" H 2100 6400 50  0000 L CNN
@@ -1029,9 +828,9 @@ Wire Wire Line
 	4000 6900 4000 6950
 Connection ~ 4000 6650
 Wire Wire Line
-	3650 6650 4000 6650
+	3650 6650 3750 6650
 Wire Wire Line
-	4000 6500 4000 6700
+	4000 6500 4000 6650
 Wire Notes Line
 	4400 5500 2900 5500
 Wire Notes Line
@@ -1043,7 +842,7 @@ Wire Notes Line
 Text GLabel 3650 6650 0    60   Input ~ 0
 nRESET_MEM
 $Comp
-L GND #PWR024
+L power1:GND #PWR024
 U 1 1 5CA86A43
 P 4000 6000
 F 0 "#PWR024" H 4000 5750 50  0001 C CNN
@@ -1054,12 +853,12 @@ F 3 "" H 4000 6000 60  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L R_Small R4
+L Device1:R_Small R4
 U 1 1 5CA86A49
 P 4000 6800
 F 0 "R4" H 4030 6820 50  0000 L CNN
 F 1 "10K" H 4030 6760 50  0000 L CNN
-F 2 "Resistors_SMD:R_1206_HandSoldering" H 4000 6800 50  0001 C CNN
+F 2 "Resistor_SMD:R_1206_3216Metric_Pad1.42x1.75mm_HandSolder" H 4000 6800 50  0001 C CNN
 F 3 "" H 4000 6800 60  0001 C CNN
 	1    4000 6800
 	1    0    0    -1  
@@ -1069,7 +868,7 @@ VCC3V3
 Text Notes 2950 5650 0    60   ~ 12
 RESET BUTTON MEM
 $Comp
-L GND #PWR025
+L power1:GND #PWR025
 U 1 1 5CA86A51
 P 3750 6000
 F 0 "#PWR025" H 3750 5750 50  0001 C CNN
@@ -1080,18 +879,18 @@ F 3 "" H 3750 6000 60  0001 C CNN
 	-1   0    0    1   
 $EndComp
 $Comp
-L CONN_01X02 DISABLE.MODE.2
+L atari23MTS_Upgrade-rescue:CONN_01X02 DISABLE.MODE.2
 U 1 1 5CA86A57
 P 3550 6200
 F 0 "DISABLE.MODE.2" V 3750 6200 50  0000 C CNN
 F 1 "CONN_01X02" V 3650 6200 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x02" H 3550 6200 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x02_P2.54mm_Vertical" H 3550 6200 50  0001 C CNN
 F 3 "" H 3550 6200 60  0001 C CNN
 	1    3550 6200
 	-1   0    0    1   
 $EndComp
 $Comp
-L SW_Push SW2
+L Switch1:SW_Push SW2
 U 1 1 5CA86A5D
 P 4000 6300
 F 0 "SW2" H 4050 6400 50  0000 L CNN
@@ -1115,18 +914,18 @@ Wire Wire Line
 Text Notes 8050 4200 0    60   ~ 12
 DEBUG/PROGRAMMING SECTION CART
 $Comp
-L CONN_01X04 STLinkV2.1
+L atari23MTS_Upgrade-rescue:CONN_01X04 STLinkV2.1
 U 1 1 5CA87195
 P 9750 3600
 F 0 "STLinkV2.1" V 9950 3600 50  0000 C CNN
 F 1 "CONN_01X04" V 9850 3600 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Angled_1x04" H 9750 3600 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x04_P2.54mm_Horizontal" H 9750 3600 50  0001 C CNN
 F 3 "" H 9750 3600 60  0001 C CNN
 	1    9750 3600
 	1    0    0    -1  
 $EndComp
 $Comp
-L GND #PWR026
+L power1:GND #PWR026
 U 1 1 5CA8719B
 P 9550 3450
 F 0 "#PWR026" H 9550 3200 50  0001 C CNN
@@ -1161,18 +960,18 @@ Wire Wire Line
 Text GLabel 9050 1800 3    60   Input ~ 0
 BOOT0_MEM
 $Comp
-L CONN_01X03 JP2
+L atari23MTS_Upgrade-rescue:CONN_01X03 JP2
 U 1 1 5CA875BD
 P 9050 1400
 F 0 "JP2" H 9050 1600 50  0000 C CNN
 F 1 "CONN_01X03" V 9150 1400 50  0000 C CNN
-F 2 "Pin_Headers:Pin_Header_Straight_1x03" H 9050 1400 50  0001 C CNN
+F 2 "Connector_PinHeader_2.54mm:PinHeader_1x03_P2.54mm_Vertical" H 9050 1400 50  0001 C CNN
 F 3 "" H 9050 1400 60  0001 C CNN
 	1    9050 1400
 	0    -1   -1   0   
 $EndComp
 $Comp
-L GND #PWR027
+L power1:GND #PWR027
 U 1 1 5CA875C3
 P 9150 1600
 F 0 "#PWR027" H 9150 1350 50  0001 C CNN
@@ -1194,4 +993,38 @@ U 5CA8B01A
 F0 "MCU_MEMORY" 60
 F1 "memory_controller.sch" 60
 $EndSheet
+Wire Wire Line
+	2050 6650 2050 6700
+Wire Wire Line
+	1100 1600 1100 1650
+Wire Wire Line
+	1100 1600 1300 1600
+Wire Wire Line
+	3250 1600 3400 1600
+Wire Wire Line
+	2350 2000 2350 2100
+Wire Wire Line
+	2350 2000 2800 2000
+Wire Wire Line
+	2800 2000 3000 2000
+Wire Wire Line
+	3000 1600 3250 1600
+Wire Wire Line
+	2800 1600 3000 1600
+Wire Wire Line
+	1900 1600 2050 1600
+Wire Wire Line
+	1900 1600 1900 1750
+Wire Wire Line
+	1900 1300 1900 1600
+Wire Wire Line
+	3950 1600 4050 1600
+Wire Wire Line
+	1800 6650 2050 6650
+Wire Wire Line
+	4000 6650 4000 6700
+Wire Wire Line
+	3750 6650 4000 6650
+Wire Notes Line
+	800  2900 6600 2900
 $EndSCHEMATC
