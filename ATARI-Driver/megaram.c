@@ -1,4 +1,5 @@
 /*
+ * C64 Decrunching simulator. It's a FAKE!!! ;-)
  * OS ROM RAM Enabler
 */
 
