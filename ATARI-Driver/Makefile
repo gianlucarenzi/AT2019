@@ -25,7 +25,7 @@ else
 	-xlxe_rom ~/ATARI/ATARIXL.ROM \
 	-scanlines 50 \
 	-scanlinesint \
-	-xe \
+	-320xe \
 	$(TARGET)
 	
 	DEFINES += M576K
