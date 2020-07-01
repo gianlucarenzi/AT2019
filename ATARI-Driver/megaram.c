@@ -35,14 +35,14 @@ static unsigned char * nmien = (unsigned char *) 0xD40E;
 	CLI();
 
 static int mode_576k[32] = {
-	0x80, 0x82, 0x84, 0x86, 0x88, 0x8A, 0x8C, 0x8E,
-	0xA0, 0xA2, 0xA4, 0xA6, 0xA8, 0xAA, 0xAC, 0xAE,
-	0xC0, 0xC2, 0xC4, 0xC6, 0xC8, 0xCA, 0xCC, 0xCE,
-	0xE0, 0xE2, 0xE4, 0xE6, 0xE8, 0xEA, 0xEC, 0xEE,
+	0x81, 0x83, 0x85, 0x87, 0x89, 0x8B, 0x8D, 0x8F,
+	0xA1, 0xA3, 0xA5, 0xA7, 0xA9, 0xAB, 0xAD, 0xAF,
+	0xC1, 0xC3, 0xC5, 0xC7, 0xC9, 0xCB, 0xCD, 0xCF,
+	0xE1, 0xE3, 0xE5, 0xE7, 0xE9, 0xEB, 0xED, 0xEF,
 }; 
 
 static int mode_130xe[8] = {
-	0xA2, 0xA6, 0xAA, 0xAE, 0xE2, 0xE6, 0xEA, 0xEE,
+	0xA3, 0xA7, 0xAB, 0xAF, 0xE3, 0xE7, 0xEB, 0xEF,
 };
 
 static int bank_val[32] = {
@@ -80,9 +80,12 @@ int main(void)
 	int reg;
 	int m_portb, dmareg;
 	char c;
-	unsigned char * wram = (unsigned char *) 0x4800; // RAM window (under SELFTEST ROM but within 0x4000-0x7FFF range
+	unsigned char * wram = (unsigned char *) 0x4000; // RAM window (under SELFTEST ROM but within 0x4000-0x7FFF range
+	unsigned char * chargen;
+	int charbas;
 	unsigned char * portb = (unsigned char *) 0xD301;
-	unsigned char * osrom;
+	unsigned char * charbase;
+	unsigned char * addr;
 	int count, i, bad;
 	unsigned char fake[] = {
 		'L', 'O', 'A', 'D', '"', '$', '"', ',', '8', ',', '1', 0x9b, 0x9b,
@@ -100,34 +103,32 @@ int main(void)
 	srand(0xdeadbeef);
 	clrscr();
 
-#ifndef __ATARIXL__
-#error "Use target as atarixl"
-#endif
-
-	// This program must be compiled and linked with the cc65 unique feature
-	// of startup C code for mode: atarixl. It change the OS from
-	// ROM to RAM!!
+	// New character base
+	chargen = (unsigned char *) 0x8000;
+	charbase = (unsigned char *) 0xE000;
+	memcpy(chargen, charbase, 1024);
 
 	// Commodore 64 Chargen ROM */
 	// chars from 0 to 31 ' !"#...
-	osrom = (unsigned char *) 0xE000;
-	count = 32;
-	for (reg = 0; reg < (count * 8); reg++)
-		*(osrom + reg) = c64_font[reg + (32 * 8)];
+	addr = (unsigned char *) (chargen + (0 * 8));
+	for (reg = 0; reg < (32 * 8); reg++)
+		*(addr + reg) = c64_font[reg + (32 * 8)];
 
 	// chars from 32 to 63 '@ABC...[\]^_
-	osrom = (unsigned char *) (0xE000 + ('@' - 32) * 8);
-	for (reg = 0; reg < (count * 8); reg++)
-		*(osrom + reg) = c64_font[reg];
+	addr = (unsigned char *) (chargen + (32 * 8));
+	for (reg = 0; reg < (32 * 8); reg++)
+		*(addr + reg) = c64_font[reg];
 
 	// chars from 64 to 95...
-	osrom = (unsigned char *) (0xE000 + (64 * 8));
-	for (reg = 0; reg < (count * 8); reg++)
-		*(osrom + reg) = c64_font[reg + (64 * 8)];
+	addr = (unsigned char *) (chargen + (64 * 8));
+	for (reg = 0; reg < (32 * 8); reg++)
+		*(addr + reg) = c64_font[reg + (64 * 8)];
 
 	poke(709, 14);
 	poke(712, 120);
 	poke(710, 116);
+	// new charbase
+	poke(756, 0x80);
 
 	printf("\n  **** ATARI 130XE MEMORY TESTER ****\n\n");
 	printf(" 576K INTERNAL EXPANSION RAM SYSTEM BY\n         Scott Peterson (c) 1986\n");

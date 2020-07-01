@@ -1,6 +1,6 @@
 # Makefile
 CL ?= cl65
-MACH ?= atarixl
+MACH ?= atari
 TARGET ?= atari130xe_576k.com
 EMULATOR ?= atari800
 DISABLE_EXPANSION ?= no
