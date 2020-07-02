@@ -14,6 +14,10 @@
 #include "version.h"
 #include "c64.h"
 
+#ifndef __ATARIXL__
+#error "Need ATARIXL (atarixl) mode in -t $MACH"
+#endif
+
 #define PLP()	__asm__("plp")
 #define PHP()	__asm__("php")
 
@@ -24,6 +28,10 @@
 static int nmien_reg = 0;
 static unsigned char * nmien = (unsigned char *) 0xD40E;
 #define CRAZY_COLOR		poke((unsigned char *) 0xD01A, rand());
+
+#define OS_ROM_ENA          (1 << 0)
+#define OS_ROM_DISABLE_MASK (0xFE)
+#define SELF_TEST_DISABLE   (1 << 7)
 
 #define ENTER_CRITICAL() \
 	SEI(); \
@@ -63,14 +71,14 @@ static void delay(int l)
 {
 	int c;
 	for (c = 0; c < l; c++)
-		asm_delay(255);
+		asm_delay(127);
 }
 
 static void setbank(int reg)
 {
 	unsigned char * portb = (unsigned char *) 0xD301;
 	ENTER_CRITICAL();
-	poke(portb, reg);
+	poke(portb, reg & OS_ROM_DISABLE_MASK); // Using RAM based OS (linker as -t atarixl)
 	EXIT_CRITICAL();
 	delay(1);
 }
@@ -80,10 +88,9 @@ int main(void)
 	int reg;
 	int m_portb, dmareg;
 	char c;
-	unsigned char * wram = (unsigned char *) 0x4000; // RAM window (under SELFTEST ROM but within 0x4000-0x7FFF range
-	unsigned char * chargen;
-	int charbas;
+	unsigned char * wram  = (unsigned char *) 0x5000; // RAM window (under SELFTEST ROM but within 0x4000-0x7FFF range
 	unsigned char * portb = (unsigned char *) 0xD301;
+	unsigned char * chargen;
 	unsigned char * charbase;
 	unsigned char * addr;
 	int count, i, bad;
@@ -97,6 +104,8 @@ int main(void)
 
 	dmareg = peek(559);
 	m_portb = peek(portb);
+	m_portb = m_portb & OS_ROM_DISABLE_MASK;
+	poke(portb, m_portb);
 
 	// Turns off DMA
 	poke(559, 0);
@@ -187,13 +196,11 @@ int main(void)
 		}
 		else
 		{
-			//printf("ERROR Bank #%d - R $%02x - E $%02x\n",
-			//		i, reg, bank_val[ i ]);
 			bad++;
 			delay(10);
 		}
 	}
-	setbank(m_portb);
+	poke(portb, m_portb);
 	// 130xe mode = 128k + 64k
 	printf("%dK GOOD.\n", count * 16);
 	if (bad > 0)
@@ -235,13 +242,11 @@ int main(void)
 		}
 		else
 		{
-			//printf("ERROR Bank #%d - R $%02x - E $%02x\n",
-			//	i, reg, bank_val[ i ]);
 			bad++;
 			delay(10);
 		}
 	}
-	setbank(m_portb);
+	poke(portb, m_portb);
 	// 576k mode = 512k + 64k
 	printf("%dK GOOD.\n", count * 16);
 	if (bad > 0)
