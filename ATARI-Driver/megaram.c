@@ -27,11 +27,13 @@
 
 static int nmien_reg = 0;
 static unsigned char * nmien = (unsigned char *) 0xD40E;
-#define CRAZY_COLOR		poke((unsigned char *) 0xD01A, rand());
+#define CRAZY_COLOR		*((unsigned char *) 0xD01A, rand());
 
 #define OS_ROM_ENA          (1 << 0)
 #define OS_ROM_DISABLE_MASK (0xFE)
 #define SELF_TEST_DISABLE   (1 << 7)
+
+#define SDMCTL	(0x22F)
 
 #define ENTER_CRITICAL() \
 	SEI(); \
@@ -78,7 +80,7 @@ static void setbank(int reg)
 {
 	unsigned char * portb = (unsigned char *) 0xD301;
 	ENTER_CRITICAL();
-	poke(portb, reg & OS_ROM_DISABLE_MASK); // Using RAM based OS (linker as -t atarixl)
+	*(portb) = reg & OS_ROM_DISABLE_MASK; // Using RAM based OS (linker as -t atarixl)
 	EXIT_CRITICAL();
 	delay(1);
 }
@@ -102,13 +104,13 @@ int main(void)
 	};
 	unsigned char * ptr;
 
-	dmareg = peek(559);
-	m_portb = peek(portb);
-	m_portb = m_portb & OS_ROM_DISABLE_MASK;
-	poke(portb, m_portb);
+	dmareg = *(SDMCTL);
+	m_portb = *(portb);
+	m_portb &= OS_ROM_DISABLE_MASK;
+	*(portb) = m_portb;
 
 	// Turns off DMA
-	poke(559, 0);
+	*(SDMCTL) = 0;
 	srand(0xdeadbeef);
 	clrscr();
 
@@ -133,6 +135,7 @@ int main(void)
 	for (reg = 0; reg < (32 * 8); reg++)
 		*(addr + reg) = c64_font[reg + (64 * 8)];
 
+	// Still uses pokes here, to improve readability
 	poke(709, 14);
 	poke(712, 120);
 	poke(710, 116);
@@ -145,7 +148,7 @@ int main(void)
 	printf("READY.\n");
 
 	// Turns on DMA
-	poke(559, dmareg);
+	*(SDMCTL) = dmareg;
 
 	// Fake typing... ;-)
 	ptr = fake;
@@ -177,7 +180,7 @@ int main(void)
 		// Now accessing @ bank # (CPU & ANTIC)
 		reg = mode_130xe[i];		// Select BANK #
 		setbank(reg);
-		poke(wram, bank_val[i]);	// Write i @ bank # @
+		*(wram) = bank_val[i];	// Write i @ bank # @
 		CRAZY_COLOR;
 	}
 
@@ -186,7 +189,7 @@ int main(void)
 		reg = mode_130xe[i];		// Select BANK #
 		setbank(reg);
 		// Now read RAM WINDOWED DATA
-		reg = peek(wram);
+		reg = *(wram);
 		CRAZY_COLOR;
 		// Test if it is the correct value written
 		if (reg == bank_val[i])
@@ -200,7 +203,7 @@ int main(void)
 			delay(10);
 		}
 	}
-	poke(portb, m_portb);
+	*(portb) = m_portb;
 	// 130xe mode = 128k + 64k
 	printf("%dK GOOD.\n", count * 16);
 	if (bad > 0)
@@ -223,7 +226,7 @@ int main(void)
 		// Now accessing @ bank # (CPU & ANTIC)
 		reg = mode_576k[i];		// Select BANK #
 		setbank(reg);
-		poke(wram, bank_val[i]);	// Write i @ bank # @
+		*(wram) = bank_val[i];	// Write i @ bank # @
 		CRAZY_COLOR;
 	}
 
@@ -232,7 +235,7 @@ int main(void)
 		reg = mode_576k[i];		// Select BANK #
 		setbank(reg);
 		// Now read RAM WINDOWED DATA
-		reg = peek(wram);
+		reg = *(wram);
 		CRAZY_COLOR;
 		// Test if it is the correct value written
 		if (reg == bank_val[i])
@@ -246,7 +249,7 @@ int main(void)
 			delay(10);
 		}
 	}
-	poke(portb, m_portb);
+	*(portb) = m_portb;
 	// 576k mode = 512k + 64k
 	printf("%dK GOOD.\n", count * 16);
 	if (bad > 0)
