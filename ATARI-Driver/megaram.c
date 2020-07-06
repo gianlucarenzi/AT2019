@@ -27,13 +27,13 @@
 
 static int nmien_reg = 0;
 static unsigned char * nmien = (unsigned char *) 0xD40E;
-#define CRAZY_COLOR		*((unsigned char *) 0xD01A, rand());
+#define CRAZY_COLOR		*((unsigned char *) 0xD01A) = rand();
 
 #define OS_ROM_ENA          (1 << 0)
 #define OS_ROM_DISABLE_MASK (0xFE)
 #define SELF_TEST_DISABLE   (1 << 7)
 
-#define SDMCTL	(0x22F)
+#define SDMCTL	((unsigned char *) 0x022F)
 
 #define ENTER_CRITICAL() \
 	SEI(); \
