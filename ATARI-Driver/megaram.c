@@ -14,10 +14,6 @@
 #include "version.h"
 #include "c64.h"
 
-#ifndef __ATARIXL__
-#error "Need ATARIXL (atarixl) mode in -t $MACH"
-#endif
-
 #define PLP()	__asm__("plp")
 #define PHP()	__asm__("php")
 
@@ -33,7 +29,12 @@ static unsigned char * nmien = (unsigned char *) 0xD40E;
 #define OS_ROM_DISABLE_MASK (0xFE)
 #define SELF_TEST_DISABLE   (1 << 7)
 
-#define SDMCTL	((unsigned char *) 0x022F)
+#define CHBASE		0xE000
+#define CHRAMBASE	0x8000
+#define WRAM		0x5000
+#define PORTB		0xD301
+#define CHBASEOS	0x02F4
+#define SDMCTL		0x022F
 
 #define ENTER_CRITICAL() \
 	SEI(); \
@@ -73,7 +74,7 @@ static void delay(int l)
 {
 	int c;
 	for (c = 0; c < l; c++)
-		asm_delay(127);
+		asm_delay(64);
 }
 
 static void setbank(int reg)
@@ -90,10 +91,12 @@ int main(void)
 	int reg;
 	int m_portb, dmareg;
 	char c;
-	unsigned char * wram  = (unsigned char *) 0x5000; // RAM window (under SELFTEST ROM but within 0x4000-0x7FFF range
-	unsigned char * portb = (unsigned char *) 0xD301;
+	unsigned char * wram  = (unsigned char *) WRAM; // RAM window (under SELFTEST ROM but within 0x4000-0x7FFF range
+	unsigned char * portb = (unsigned char *) PORTB;
+	unsigned char * sdmctl = (unsigned char *) SDMCTL;
 	unsigned char * chargen;
 	unsigned char * charbase;
+	unsigned char * chbase = (unsigned char *) CHBASEOS;
 	unsigned char * addr;
 	int count, i, bad;
 	unsigned char fake[] = {
@@ -104,21 +107,28 @@ int main(void)
 	};
 	unsigned char * ptr;
 
-	dmareg = *(SDMCTL);
+	dmareg = *(sdmctl);
+	ENTER_CRITICAL();
+#ifdef __ATARIXL__
 	m_portb = *(portb);
 	m_portb &= OS_ROM_DISABLE_MASK;
 	*(portb) = m_portb;
+#endif
 
 	// Turns off DMA
-	*(SDMCTL) = 0;
+	*(sdmctl) = 0;
 	srand(0xdeadbeef);
 	clrscr();
 
+	charbase = (unsigned char *) CHBASE;
+#ifndef __ATARIXL__
 	// New character base
-	chargen = (unsigned char *) 0x8000;
-	charbase = (unsigned char *) 0xE000;
+	chargen = (unsigned char *) CHRAMBASE;
 	memcpy(chargen, charbase, 1024);
-
+#else
+	// Character base in ROM/RAM
+	chargen = charbase;
+#endif
 	// Commodore 64 Chargen ROM */
 	// chars from 0 to 31 ' !"#...
 	addr = (unsigned char *) (chargen + (0 * 8));
@@ -139,8 +149,12 @@ int main(void)
 	poke(709, 14);
 	poke(712, 120);
 	poke(710, 116);
-	// new charbase
-	poke(756, 0x80);
+
+#ifndef __ATARIXL__
+	*(chbase) = (CHRAMBASE & 0xff00) >> 8;
+#else
+	*(chbase) = (CHBASE & 0xff00) >> 8;
+#endif
 
 	printf("\n  **** ATARI 130XE MEMORY TESTER ****\n\n");
 	printf(" 576K INTERNAL EXPANSION RAM SYSTEM BY\n         Scott Peterson (c) 1986\n");
@@ -148,7 +162,8 @@ int main(void)
 	printf("READY.\n");
 
 	// Turns on DMA
-	*(SDMCTL) = dmareg;
+	*(sdmctl) = dmareg;
+	EXIT_CRITICAL();
 
 	// Fake typing... ;-)
 	ptr = fake;
@@ -167,6 +182,7 @@ int main(void)
 	bad = 0;
 	// 130XE mode: 192K RAM Pia Port B bank selection bit 2,3,6
 	printf("Checking 130XE Mode: ");
+#ifdef __ATARIXL__
 	for (i = 0; i < 8; i++)
 	{
 		// There is no way to disable this expansion
@@ -204,6 +220,7 @@ int main(void)
 		}
 	}
 	*(portb) = m_portb;
+#endif
 	// 130xe mode = 128k + 64k
 	printf("%dK GOOD.\n", count * 16);
 	if (bad > 0)
@@ -213,6 +230,7 @@ int main(void)
 	count = 0;
 	bad = 0;
 	printf("Checking  576K Mode: ");
+#ifdef __ATARIXL__
 	for (i = 0; i < 32; i++)
 	{
 		// There is no way to disable this expansion
@@ -251,6 +269,7 @@ int main(void)
 	}
 	*(portb) = m_portb;
 	// 576k mode = 512k + 64k
+#endif
 	printf("%dK GOOD.\n", count * 16);
 	if (bad > 0)
 		printf("FAILED BANK: %d\n", bad); 
