@@ -1,35 +1,29 @@
 # Makefile
 CL ?= cl65
 MACH ?= atarixl
-TARGET ?= atari130xe_576k.com
+TARGET ?= megaram.com
 EMULATOR ?= atari800
-DISABLE_EXPANSION ?= no
 ATRFOLDER ?= ~/ATARI/ATR
+ROM ?= ~/ATARI/ATARIXL.ROM
+ROMSWITCH ?= -xlxe_rom
+MACHINE ?= 320xe
+DEFINES ?= RETROBIT
 
-# Usually this software can run on emulator and using the -retrobit switch
-# to enable to memory expansion driver.
-
-ifeq ($(DISABLE_EXPANSION),yes)
-	EMUSWITCHES = -win-width 800 \
-	-win-height 600 \
-	-xlxe_rom ~/ATARI/ATARIXL.ROM \
-	-scanlines 50 \
-	-scanlinesint \
-	-xe \
-	$(TARGET)
+ifeq ($(MACH),atari)
+	ROM = ~/ATARI/ATARIOSB.ROM
+	ROMSWITCH = -osb_rom
+	DEFINES += -DATARI800 \
 	
-	DEFINES += M192K
-else
-	EMUSWITCHES = -win-width 800 \
-	-win-height 600 \
-	-xlxe_rom ~/ATARI/ATARIXL.ROM \
-	-scanlines 50 \
-	-scanlinesint \
-	-320xe \
-	$(TARGET)
-	
-	DEFINES += M576K
 endif
+
+EMUSWITCHES = \
+	-win-width 800 \
+	-win-height 600 \
+	$(ROMSWITCH) $(ROM) \
+	-$(MACHINE) \
+	-scanlines 50 \
+	-scanlinesint \
+	$(TARGET)
 
 C_SOURCES = \
 	megaram.c \
@@ -48,7 +42,7 @@ memsize:
 	@echo "#define MEMSIZEK $(MEMSIZEK)" > version.h
 
 build: $(TARGET)
-	$(EMULATOR) $(EMUSWITCHES) $(TARGET)
+	$(EMULATOR) $(EMUSWITCHES)
 
 atr: $(TARGET)
 	cp $(TARGET) $(ATRFOLDER)/build/mypdos-406.ar0
