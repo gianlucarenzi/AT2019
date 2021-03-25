@@ -50,7 +50,7 @@ static int mode_576k[32] = {
 	0xA1, 0xA3, 0xA5, 0xA7, 0xA9, 0xAB, 0xAD, 0xAF,
 	0xC1, 0xC3, 0xC5, 0xC7, 0xC9, 0xCB, 0xCD, 0xCF,
 	0xE1, 0xE3, 0xE5, 0xE7, 0xE9, 0xEB, 0xED, 0xEF,
-}; 
+};
 
 static int mode_130xe[8] = {
 	0xA3, 0xA7, 0xAB, 0xAF, 0xE3, 0xE7, 0xEB, 0xEF,
@@ -86,6 +86,40 @@ static void setbank(int reg)
 	delay(1);
 }
 
+static unsigned char *scroll =
+		"                                       "
+		"Questo video e' stato prodotto per Federico Di Dato a.k.a. RetroBitLab"
+		" e la sua cricca di compagni di merende, in attesa di essere rintracciati "
+		" e successivamente giustiziati da una folla inferocita che grida vendetta..."
+		"      Questa volta come ogni bella intro scroller abbiamo "
+		"messo anche del testo che non siano i soliti ringraziamenti "
+		" ;-) GRAZIE a tutti ed anche a JAN BETA                     "
+		"                          ";
+
+static void do_scroll(int reset)
+{
+	static int scrlen = -1;
+	static unsigned char *ptr;
+	static int chr = 0;
+	unsigned char buf[41];
+
+	if (scrlen < 0 || reset) {
+		scrlen = strlen(scroll);
+		ptr = scroll;
+		memset(buf, 0, 41);
+		chr = 0;
+	}
+	strncpy(buf, ptr, 40);
+	gotoxy(0, 21);
+	cprintf("%s", buf);
+	++ptr;
+	++chr;
+	if (chr > scrlen) {
+		ptr = scroll;
+		chr = 0;
+	}
+}
+
 int main(void)
 {
 	int reg;
@@ -99,12 +133,11 @@ int main(void)
 	unsigned char * chbase = (unsigned char *) CHBASEOS;
 	unsigned char * addr;
 	int count, i, bad;
-	unsigned char fake[] = {
-		'L', 'O', 'A', 'D', '"', '$', '"', ',', '8', ',', '1', 0x9b, 0x9b,
-		'S', 'E', 'A', 'R', 'C', 'H', 'I', 'N', 'G', ' ', 'F', 'O', 'R', ' ', '$', 0x9b,
-		'L', 'O', 'A', 'D', 'I', 'N', 'G', 0x9b,
-		'\0'// must be last!
-	};
+	unsigned char *fake =
+			"LOAD \"$\",8,1\n\n"
+			"Little  adventures into  retrocomputing \n"
+			"world of 8bit and other  computers from \n"
+			"             last century...\n\n";
 	unsigned char * ptr;
 
 	dmareg = *(sdmctl);
@@ -118,7 +151,6 @@ int main(void)
 	// Turns off DMA
 	*(sdmctl) = 0;
 	srand(0xdeadbeef);
-	clrscr();
 
 	charbase = (unsigned char *) CHBASE;
 #ifndef __ATARIXL__
@@ -150,132 +182,49 @@ int main(void)
 	poke(712, 120);
 	poke(710, 116);
 
+	EXIT_CRITICAL();
+	// Turns on DMA
+	*(sdmctl) = dmareg;
+
 #ifndef __ATARIXL__
 	*(chbase) = (CHRAMBASE & 0xff00) >> 8;
 #else
 	*(chbase) = (CHBASE & 0xff00) >> 8;
 #endif
 
-	printf("\n  **** ATARI 130XE MEMORY TESTER ****\n\n");
-	printf(" 576K INTERNAL EXPANSION RAM SYSTEM BY\n         Scott Peterson (c) 1986\n");
-	printf("   written by Gianluca Renzi (c) 2020\n\n");
-	printf("READY.\n");
-
-	// Turns on DMA
-	*(sdmctl) = dmareg;
-	EXIT_CRITICAL();
-
-	// Fake typing... ;-)
-	ptr = fake;
-	for (i = 0; i < 120; i++)
+	for (;;)
 	{
-		if (*(ptr) == '\0')
-			break;
-		putchar(*(ptr));
-		ptr++;
-		delay(1);
-	}
-	printf("READY.\n%c\n\n", 128 + ' ');
-	delay(50);
+		clrscr();
+		printf("\n");
+		//      ---------0---------0---------0---------0
+		printf("**  RETROBIT LAB VINTAGE ADVENTURES  **\n\n");
+		printf("READY.\n");
 
-	count = 0;
-	bad = 0;
-	// 130XE mode: 192K RAM Pia Port B bank selection bit 2,3,6
-	printf("Checking 130XE Mode: ");
-#ifdef __ATARIXL__
-	for (i = 0; i < 8; i++)
-	{
-		// There is no way to disable this expansion
-		// So the only way to check if it is working good, is to write/read
-		// at the window address a well known data structures...
-
-		//
-		// 7 6 5 4 3 2 1 0 
-		// - X - - X X - -
-		// 
-		// Now accessing @ bank # (CPU & ANTIC)
-		reg = mode_130xe[i];		// Select BANK #
-		setbank(reg);
-		*(wram) = bank_val[i];	// Write i @ bank # @
-		CRAZY_COLOR;
-	}
-
-	for (i = 0; i < 8; i++)
-	{
-		reg = mode_130xe[i];		// Select BANK #
-		setbank(reg);
-		// Now read RAM WINDOWED DATA
-		reg = *(wram);
-		CRAZY_COLOR;
-		// Test if it is the correct value written
-		if (reg == bank_val[i])
+		// Fake typing... ;-)
+		ptr = fake;
+		for (i = 0; i < strlen(fake); i++)
 		{
-			// If it is correct, assume the bank is good!
-			count++;
+			if (*(ptr) == '\0')
+				break;
+			putchar(*(ptr));
+			ptr++;
+			CRAZY_COLOR;
+			//delay(3);
 		}
-		else
+		printf("READY.\n%c\n\n", 128 + ' ');
+		delay(50);
+		for (;;)
 		{
-			bad++;
-			delay(10);
+			c = peek(764);
+			if (c != 255)
+			{
+				do_scroll(1);
+				break;
+			}
+			do_scroll(0);
+			delay(12);
 		}
-	}
-	*(portb) = m_portb;
-#endif
-	// 130xe mode = 128k + 64k
-	printf("%dK GOOD.\n", count * 16);
-	if (bad > 0)
-		printf("FAILED BANK: %d\n", bad); 
-
-	// 576K mode: 576K RAM Pia Port B bank selection bit 1,2,3,5,6 (bit 4 must be 0)
-	count = 0;
-	bad = 0;
-	printf("Checking  576K Mode: ");
-#ifdef __ATARIXL__
-	for (i = 0; i < 32; i++)
-	{
-		// There is no way to disable this expansion
-		// So the only way to check if it is working good, is to write/read
-		// at the window address a well known data structures...
-
-		//
-		// 7 6 5 4 3 2 1 0 
-		// - X - - X X - -
-		// 
-		// Now accessing @ bank # (CPU & ANTIC)
-		reg = mode_576k[i];		// Select BANK #
-		setbank(reg);
-		*(wram) = bank_val[i];	// Write i @ bank # @
-		CRAZY_COLOR;
-	}
-
-	for (i = 0; i < 32; i++)
-	{
-		reg = mode_576k[i];		// Select BANK #
-		setbank(reg);
-		// Now read RAM WINDOWED DATA
-		reg = *(wram);
-		CRAZY_COLOR;
-		// Test if it is the correct value written
-		if (reg == bank_val[i])
-		{
-			// If it is correct, assume the bank is good!
-			count++;
-		}
-		else
-		{
-			bad++;
-			delay(10);
-		}
-	}
-	*(portb) = m_portb;
-	// 576k mode = 512k + 64k
-#endif
-	printf("%dK GOOD.\n", count * 16);
-	if (bad > 0)
-		printf("FAILED BANK: %d\n", bad); 
-
-	for (;;) {
-		CRAZY_COLOR;
+		poke(764,255);
 	}
 	// NEVERREACHED
 	c = cgetc();
