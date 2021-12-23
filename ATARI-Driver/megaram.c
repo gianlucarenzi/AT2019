@@ -93,7 +93,7 @@ static unsigned char *scroll =
 		" e successivamente giustiziati da una folla inferocita che grida vendetta..."
 		"      Questa volta come ogni bella intro scroller abbiamo "
 		"messo anche del testo che non siano i soliti ringraziamenti "
-		" ;-) GRAZIE a tutti ed anche a JAN BETA                     "
+		" ;-) GRAZIE a tutti, a xAD Nightfall Crew ed anche a JAN BETA...         "
 		"                          ";
 
 static void do_scroll(int reset)
