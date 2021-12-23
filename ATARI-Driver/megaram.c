@@ -23,7 +23,6 @@
 
 static int nmien_reg = 0;
 static unsigned char * nmien = (unsigned char *) 0xD40E;
-#define CRAZY_COLOR		*((unsigned char *) 0xD01A) = rand();
 
 #define OS_ROM_ENA          (1 << 0)
 #define OS_ROM_DISABLE_MASK (0xFE)
@@ -120,6 +119,17 @@ static void do_scroll(int reset)
 	}
 }
 
+static unsigned char clut[256] = { 0 };
+
+static void crazy_color(void)
+{
+	static unsigned char idx = 0;
+	*((unsigned char *) 0xD01A) = clut[idx];
+	++idx;
+	if ( idx > 255 )
+		idx = 0;
+}
+
 int main(void)
 {
 	int reg;
@@ -182,6 +192,10 @@ int main(void)
 	poke(712, 120);
 	poke(710, 116);
 
+	/* Fill in the clut */
+	for (reg = 0; reg < 256; reg++)
+		clut[reg] = rand();
+
 	EXIT_CRITICAL();
 	// Turns on DMA
 	*(sdmctl) = dmareg;
@@ -192,6 +206,7 @@ int main(void)
 	*(chbase) = (CHBASE & 0xff00) >> 8;
 #endif
 
+	reg = strlen(fake);
 	for (;;)
 	{
 		clrscr();
@@ -202,13 +217,13 @@ int main(void)
 
 		// Fake typing... ;-)
 		ptr = fake;
-		for (i = 0; i < strlen(fake); i++)
+		for (i = 0; i < reg; ++i)
 		{
 			if (*(ptr) == '\0')
 				break;
 			putchar(*(ptr));
-			ptr++;
-			CRAZY_COLOR;
+			++ptr;
+			crazy_color();
 			//delay(3);
 		}
 		printf("READY.\n%c\n\n", 128 + ' ');
@@ -222,6 +237,7 @@ int main(void)
 				break;
 			}
 			do_scroll(0);
+			//crazy_color();
 			delay(12);
 		}
 		poke(764,255);
