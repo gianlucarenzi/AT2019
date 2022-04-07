@@ -7,26 +7,46 @@ ATRFOLDER ?= ~/ATARI/ATR
 ROM ?= ~/ATARI/ATARIXL.ROM
 ROMSWITCH ?= -xlxe_rom
 MACHINE ?= 320xe
-DEFINES ?= RETROBIT
+DEFINES ?= ATARIXL
+
+EMUWINSIZE ?= \
+	-win-width 800 \
+	-win-height 600 \
+
+
+VIDEOATTR ?= \
+	-scanlines 50 \
+	-scanlinesint \
+
 
 ifeq ($(MACH),atari)
 	ROM = ~/ATARI/ATARIOSB.ROM
 	ROMSWITCH = -osb_rom
-	DEFINES += -DATARI800 \
+	DEFINES = ATARI
 	
 endif
 
+ifeq ($(MACH),c64)
+	ROM = 
+	ROMSWITCH = 
+	DEFINES = CBM
+	MACHINE =
+	EMULATOR = x64
+	EMUWINSIZE =
+	VIDEOATTR =
+		
+endif
+
 EMUSWITCHES = \
-	-win-width 800 \
-	-win-height 600 \
+	$(EMUWINSIZE) \
 	$(ROMSWITCH) $(ROM) \
-	-$(MACHINE) \
-	-scanlines 50 \
-	-scanlinesint \
+	$(MACHINE) \
+	$(VIDEOATTR) \
 	$(TARGET)
 
 C_SOURCES = \
-	megaram.c \
+	memaccess.c \
+#	megaram.c \
 
 
 ASM_SOURCES =
@@ -34,8 +54,8 @@ ASM_SOURCES =
 
 all: $(TARGET)
 
-$(TARGET): memsize megaram.c
-	$(CL) -Oi -t $(MACH) -D$(DEFINES) $(C_SOURCES) $(ASM_SOURCES) -o $(TARGET)
+$(TARGET): memsize $(C_SOURCES)
+	$(CL) -Osir -o $(TARGET) -t $(MACH) -D$(DEFINES) $(C_SOURCES) $(ASM_SOURCES)
 
 # Build MEMSIZEK C variable
 memsize:
