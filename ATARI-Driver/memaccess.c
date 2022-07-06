@@ -117,7 +117,7 @@ int main(void)
 	printf("\nRETROBITLAB MEMORY ACCESS TESTER\n");
 
 #if 1
-	for (c = 32; c <= blksize; c += 32)
+	for (c = 0; c <= blksize; c += 32)
 	{
 		// Start from 32 bytes as minimum
 		blks = 0;
