@@ -85,3 +85,4 @@
 /mcu.bak
 /.metadata/
 /firmware/build/
+/ATARI-Driver/memaccess.o
