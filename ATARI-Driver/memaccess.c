@@ -100,10 +100,8 @@ static void prepare_screen(void)
 	poke(710, 116);
 
 	*(chbase) = (CHRAMBASE & 0xff00) >> 8;
-	clrscr();
-#else
-	clrscr();
 #endif
+	clrscr();
 }
 
 int main(void)
