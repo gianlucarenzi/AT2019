@@ -18,7 +18,6 @@
 #include <stdlib.h>
 #include <peekpoke.h>
 #include <time.h>
-#include "version.h"
 
 #define PLP()	__asm__("plp")
 #define PHP()	__asm__("php")
@@ -113,6 +112,15 @@ int main(void)
 	prepare_screen();
 
 	printf("\nRETROBITLAB MEMORY ACCESS TESTER\n");
+#ifdef CBM
+	printf("   FOR COMMODORE 64 COMPUTERS\n");
+#endif
+#ifdef ATARIXL
+	printf("   FOR ATARI XL/XE COMPUTERS\n");
+#endif
+#ifdef ATARI
+	printf("   FOR ATARI 400/800 COMPUTERS\n");
+#endif
 
 #if 1
 	for (c = 0; c <= blksize; c += 32)
