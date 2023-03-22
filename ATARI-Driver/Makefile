@@ -6,7 +6,7 @@ EMULATOR ?= atari800
 ATRFOLDER ?= ~/ATARI/ATR
 ROM ?= ~/ATARI/ATARIXL.ROM
 ROMSWITCH ?= -xlxe_rom
-MACHINE ?= -320xe
+MACHINE ?= -576xe
 DEFINES ?= ATARIXL
 
 # CC65 Useful environment variables if not defined by the
@@ -69,8 +69,12 @@ ASM_SOURCES =
 
 all: $(TARGET)
 
-$(TARGET):
-	$(CL) -Osir -o $(TARGET) -t $(MACH) -D$(DEFINES) $(INCDIR) $(C_SOURCES) $(ASM_SOURCES)
+$(TARGET): memsize $(C_SOURCES)
+	$(CL) -Osir -o $(TARGET) -t $(MACH) -D$(DEFINES) $(C_SOURCES) $(ASM_SOURCES)
+
+# Build MEMSIZEK C variable
+memsize:
+	@echo "#define MEMSIZEK $(MEMSIZEK)" > version.h
 
 build: $(TARGET)
 	$(EMULATOR) $(EMUSWITCHES)
@@ -80,4 +84,6 @@ atr: $(TARGET)
 	dir2atr -a -b MyPicoDos406 $(ATRFOLDER)/memorytester-xe.atr $(ATRFOLDER)/build
 
 clean:
+	rm *.o
+	rm version.h
 	rm $(TARGET)

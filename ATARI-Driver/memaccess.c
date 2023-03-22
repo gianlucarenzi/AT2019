@@ -77,7 +77,7 @@ static void prepare_screen(void)
 	chargen = (unsigned char *) CHRAMBASE;
 	memcpy(chargen, charbase, 1024);
 
-	// Commodore 64 Chargen ROM */
+	// Commodore 64 Chargen ROM
 	// chars from 0 to 31 ' !"#...
 	addr = (unsigned char *) (chargen + (0 * 8));
 	for (reg = 0; reg < (32 * 8); reg++)
