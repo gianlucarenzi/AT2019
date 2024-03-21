@@ -27,16 +27,16 @@
 #define poke(a,b)	POKE(a,b)
 
 #if defined(ATARI) || defined(ATARIXL)
-#warning "ATARI COMPUTER BUILD"
-#define VDP_ADDR	0xD500
-#define SRCMEM		0x0600
+	#warning "ATARI COMPUTER BUILD"
+	#define VDP_ADDR	0xD500 /* _CCTL pin 15 Cart Port */
 #elif defined(CBM)
-#warning "COMMODORE 64 COMPUTER BUILD"
-#define VDP_ADDR	0xDE00
-#define SRCMEM		0xC000
+	#warning "COMMODORE 64 COMPUTER BUILD"
+	#define VDP_ADDR	0xDE00 /* _IO1 pin 7 Cart Port */
 #else
-#error "NO MACHINE DEFINED"
+	#error "NO MACHINE DEFINED"
 #endif
+
+#define SRCMEM		0xC000
 
 #define VDP_REG_SZ	(1 << 5) // 32 registers
 #define VDP_MEM		(VDP_ADDR + VDP_REG_SZ)
@@ -58,6 +58,7 @@ static int jiffies_elapsed(int j)
 	else
 		return 0;
 }
+
 
 static void prepare_screen(void)
 {
@@ -103,11 +104,56 @@ static void prepare_screen(void)
 	clrscr();
 }
 
+static unsigned char gpu = 0;
+static unsigned char use_gpu = 1;
+
+static void ask_gpu(void)
+{
+#ifdef FORCE_BENCHMARK
+	char buf[2];
+	printf("\n---> Use GPU (Y/N)? ");
+	scanf("%s", buf);
+	use_gpu = (buf[0] == 'Y'| buf[0] == 'y') ? 1 : 0;
+	printf("\n");
+#endif
+}
+
+static void enable_gpu(void)
+{
+#ifdef FORCE_BENCHMARK
+	if (!use_gpu)
+	{
+	#ifdef CBM
+		poke(0xD011, gpu);
+	#else
+		poke(559, gpu);
+	#endif
+	}
+#endif
+}
+
+static void disable_gpu(void)
+{
+#ifdef FORCE_BENCHMARK
+	if (!use_gpu)
+	{
+	#ifdef CBM
+		gpu = peek(0xD011);
+		poke(0xD011, 0x0b);
+	#else
+		gpu = peek(559);
+		poke(559,0);
+	#endif
+	}
+#endif
+}
+
 int main(void)
 {
 	register char c;
 	register unsigned int blks = 0;
 	register unsigned int blksize = VDP_BUF_SZ;
+	long sizes;
 
 	prepare_screen();
 
@@ -122,7 +168,10 @@ int main(void)
 	printf("   FOR ATARI 400/800 COMPUTERS\n");
 #endif
 
-#if 1
+	ask_gpu();
+
+	disable_gpu();
+
 	for (c = 0; c <= blksize; c += 32)
 	{
 		// Start from 32 bytes as minimum
@@ -136,7 +185,8 @@ int main(void)
 			memcpy((unsigned char *)SRCMEM, (unsigned char *)VDP_MEM, c);
 			++blks;
 		}
-		printf("Blocks: %04d -- Size: %u bytes/sec\n", blks, (blks * c));
+		sizes = 1L * blks * c;
+		printf("Blocks: %04d -- Size: %ld bytes/sec\n\n", blks, sizes);
 	}
 	// Do Last computation
 	c = blksize;
@@ -150,8 +200,10 @@ int main(void)
 		memcpy((unsigned char *)SRCMEM, (unsigned char *)VDP_MEM, c);
 		++blks;
 	}
-	printf("Last: %04d -- Size: %u bytes/sec\n", blks, (blks * c));
-#endif
+	sizes = 1L * blks * c;
+	printf("Blocks: %04d -- Size: %ld bytes/sec\n", blks, sizes);
+	enable_gpu();
+
 	// NEVERREACHED
 	c = cgetc();
 	return(0);
