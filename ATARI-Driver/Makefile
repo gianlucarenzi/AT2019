@@ -8,6 +8,7 @@ ROM ?= ~/ATARI/ATARIXL.ROM
 ROMSWITCH ?= -xlxe_rom
 MACHINE ?= -576xe
 DEFINES ?= ATARIXL
+FORCE_BENCHMARK ?= 0
 
 # CC65 Useful environment variables if not defined by the
 # system/environment shell
@@ -66,6 +67,11 @@ ASM_SOURCES =
 
 #INCDIR = -I$(CC65_INC) \
 #	-I$(CA65_INC) \
+
+ifeq ($(FORCE_BENCHMARK), 1)
+	DEFINES += -DFORCE_BENCHMARK
+
+endif
 
 all: $(TARGET)
 
