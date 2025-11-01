@@ -15,7 +15,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L AmigaComponents:ISSI61WV5128BL U7
+L RetroBitLab:ISSI61WV5128BL U7
 U 1 1 5C2B9006
 P 7500 2250
 F 0 "U7" H 7200 3300 50  0000 C CNN
@@ -73,7 +73,7 @@ F 3 "" H 7750 1100 60  0001 C CNN
 	0    -1   -1   0   
 $EndComp
 $Comp
-L AmigaComponents:TXB0108-PW U2
+L RetroBitLab:TXB0108-PW U2
 U 1 1 5C2BF846
 P 1350 1650
 F 0 "U2" H 1150 2400 60  0000 L CNN
@@ -84,7 +84,7 @@ F 3 "" H 1350 1650 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L AmigaComponents:TXB0108-PW U3
+L RetroBitLab:TXB0108-PW U3
 U 1 1 5C2BF9CC
 P 1650 4200
 F 0 "U3" H 1450 4950 60  0000 L CNN
@@ -95,7 +95,7 @@ F 3 "" H 1650 4200 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L AmigaComponents:TXB0108-PW U5
+L RetroBitLab:TXB0108-PW U5
 U 1 1 5C2BFA07
 P 4100 4200
 F 0 "U5" H 3900 4950 60  0000 L CNN
@@ -106,7 +106,7 @@ F 3 "" H 4100 4200 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L AmigaComponents:TXB0108-PW U6
+L RetroBitLab:TXB0108-PW U6
 U 1 1 5C2BFAD5
 P 4600 1600
 F 0 "U6" H 4400 2350 60  0000 L CNN
@@ -362,7 +362,7 @@ mRD4
 Text GLabel 3700 4100 0    39   BiDi ~ 0
 ~mS4
 $Comp
-L AmigaComponents:TXB0108-PW U4
+L RetroBitLab:TXB0108-PW U4
 U 1 1 5C374049
 P 2900 1600
 F 0 "U4" H 2700 2350 60  0000 L CNN
@@ -466,7 +466,7 @@ EXTERNAL RAM ACCESS WILL ASSERT THE EXTSEL SIGNAL (code)
 Text GLabel 8450 2650 3    39   BiDi ~ 0
 mW/~R
 $Comp
-L AmigaComponents:ISSI61WV5128BL U8
+L RetroBitLab:ISSI61WV5128BL U8
 U 1 1 5C5E8B61
 P 9700 2300
 F 0 "U8" H 9400 3350 50  0000 C CNN

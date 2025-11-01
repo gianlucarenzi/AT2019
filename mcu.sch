@@ -1,5 +1,5 @@
 EESchema Schematic File Version 2
-LIBS:AmigaComponents
+LIBS:RetroBitLab
 LIBS:4xxx
 LIBS:4xxx_IEEE
 LIBS:74xGxx

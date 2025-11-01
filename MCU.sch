@@ -29,7 +29,7 @@ LIBS:opto
 LIBS:atmel
 LIBS:contrib
 LIBS:valves
-LIBS:AmigaComponents
+LIBS:RetroBitLab
 LIBS:MCU_ST_STM32F4
 LIBS:atari23MTS_Upgrade-cache
 EELAYER 25 0

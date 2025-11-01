@@ -15,7 +15,7 @@ Comment3 ""
 Comment4 ""
 $EndDescr
 $Comp
-L AmigaComponents:ATARICARTRIDGE CART2
+L RetroBitLab:ATARICARTRIDGE CART2
 U 1 1 5C2FF23F
 P 1850 2200
 F 0 "CART2" H 2300 3050 50  0000 C CNN
@@ -26,7 +26,7 @@ F 3 "" H 1850 2200 60  0001 C CNN
 	1    0    0    -1  
 $EndComp
 $Comp
-L AmigaComponents:ECIBUS ECI2
+L RetroBitLab:ECIBUS ECI2
 U 1 1 5C2FF2C0
 P 4950 2250
 F 0 "ECI2" H 5400 2700 50  0000 C CNN
