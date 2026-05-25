@@ -59,11 +59,11 @@ EMUSWITCHES = \
 	$(VIDEOATTR) \
 	$(TARGET)
 
-C_SOURCES = \
+C_SOURCES ?= \
 	memaccess.c \
 
 
-ASM_SOURCES =
+ASM_SOURCES ?=
 
 #INCDIR = -I$(CC65_INC) \
 #	-I$(CA65_INC) \
