@@ -1,10 +1,32 @@
 ╔════════════════════════════════════════════════════════════════════════════╗
 ║                         RmtSkeleton - START HERE                           ║
 ║              Minimal Template for RMT Player Integration                    ║
+║                                                                              ║
+║             🎮 Perfect for Atari Videogames with Disk Loading 🎮           ║
 ╚════════════════════════════════════════════════════════════════════════════╝
 
 Benvenuto! Questo è uno skeleton minimalista per integrare il player RMT 
 (Raster Music Tracker) nel tuo progetto cc65.
+
+Contiene anche la strategia audio ottimale per videogame Atari che caricano 
+asset da disco senza interruzioni audio.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🎮 AUDIO DESIGN PATTERN (Il Motivo di Questo Skeleton)
+
+Se stai creando un videogame Atari con caricamento asset da SIO (disco):
+
+  Problem:  Caricare da disco mentre suona musica RMT = glitch audio
+            (CH3+4 necessari per baud rate seriale)
+
+  Solution: Usa solo CH1+2 per la musica, CH3+4 per effetti sonori
+  
+            ✅ Musica CH1+2: continua durante caricamento (ZERO GLITCH!)
+            ✅ Effetti CH3+4: disponibili quando SIO inattivo
+            ✅ Esperienza: professionale, arcade-like
+
+  Questo skeleton implementa esattamente questo design!
 
 ═══════════════════════════════════════════════════════════════════════════════
 
@@ -56,8 +78,12 @@ RmtSkeleton/
 
 📖 DOCUMENTAZIONE
 
+- 00-START-HERE.txt (questo file)
+  → Quick start e FAQ
+  
 - README.md
   → Spiegazione completa del progetto e dell'API
+  → ⭐ Sezione "Audio Design Pattern for Videogames" (IL MOTIVO PRINCIPALE!)
   → Memory layout, linker config, VBI handler
   → Come adattare per il tuo progetto
 
@@ -66,9 +92,20 @@ RmtSkeleton/
   → 6 step essenziali
   → Troubleshooting
 
+- SFX_INTEGRATION.md ⭐ NUOVO
+  → Come aggiungere effetti sonori su CH3+4
+  → Codice di esempio (sfx.c / sfx.h)
+  → Reference POKEY registers
+  → Audio design best practices
+
 - CHECKLIST.md
   → Checklist di test prima, durante e dopo l'integrazione
   → Diagnositca e troubleshooting
+
+- FIND_2CHANNEL_SONGS.md
+  → Come trovare file RMT online
+  → Verificare quanti canali usa un RMT
+  → Filtrare per canali 1+2 (perfetti per SIO)
 
 ═══════════════════════════════════════════════════════════════════════════════
 
@@ -116,6 +153,14 @@ R: Genera un .s per ciascuna, linkale tutte, cambia con rmt_init().
 D: Cosa succede se faccio I/O disco?
 R: Usa rmt_io_begin() / rmt_io_end() attorno al caricamento.
    I canali 3/4 si silenzierno (usati dalla seriale), 1/2 continuano.
+   Perfetto se usi il design 2+2 channels!
+
+D: Come aggiungo effetti sonori?
+R: Leggi SFX_INTEGRATION.md per l'implementazione completa.
+   Usa CH3+4 per effetti, CH1+2 restano per musica.
+   Gli effetti si mutano automaticamente durante SIO (ZERO GLITCH!)
+
+═══════════════════════════════════════════════════════════════════════════════
 
 ═══════════════════════════════════════════════════════════════════════════════
 

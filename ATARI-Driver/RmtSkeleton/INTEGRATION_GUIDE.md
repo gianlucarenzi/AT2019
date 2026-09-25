@@ -1,6 +1,19 @@
 # Integration Guide - Aggiungere il Player RMT al Tuo Progetto cc65
 
-Questo documento spiega passo passo come integrare il player RMT dal skeleton nel tuo progetto cc65.
+Questo documento spiega passo passo come integrare il player RMT dal skeleton nel tuo progetto cc65, inclusa la strategia audio ottimale per videogame con caricamento da disco.
+
+## Strategia Audio Consigliata: 2+2 Channels
+
+**Prima di integrare**, capisci il design pattern ottimale per Atari:
+
+- **CH1+2**: Musica di fondo RMT (continua, mai interrotta)
+- **CH3+4**: Effetti sonori del gioco (disponibili quando SIO inattivo)
+
+**Vantaggio**: Durante il caricamento da disco, la musica suona **identicamente** perché usa solo CH1+2. Zero glitch audio.
+
+Vedi `README.md` sezione "Audio Design Pattern" per i dettagli tecnici e `SFX_INTEGRATION.md` per come implementare gli effetti sonori.
+
+---
 
 ## Passo 1: Copia i File Necessari
 
@@ -66,21 +79,32 @@ Nel tuo main.c (o dove usi la musica):
 
 ```c
 #include "rmt.h"
+#include "sfx.h"     // Se usi effetti sonori
 
 int main(void)
 {
     // Inizializza il player
-    rmt_init(rmt_song);
+    rmt_init(rmt_song_2channel);
     
     // Avvia la musica (attacca al VBI)
     rmt_vbi_on();
     
-    // ... il tuo programma qui ...
-    
-    // Se fai accesso a disco
-    rmt_io_begin();
-    // ... operazione SIO ...
-    rmt_io_end();
+    // Main game loop
+    for (;;) {
+        // ... tua logica di gioco ...
+        
+        // Gestisci effetti sonori (se SIO inattivo)
+        if (player_jumped()) {
+            sfx_play(SFX_JUMP);
+        }
+        
+        // Se fai accesso a disco (IMPORTANTE!)
+        if (should_load_asset()) {
+            rmt_io_begin();         // CH3+4 silenziano, CH1+2 continua
+            // ... operazione SIO ...
+            rmt_io_end();           // CH3+4 riprendono
+        }
+    }
     
     // Ferma la musica
     rmt_vbi_off();
@@ -88,6 +112,13 @@ int main(void)
     return 0;
 }
 ```
+
+**Cosa cambia**: 
+- Includi anche `sfx.h` per gli effetti sonori
+- Usa `rmt_io_begin()` / `rmt_io_end()` **per ogni operazione SIO**
+- Gli effetti sonori vengono muti automaticamente durante SIO (verifichi `rmt_ioactive` interno a `rmt_io_begin`)
+
+Vedi `SFX_INTEGRATION.md` per l'implementazione completa degli effetti sonori.
 
 ## Passo 5: Testa la Compilazione
 
@@ -112,7 +143,20 @@ Se ricevi errori:
 make run    # se hai atari800
 ```
 
-O carica `build/your_program.com` nel tuo emulatore preferito.
+Ascolta: la musica dovrebbe suonare perfettamente, sia durante il gioco che durante caricamenti (se implementati).
+
+## Opzionale: Aggiungere Effetti Sonori
+
+Se vuoi aggiungere effetti sonori su CH3+4:
+
+1. Copia `SFX_INTEGRATION.md` nel tuo progetto
+2. Implementa `sfx.c` e `sfx.h` seguendo l'esempio
+3. Includi in main.c: `#include "sfx.h"`
+4. Chiama `sfx_play()` per effetti (la mutazione durante SIO avviene automaticamente)
+
+Vedi `SFX_INTEGRATION.md` per l'implementazione completa con esempi di codice.
+
+---
 
 ## Utilizzo Avanzato
 
