@@ -1,0 +1,72 @@
+PokeyATest - RMT music on VBI while loading assets from disk (SIO)
+===================================================================
+
+Test bench: a Raster Music Tracker tune keeps playing while files of
+2K..16K are loaded from disk, verified (size + checksum) and loaded again,
+forever. It counts passes, errors, SIO retries and player timing.
+
+Compile / Launch:
+-----------------
+make            -> build/pokeyatest.atr (MyPicoDos406N, autorun PKATEST.COM)
+make run        -> atari800 -xl -pal -nopatchall (NO SIO patch: real POKEY
+                   serial timing; ~/.atari800.cfg has ENABLE_SIO_PATCH=1)
+
+make SONG=music/xxx.rmt               any mono RMT4 module, instr. speed 1
+make ASSET_SIZES="2048 7000 16384"    sizes in bytes, 2048..16384
+make clean all DEFS=-DTEST_NOMUSIC    baseline without the player
+make clean all DEFS=-DSTOP_ON_ERROR   freeze the screen at the first error
+
+Needs cc65, python3, dir2atr (AtariSIO), atari800.
+
+Keys: L = switch loader (RBL IRQ SIO / OS SIOV)
+      S = OS SIO noise on/off (SOUNDR, only meaningful with the OS loader)
+      ESC = quit
+
+Files:
+------
+src/rmtplayr.s   RMT 1.20090108 player (Raster/C.P.U.) ported to ca65, mono,
+                 relocatable (tables in the page aligned RMTTAB segment)
+src/rmt_feat.inc RMT feature switches (all enabled)
+src/rmtvbi.s     player on the immediate VBI + C interface (rmt.h)
+src/sio.s        sector read: own IRQ driven SIO driver + OS SIOV version
+src/dos2fs.c     read only DOS 2.x/MyDOS filesystem on raw sectors (no DOS)
+src/main.c       test program
+src/pokeyatest.cfg  atari.cfg + RMTTAB segment
+tools/rmt2ca65.py   .rmt -> relocatable ca65 source (pointers rewritten)
+tools/mkassets.py   test assets + assets.h with sizes and checksums
+
+How it works:
+-------------
+1) Immediate VBI (VVBLKI), not deferred: during SIO the OS sets CRITIC and
+   skips the deferred VBI. The handler re-enables IRQs (CLI) while the player
+   runs, so the serial IRQs are not starved (a byte every ~930 cycles).
+
+2) CLI only if the interrupted code had I=0 (P stacked by the NMI).
+   If the NMI hit inside an IRQ handler, a CLI would re-enter it. In that
+   case the tick is postponed and run at the tail of the next serial IRQ
+   (rmt_irqtick) or at the next VBI: the tempo does not change
+   ("late" counter = postponed ticks, "lost" = really lost, must stay 0).
+
+3) During a transfer (rmt_io_begin/rmt_io_end) POKEY channels 3+4 and
+   AUDCTL are the 16 bit baud rate generator of the serial port: the player
+   does not write AUDF3/AUDC3/AUDF4/AUDC4/AUDCTL and the music goes on with
+   channels 1+2 only. Channels 3/4 are programmed with volume 0, so the
+   loading is silent (with the OS loader SOUNDR=0 does the same).
+
+4) Loader. The OS SIOV is NOT safe with a heavy VBI player: after the drive
+   "Complete" byte the OS re-enables the SERIN IRQ from main code (RECEIV);
+   if the VBI runs there the first data byte is lost and the sector comes
+   in shifted by one byte - and SIOV can even return status 1 (OK)!
+   Press L to see it: "BADLNK" errors. The RBL loader receives ACK,
+   Complete, the 128 data bytes and the checksum in a state machine inside
+   the VSERIN IRQ handler: nothing depends on main code timing.
+
+Measured in atari800 (PAL, -nopatchall, 19200 baud):
+   no music, OS SIOV      : ~960 bytes/s, 0 errors
+   music, RBL IRQ loader  : ~880 bytes/s, 0 errors, 0 lost ticks
+                            (1216 files in a turbo stress run)
+   music, OS SIOV         : shifted sectors, ~70% of the files fail
+                            (803 errors vs 315 OK)
+
+Limits: 128 bytes sectors only (SD/ED), drive speed 19200 baud, mono RMT4
+modules, the VBI calls the player once per frame (instrument speed 1).
