@@ -5,6 +5,9 @@ Test bench: a Raster Music Tracker tune keeps playing while files of
 2K..16K are loaded from disk, verified (size + checksum) and loaded again,
 forever. It counts passes, errors, SIO retries and player timing.
 
+Full guide (Italian): doc/GUIDA.md - RMT player API, asset loading API,
+loaders, diagnostics.
+
 Compile / Launch:
 -----------------
 make            -> build/pokeyatest.atr (MyPicoDos406N, autorun PKATEST.COM)
