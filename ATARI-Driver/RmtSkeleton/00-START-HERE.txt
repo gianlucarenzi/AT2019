@@ -1,0 +1,156 @@
+╔════════════════════════════════════════════════════════════════════════════╗
+║                         RmtSkeleton - START HERE                           ║
+║              Minimal Template for RMT Player Integration                    ║
+╚════════════════════════════════════════════════════════════════════════════╝
+
+Benvenuto! Questo è uno skeleton minimalista per integrare il player RMT 
+(Raster Music Tracker) nel tuo progetto cc65.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📁 STRUTTURA DEL PROGETTO
+
+RmtSkeleton/
+  README.md                 ← Documentazione completa (INIZIA DA QUI)
+  INTEGRATION_GUIDE.md      ← Guida passo-passo per il tuo progetto
+  CHECKLIST.md              ← Checklist di test e verifica
+  Makefile                  ← Build automation
+  
+  src/
+    main.c                  ← Programma minimalista (template)
+    rmtskeleton.cfg         ← Configurazione linker (con RMTTAB)
+    rmtplayr.s              ← RMT player (da PokeyATest, non modificare)
+    rmtvbi.s                ← VBI handler (da PokeyATest, non modificare)
+    rmt.h                   ← API C (da PokeyATest, non modificare)
+    rmt_feat.inc            ← Feature switches (da PokeyATest, non modificare)
+  
+  tools/
+    rmt2ca65.py             ← Converte .rmt in ca65 rilocabile
+  
+  music/
+    gemx.rmt                ← Canzone di esempio
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🚀 QUICK START
+
+1. Leggi README.md (documentazione completa)
+
+2. Compila questo skeleton così com'è:
+   
+   $ cd RmtSkeleton
+   $ make
+   
+   Risultato: build/rmtskeleton.com (executable)
+
+3. Esegui con atari800:
+   
+   $ make run
+
+4. Per usare la tua canzone:
+   
+   $ cp your_song.rmt music/
+   $ make SONG=music/your_song.rmt
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📖 DOCUMENTAZIONE
+
+- README.md
+  → Spiegazione completa del progetto e dell'API
+  → Memory layout, linker config, VBI handler
+  → Come adattare per il tuo progetto
+
+- INTEGRATION_GUIDE.md
+  → Guida passo-passo per aggiungere RMT al TUO progetto
+  → 6 step essenziali
+  → Troubleshooting
+
+- CHECKLIST.md
+  → Checklist di test prima, durante e dopo l'integrazione
+  → Diagnositca e troubleshooting
+
+═══════════════════════════════════════════════════════════════════════════════
+
+✨ COSA CONTIENE QUESTO SKELETON
+
+✓ Il player RMT completo (ca65, 4 canali mono)
+✓ VBI handler per il timing automatico
+✓ File di configurazione linker corretto (RMTTAB align=$100)
+✓ Makefile che converte .rmt → .s automaticamente
+✓ Programma principale minimalista
+✓ Tutta la documentazione necessaria
+
+Non contiene:
+✗ Asset loader (vedi ../PokeyATest per quello)
+✗ Codice di gioco (tu lo scrivi)
+✗ Effetti sonori (solo music background)
+
+═══════════════════════════════════════════════════════════════════════════════
+
+🎵 API ESSENZIALE (in 3 righe)
+
+#include "rmt.h"
+
+rmt_init(rmt_song);    // Inizializza
+rmt_vbi_on();          // Inizia la musica
+rmt_vbi_off();         // Ferma la musica
+
+═══════════════════════════════════════════════════════════════════════════════
+
+❓ FAQ VELOCE
+
+D: Come cambio la canzone?
+R: Copia il file .rmt in music/, poi: make SONG=music/your_song.rmt
+
+D: Che format di file musicale vuole?
+R: Solo RMT4 mono, instrument speed 1. Usa Raster Music Tracker.
+
+D: Posso usare RMT8 stereo?
+R: No, il player è mono. RMT8 viene rifiutato.
+
+D: Se ho più canzoni?
+R: Genera un .s per ciascuna, linkale tutte, cambia con rmt_init().
+   Leggi INTEGRATION_GUIDE.md per i dettagli.
+
+D: Cosa succede se faccio I/O disco?
+R: Usa rmt_io_begin() / rmt_io_end() attorno al caricamento.
+   I canali 3/4 si silenzierno (usati dalla seriale), 1/2 continuano.
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📦 REQUISITI
+
+cc65 (ca65, cl65)
+Python 3 (per rmt2ca65.py)
+atari800 (opzionale, solo per eseguire l'emulator)
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📝 PROSSIMI PASSI
+
+1. Leggi README.md completamente
+2. Testa questo skeleton così com'è (make && make run)
+3. Leggi INTEGRATION_GUIDE.md
+4. Copia i file nel TUO progetto
+5. Integra step-by-step seguendo la checklist
+6. Divertiti! 🎶
+
+═══════════════════════════════════════════════════════════════════════════════
+
+📚 RIFERIMENTI
+
+Completa documentazione in:
+  ../PokeyATest/doc/GUIDA.md     (italiano, molto dettagliato)
+  ../PokeyATest/README           (english, breve)
+  ../PokeyATest/src/main.c       (esempio completo con asset loader)
+
+Original RMT player:
+  Radek Sterba (Raster/C.P.U.)
+  Ported to ca65 by RetroBitLab
+
+═══════════════════════════════════════════════════════════════════════════════
+
+Domande? Buggy? Aprire un issue o consultare la GUIDA completa di PokeyATest.
+
+Buon coding! 🎵🔊
