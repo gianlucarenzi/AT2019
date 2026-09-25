@@ -15,7 +15,10 @@ make run        -> atari800 -xl -pal -nopatchall (NO SIO patch: real POKEY
                    serial timing; ~/.atari800.cfg has ENABLE_SIO_PATCH=1)
 
 make SONG=music/xxx.rmt               any mono RMT4 module, instr. speed 1
-make ASSET_SIZES="2048 7000 16384"    sizes in bytes, 2048..16384
+make ASSET_SIZES="2048 7000 16384"    generated test assets, 2048..16384 bytes
+                                      (ASSET_SIZES= : none)
+your assets: copy them into assets/ (or make ASSETS_DIR=dir): DOS 8.3 names,
+1..16384 bytes, they go on the disk and are verified by the test loop too
 make clean all DEFS=-DTEST_NOMUSIC    baseline without the player
 make clean all DEFS=-DSTOP_ON_ERROR   freeze the screen at the first error
 
@@ -36,7 +39,10 @@ src/dos2fs.c     read only DOS 2.x/MyDOS filesystem on raw sectors (no DOS)
 src/main.c       test program
 src/pokeyatest.cfg  atari.cfg + RMTTAB segment
 tools/rmt2ca65.py   .rmt -> relocatable ca65 source (pointers rewritten)
-tools/mkassets.py   test assets + assets.h with sizes and checksums
+tools/mkassets.py   test assets + your assets/ -> disk dir + assets.h (sizes, checksums)
+tools/atrcheck.py   fails if the ATR has more sectors than the loader supports
+tools/atrorder.py   moves PKATEST.COM to the first directory entry (MyPicoDos
+                    autorun starts the first file)
 
 How it works:
 -------------

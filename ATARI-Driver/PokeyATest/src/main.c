@@ -38,7 +38,8 @@ extern unsigned char secbuf[];
 #define ROW_PLAYER  7
 #define ROW_PASS    9
 #define ROW_FIRST   11
-#define ROW_MSG     (ROW_FIRST + ASSET_COUNT + 1)
+#define ASSET_ROWS  10      // more assets than rows: lines are reused
+#define ROW_MSG     (ROW_FIRST + ASSET_ROWS + 1)
 #define VU_ON       0xA0    // inverse space
 
 static unsigned char buffer[ASSET_MAXSIZE];
@@ -148,7 +149,7 @@ static void load_asset(unsigned char n)
 	unsigned int t0, frames, sum;
 	unsigned long bps;
 
-	cur_row = ROW_FIRST + n;
+	cur_row = ROW_FIRST + n % ASSET_ROWS;
 	gotoxy(0, cur_row);
 	cprintf("%.8s.%.3s ", a->name83, a->name83 + 8);
 	cclear(40 - 13);

@@ -327,40 +327,71 @@ Selezione a runtime: `fs_loader = FS_LOADER_OS;` oppure `FS_LOADER_RBL`.
 
 ### 2.7 Mettere i propri asset sul disco
 
-Il Makefile costruisce il disco a partire dalla cartella `build/disk/`:
+Basta copiare i file nella cartella **`assets/`** del progetto e lanciare `make`:
 
-```make
-$(ATR): $(TARGET) $(BUILD)/assets.h
-	$(DIR2ATR) -a -b $(BOOTDOS) $@ $(DISK)
+```sh
+cp ~/grafica/SPRITES.GFX ~/livelli/level1.map assets/
+make            # disco con gli asset di test + i tuoi
+make run        # il test carica e verifica anche i tuoi file
 ```
 
-Per aggiungere file propri basta copiarli in `$(DISK)` prima di `dir2atr`, con nomi
-validi per DOS (8.3, maiuscoli, il primo carattere una lettera). Per esempio:
+Ogni file di `assets/` viene:
 
-```make
-MY_ASSETS = $(wildcard assets/*)
+1. copiato su `build/disk/` con il nome in maiuscolo (`level1.map` → `LEVEL1.MAP`);
+2. aggiunto alla tabella `build/assets.h` con dimensione e checksum calcolati dal file
+   sul PC, quindi il loop di test lo carica e lo verifica come quelli generati;
+3. scritto sull'ATR da `dir2atr`.
 
-$(ATR): $(TARGET) $(BUILD)/assets.h $(MY_ASSETS)
-	cp $(MY_ASSETS) $(DISK)/
-	rm -f $@
-	$(DIR2ATR) -a -b $(BOOTDOS) $@ $(DISK)
+Variabili del Makefile:
+
+| Variabile      | Default                             | Significato                                        |
+|----------------|-------------------------------------|----------------------------------------------------|
+| `ASSETS_DIR`   | `assets`                            | cartella dei tuoi file                             |
+| `ASSET_SIZES`  | `2048 3500 5120 8000 12288 16384`   | asset di test generati; vuoto = nessuno            |
+| `MAXSECTORS`   | `1023`                              | settori massimi accettati per l'ATR                |
+
+```sh
+make ASSET_SIZES=                       # sul disco solo i tuoi file
+make ASSETS_DIR=../gioco/data           # file presi da un'altra cartella
 ```
 
-Attenzione:
+Il disco si ricostruisce da solo quando aggiungi, togli o modifichi un file, o quando
+cambi `ASSET_SIZES` da riga di comando (la lista viene salvata in `build/assets.cfg`).
 
-- **autorun**: con `-a` MyPicoDos avvia da solo un file all'accensione. Nel test è
-  `PKATEST.COM`, che è il primo file dopo `PICODOS.SYS` (`dir2atr` li aggiunge in ordine
-  alfabetico). Per sicurezza conviene che il programma resti il primo in ordine
-  alfabetico, prima degli asset.
-- **capacità**: 720 settori × 125 byte utili ≈ 88 KB, meno MyPicoDos (~5 KB) e il
-  programma (~13 KB). Per dischi più grandi servono altri formati (`dir2atr -E/-d`),
-  ma il loader legge solo settori da 128 byte.
-- **tempo**: ~880 byte/s, quindi un asset da 16 KB richiede circa 19 s.
+Controlli fatti dalla build, con errore e messaggio esplicito:
+
+- **nome**: deve essere un nome DOS 8.3 valido, cioè una lettera seguita da un massimo di
+  7 lettere o cifre, più un'estensione opzionale di massimo 3 lettere o cifre. Maiuscole
+  e minuscole sono indifferenti; niente spazi, trattini o underscore. Un nome non valido
+  blocca la build invece di essere storpiato da `dir2atr` (che ridurrebbe
+  `too_long_name.dat` a un nome diverso da quello della tabella).
+- **nome riservato o duplicato**: `PKATEST.COM`, `PICODOS.SYS` e i nomi degli asset di test
+  non si possono usare; due file che differiscono solo per le maiuscole sono un duplicato.
+- **dimensione**: da 1 a 16384 byte, cioè il buffer del programma di test.
+- **capacità**: `dir2atr` ingrandisce il disco oltre i 720 settori se serve. Oltre
+  `MAXSECTORS` (1023, il limite dei link a 10 bit del DOS 2) l'ATR viene cancellato
+  e la build fallisce. Con 1023 settori ci stanno circa 105 KB di asset.
+- **file per disco**: la directory DOS 2 contiene 64 voci, programma e MyPicoDos compresi.
+
+**Autorun.** La modalità `-a` di MyPicoDos è documentata (AtariSIO `README-tools`) per
+un disco con un solo file. Con più file MyPicoDos avvia **il primo file della directory**,
+e `dir2atr` aggiunge i file in ordine alfabetico: un asset chiamato `ALPHA.BIN` verrebbe
+"eseguito" al posto del programma (provato: schermo vuoto o menu). L'estensione `.AR0`
+con MyPicoDos 4.06 non fa partire il file, né con `-a` né senza (provato: compare il menu). Per questo, dopo `dir2atr`, il Makefile
+lancia `tools/atrorder.py`, che sposta `PKATEST.COM` nella prima voce dopo `PICODOS.SYS`
+e riscrive il numero file nei link dei settori dei file spostati. L'immagine resta un
+disco DOS 2 valido e i tuoi file possono avere qualsiasi nome.
+
+**Tempo**: ~880 byte/s, quindi un asset da 16 KB richiede circa 19 s.
+
+Nel tuo programma i file si caricano con `fs_find`/`fs_load` usando il nome a 11
+caratteri (vedi 2.3): per `LEVEL1.MAP` è `"LEVEL1  MAP"`.
 
 ### 2.8 Verifica degli asset del test
 
 `tools/mkassets.py` genera file di dati pseudo-casuali deterministici
-(`make ASSET_SIZES="2048 7000 16384"`, dimensioni tra 2048 e 16384) e `build/assets.h`:
+(`make ASSET_SIZES="2048 7000 16384"`, dimensioni tra 2048 e 16384), vi aggiunge
+i file di `assets/` e scrive `build/assets.h`:
 
 ```c
 static const asset_t assets[ASSET_COUNT] = {
