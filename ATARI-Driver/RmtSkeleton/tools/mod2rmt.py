@@ -80,18 +80,20 @@ class RMTBuilder:
             }
     
     def build_binary(self):
-        """Generate RMT binary data with Atari binary header"""
-        # First, build the RMT data (without Atari binary wrapper)
+        """Generate RMT binary data in standard RMT4 format"""
+        # RMT Header at offset 0-15:
+        # Offset 0-3: "RMT4" magic
+        # Offset 4-5: Module flags
+        # Offset 6-7: Speed and tempo
+        
         rmt_data = bytearray()
         
-        # RMT Header at offset 0-15:
-        # Offset 0-3: "NRMT" magic
-        # Offset 4-5: Version/Module ID
-        # Offset 6+: Module data
+        # Magic: "RMT4"
+        rmt_data.extend(b'RMT4')
         
-        rmt_data.extend(b'NRMT')
-        rmt_data.append(0x34)  # Module version
+        # Flags/properties
         rmt_data.append(0x40)  # Flags
+        rmt_data.append(0x06)  # Module info byte
         
         # Speed and tempo
         rmt_data.append(self.speed)
@@ -166,27 +168,8 @@ class RMTBuilder:
         while (len(rmt_data) - song_start) < 256:
             rmt_data.append(0)
         
-        # Now wrap with Atari binary header (FFFF format)
-        # Format: FFFF (header), start_lo, start_hi, data..., end_lo, end_hi
-        output = bytearray()
-        
-        # Atari binary header
-        output.append(0xFF)
-        output.append(0xFF)
-        
-        # Start address (0x4000)
-        output.append(0x00)
-        output.append(0x40)
-        
-        # Data
-        output.extend(rmt_data)
-        
-        # End address (0x4000 + len(rmt_data) - 1)
-        end_addr = 0x4000 + len(rmt_data) - 1
-        output.append(end_addr & 0xFF)
-        output.append((end_addr >> 8) & 0xFF)
-        
-        return bytes(output)
+        # Return raw RMT binary (standard RMT4 format, no Atari wrapper)
+        return bytes(rmt_data)
 
 class MODtoRMT:
     """Convert MOD to RMT"""
