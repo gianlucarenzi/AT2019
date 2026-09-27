@@ -1,0 +1,21 @@
+# Build artifacts
+build/
+*.o
+*.s (except src/*.s)
+*.map
+
+# Emulator savestate files
+*.vsf
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Temporary
+*.tmp
+*.bak
+*~
