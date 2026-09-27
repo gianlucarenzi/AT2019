@@ -1,0 +1,25 @@
+# Makefile for RMT Player (Linux/SDL2)
+
+CC = gcc
+CFLAGS = -O2 -Wall
+LIBS = -lSDL2 -lm
+
+# Targets
+all: rmt_player
+
+rmt_player: rmt_player.c
+	$(CC) $(CFLAGS) -o rmt_player rmt_player.c $(LIBS)
+	@echo "✅ Built: rmt_player"
+
+install: rmt_player
+	cp rmt_player ../build/ || mkdir -p ../build && cp rmt_player ../build/
+	@echo "✅ Installed to ../build/rmt_player"
+
+clean:
+	rm -f rmt_player *.o
+
+# Test
+test: rmt_player
+	./rmt_player ../music/gemx.rmt
+
+.PHONY: all install clean test
