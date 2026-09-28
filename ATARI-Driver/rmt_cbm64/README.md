@@ -59,7 +59,9 @@ make clean
 
 `SONG` is any RMT4 module with instrument speed 1 (`python3 tools/rmt2ca65.py
 file.rmt /dev/null` checks it). Songs in `music/`: `gemx.rmt` (default),
-`PROJECT-X_LOADER_pokey.rmt`, `PROJECT-X_THESMOPHORIA_pokey.rmt`.
+`PROJECT-X_LOADER_pokey.rmt`, `PROJECT-X_THESMOPHORIA_pokey.rmt`,
+`ProjectX-End-Lynne_pokey.rmt` (15 KB; the D64 loads in about a minute on a
+real-speed 1541). `D64=build/other.d64` writes the disk under another name.
 The song in use is kept in `build/song.cfg`: changing `SONG` rebuilds.
 
 On the disk the program is `RMT PLAYER`: `LOAD"*",8,1` and `RUN`, or
