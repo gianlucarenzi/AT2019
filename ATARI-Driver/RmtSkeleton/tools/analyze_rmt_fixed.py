@@ -7,7 +7,8 @@ In RMT:
 - 4 canali POKEY (CH1, CH2, CH3, CH4)
 - Fino a 255 tracce/pattern (distribuite sui 4 canali)
 
-Questo script verifica quale canale POKEY è effettivamente usato.
+Questo script verifica quale canale POKEY è effettivamente usato,
+leggendo le righe della song.
 """
 import struct
 import sys
@@ -53,18 +54,23 @@ def analyze_rmt(filename):
     o_thi = p_thi - start
     o_song = p_song - start
     
-    # RMT4 ha sempre 4 canali POKEY
-    # Le tracce lo/hi indicano quale pattern usare per ogni canale
+    # RMT4 ha sempre 4 canali POKEY. Le tabelle tracce lo/hi sono indicizzate
+    # per numero di traccia, non per canale: i canali usati si leggono dalla
+    # song, righe da 4 byte (un numero di traccia per canale, $FF = vuoto,
+    # riga che inizia con $FE = goto).
     num_channels = 4
-    
-    active_channels = []
-    for ch in range(num_channels):
-        lo = module[o_tlo + ch]
-        hi = module[o_thi + ch]
-        ptr = lo | (hi << 8)
-        if ptr != 0:
-            active_channels.append(ch + 1)
-    
+    print(f"  Tracce: {o_thi - o_tlo}")
+
+    used = set()
+    off = o_song
+    while off + 3 < len(module):
+        if module[off] != 0xFE:
+            for ch in range(num_channels):
+                if module[off + ch] != 0xFF:
+                    used.add(ch + 1)
+        off += 4
+    active_channels = sorted(used)
+
     print(f"\n  Canali POKEY totali: 4 (sempre in RMT4)")
     print(f"  Canali POKEY usati: {active_channels}")
     print()

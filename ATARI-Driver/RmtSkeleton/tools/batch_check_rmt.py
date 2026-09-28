@@ -38,26 +38,29 @@ def check_rmt(filepath):
     if len(module) < 16:
         return None, False
     
-    # Leggi puntatori tracce
+    # Leggi puntatore alla song
     try:
-        p_tlo = struct.unpack('<H', module[10:12])[0]
-        p_thi = struct.unpack('<H', module[12:14])[0]
+        p_song = struct.unpack('<H', module[14:16])[0]
     except:
         return None, False
-    
-    o_tlo = p_tlo - start
-    o_thi = p_thi - start
-    
-    # Verifica canali
-    active_channels = []
-    for ch in range(4):
-        if o_tlo + ch < len(module) and o_thi + ch < len(module):
-            lo = module[o_tlo + ch]
-            hi = module[o_thi + ch]
-            ptr = lo | (hi << 8)
-            if ptr != 0:
-                active_channels.append(ch + 1)
-    
+
+    o_song = p_song - start
+    if o_song < 0 or o_song >= len(module):
+        return None, False
+
+    # Canali usati: righe della song da 4 byte, un numero di traccia per
+    # canale ($FF = vuoto), riga che inizia con $FE = goto. Le tabelle
+    # tracce lo/hi sono per numero di traccia, non per canale.
+    used = set()
+    off = o_song
+    while off + 3 < len(module):
+        if module[off] != 0xFE:
+            for ch in range(4):
+                if module[off + ch] != 0xFF:
+                    used.add(ch + 1)
+        off += 4
+    active_channels = sorted(used)
+
     is_2channel = active_channels == [1, 2]
     return active_channels, is_2channel
 
