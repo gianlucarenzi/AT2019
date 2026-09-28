@@ -8,25 +8,24 @@
 Benvenuto! Questo è uno skeleton minimalista per integrare il player RMT 
 (Raster Music Tracker) nel tuo progetto cc65.
 
-Contiene anche la strategia audio ottimale per videogame Atari che caricano 
-asset da disco senza interruzioni audio.
+Il player è quello di PokeyATest, provato mentre carica file da disco (SIO).
 
 ═══════════════════════════════════════════════════════════════════════════════
 
-🎮 AUDIO DESIGN PATTERN (Il Motivo di Questo Skeleton)
+🎮 CANALI POKEY E CARICAMENTI DA DISCO
 
-Se stai creando un videogame Atari con caricamento asset da SIO (disco):
+Durante un trasferimento SIO i canali 3+4 di POKEY sono il generatore di
+baud rate della seriale. Il player lavora così:
 
-  Problem:  Caricare da disco mentre suona musica RMT = glitch audio
-            (CH3+4 necessari per baud rate seriale)
+  Nessun I/O:   CH1+2 musica RMT     CH3+4 musica RMT
+  Durante I/O:  CH1+2 musica RMT     CH3+4 seriale (muti)
+                (tra rmt_io_begin() e rmt_io_end())
 
-  Solution: Usa solo CH1+2 per la musica, CH3+4 per effetti sonori
-  
-            ✅ Musica CH1+2: continua durante caricamento (ZERO GLITCH!)
-            ✅ Effetti CH3+4: disponibili quando SIO inattivo
-            ✅ Esperienza: professionale, arcade-like
+  ✅ Musica su CH1+2: continua durante il caricamento, a tempo
+  ✅ Musica su CH3+4: si ferma durante il caricamento, riprende da sola dopo
+  ✅ Caricamento muto: nessun fischio dalla seriale
 
-  Questo skeleton implementa esattamente questo design!
+  Consiglio: melodia e voci principali sui canali 1 e 2.
 
 ═══════════════════════════════════════════════════════════════════════════════
 
@@ -83,7 +82,7 @@ RmtSkeleton/
   
 - README.md
   → Spiegazione completa del progetto e dell'API
-  → ⭐ Sezione "Audio Design Pattern for Videogames" (IL MOTIVO PRINCIPALE!)
+  → ⭐ Sezione "POKEY Channels and Disk I/O"
   → Memory layout, linker config, VBI handler
   → Come adattare per il tuo progetto
 
@@ -92,11 +91,9 @@ RmtSkeleton/
   → 6 step essenziali
   → Troubleshooting
 
-- SFX_INTEGRATION.md ⭐ NUOVO
-  → Come aggiungere effetti sonori su CH3+4
-  → Codice di esempio (sfx.c / sfx.h)
-  → Reference POKEY registers
-  → Audio design best practices
+- SFX_INTEGRATION.md
+  → Effetti sonori su CH3+4: cosa permette il player attuale e cosa no
+  → Reference POKEY registers (AUDC, AUDCTL)
 
 - CHECKLIST.md
   → Checklist di test prima, durante e dopo l'integrazione
@@ -121,7 +118,7 @@ RmtSkeleton/
 Non contiene:
 ✗ Asset loader (vedi ../PokeyATest per quello)
 ✗ Codice di gioco (tu lo scrivi)
-✗ Effetti sonori (solo music background)
+✗ Effetti sonori (il player usa tutti e 4 i canali, vedi SFX_INTEGRATION.md)
 
 ═══════════════════════════════════════════════════════════════════════════════
 
@@ -152,13 +149,16 @@ R: Genera un .s per ciascuna, linkale tutte, cambia con rmt_init().
 
 D: Cosa succede se faccio I/O disco?
 R: Usa rmt_io_begin() / rmt_io_end() attorno al caricamento.
-   I canali 3/4 si silenzierno (usati dalla seriale), 1/2 continuano.
-   Perfetto se usi il design 2+2 channels!
+   I canali 3/4 si silenziano (usati dalla seriale), 1/2 continuano.
+   Dopo rmt_io_end() la musica torna su tutti e 4 i canali.
+   Usa un loader a interrupt come quello di PokeyATest: il SIOV dell'OS
+   con il player nel VBI perde byte.
 
 D: Come aggiungo effetti sonori?
-R: Leggi SFX_INTEGRATION.md per l'implementazione completa.
-   Usa CH3+4 per effetti, CH1+2 restano per musica.
-   Gli effetti si mutano automaticamente durante SIO (ZERO GLITCH!)
+R: Il player scrive tutti e 4 i canali a ogni frame, quindi un effetto
+   scritto su CH3+4 viene sovrascritto. SFX_INTEGRATION.md spiega come
+   "prendere in prestito" CH3+4 con rmt_io_begin() e i limiti di questo
+   metodo.
 
 ═══════════════════════════════════════════════════════════════════════════════
 

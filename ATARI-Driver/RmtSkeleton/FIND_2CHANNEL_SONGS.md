@@ -1,215 +1,95 @@
 # Come Trovare File RMT con Solo Canali 1+2
 
-Per il tuo progetto con SIO, le canzoni che usano SOLO i canali POKEY 1+2 sono ideali, perché durante il caricamento da disco i canali 3+4 vengono usati dal baud rate generator della seriale e non possono riprodurre musica.
+Durante il caricamento da disco i canali 3+4 di POKEY sono il generatore di baud rate della seriale: il player continua a suonare solo i canali 1+2 e riprende il 3 e il 4 a fine caricamento. Un brano che usa **solo i canali 1+2** suona quindi identico anche durante i caricamenti. Un brano a 4 canali va bene lo stesso, ma durante il caricamento perde le voci dei canali 3 e 4.
 
-## 🌐 Repository Online di File RMT
+## 🌐 Dove Cercare File RMT
 
-### Principali Sorgenti
+| Sito | URL | Note |
+|------|-----|------|
+| **AtariAge** | https://atariage.com/ | forum Atari 8-bit, sezione musica |
+| **Pouet** | https://www.pouet.net/ | produzioni Atari 8-bit, spesso con i sorgenti RMT |
+| **GitHub** | https://github.com/search?q=rmt+atari | repository con file `.rmt` |
 
-| Sito | URL | Contenuto |
-|------|-----|----------|
-| **HVSC** | https://www.hvsc.c64.org/ | Database gigante di musica retro (SID + Atari) |
-| **AtariAge** | https://atariage.com/ | Community Atari, archivi musica |
-| **GitHub** | https://github.com/search?q=rmt+atari | Collezioni di file RMT |
-| **Pouet** | https://www.pouet.net/ | Archivio demo Atari con RMT |
-| **ModArchive** | https://modarchive.org/ | Tracker music archive |
-| **Atari Mania** | https://www.atarimania.com/ | Database giochi/musica Atari |
+Attenzione: HVSC è solo musica Commodore 64 (SID), e ASMA (archivio musica Atari) contiene file `.sap`, non `.rmt`. Il player accetta solo moduli `.rmt`.
 
-### Come Cercare
+## 🔍 Verificare Quanti Canali Usa un RMT
+
+In un modulo RMT4 la **song** è un elenco di righe da 4 byte, un byte per canale: il numero della traccia da suonare su quel canale, oppure `$FF` se il canale è vuoto. Le righe che iniziano con `$FE` sono salti ("goto"). Un canale è inutilizzato se in tutte le righe vale `$FF`.
+
+Le tabelle `tracks lo/hi` dell'header **non** dicono niente sui canali: sono indicizzate per numero di traccia (un brano può averne decine), non per canale.
+
+### Script
+
+Questo script legge le righe della song e stampa i canali usati:
+
+```python
+#!/usr/bin/env python3
+# rmtchannels.py file.rmt ... - canali POKEY usati da moduli RMT4
+import struct, sys
+
+for fn in sys.argv[1:]:
+    d = open(fn, 'rb').read()
+    start, end = struct.unpack('<HH', d[2:6])
+    m = d[6:6 + end - start + 1]
+    if d[:2] != b'\xff\xff' or m[:4] != b'RMT4':
+        print(fn, ': non è un modulo RMT4'); continue
+    off = struct.unpack('<H', m[14:16])[0] - start   # puntatore alla song
+    used = set()
+    while off + 3 < len(m):
+        if m[off] != 0xFE:                           # $FE = goto
+            used |= {c + 1 for c in range(4) if m[off + c] != 0xFF}
+        off += 4
+    print(fn, ': canali', sorted(used))
+```
+
+Esempio:
+
+```
+$ python3 rmtchannels.py music/gemx.rmt
+music/gemx.rmt : canali [1, 2, 3, 4]
+```
+
+Per una cartella: `python3 rmtchannels.py cartella/*.rmt`.
+
+### Gli script in `tools/`
+
+Gli script del progetto usano lo stesso metodo, con un report più dettagliato:
 
 ```bash
-# In HVSC
-# Vai in: /Atari/ oppure cerca "RMT"
-
-# In GitHub
-# Cerca: "atari rmt" oppure "pokey music collection"
-
-# In Pouet
-# Filtro: Platform = Atari
-#         Search = "RMT"
+python3 tools/analyze_rmt_fixed.py music/mysong.rmt   # un file (exit 0 = solo CH1+2)
+python3 tools/batch_check_rmt.py cartella/            # una cartella, ricorsivo
 ```
 
-## 🔍 Verificare Quanti Canali USA un RMT
-
-### Metodo 1: Script Python (Consigliato)
-
-Usa lo script `analyze_rmt_fixed.py` fornito:
-
-```bash
-python3 analyze_rmt_fixed.py music/mysong.rmt
-```
-
-Output:
-
-```
-✓ File RMT4 (mono)
-  Canali POKEY usati: [1, 2]
-
-✅ USA SOLO CANALI 1+2 - PERFETTO PER IL TUO PROGETTO!
-```
-
-o
-
-```
-✓ File RMT4 (mono)
-  Canali POKEY usati: [1, 2, 3, 4]
-
-⚠️  Usa canali [1, 2, 3, 4]
-   Canali che si silenzierebbero durante SIO: [3, 4]
-```
-
-### Metodo 2: Batch Check (per una cartella)
-
-Se hai una cartella con molti RMT:
-
-```bash
-python3 batch_check_rmt.py /path/to/rmt/files/
-```
-
-Output:
-
-```
-═══════════════════════════════════════════════════════════
-REPORT CANALI RMT
-═══════════════════════════════════════════════════════════
-
-✅ PERFETTI (SOLO CH1+2): 12
-   ✓ song1.rmt
-   ✓ song2.rmt
-   ...
-
-⚠️  TUTTI 4 CANALI: 45
-   (45 file)
-
-═══════════════════════════════════════════════════════════
-TOTALE: 89 file
-COMPATIBILI SIO (CH1+2 only): 12 file (13%)
-═══════════════════════════════════════════════════════════
-
-💾 File compatibili salvati in: /tmp/rmt_2channel_list.txt
-```
-
-### Metodo 3: Hex Editor (Manuale)
-
-Se vuoi ispezionare direttamente:
-
-```bash
-xxd -l 20 mysong.rmt
-```
-
-Guarda l'offset +10 (tracce lo) e +12 (tracce hi):
-
-```
-0000000: ffff 1f40 4041 0104 01ff 0800 0600 0007
-         ^^^^  ^^^^^^^^^^                  ^^^^^^
-        header   size   ...               tracce
-```
-
-Se ai byte +10,+11,+12,+13 vedi solo 2 valori non-zero:
-- Byte +10: track_lo[0] (canale 1)
-- Byte +11: track_lo[1] (canale 2)
-- Byte +12: track_hi[0] (canale 1)
-- Byte +13: track_hi[1] (canale 2)
-- Byte +14,+15: track_lo[2,3] = 0x00 (canali 3+4 non usati)
-
-**Non facile da leggere così, meglio usare lo script Python!**
+`batch_check_rmt.py` salva l'elenco dei file con solo CH1+2 in `/tmp/rmt_2channel_list.txt`.
 
 ## 📥 Come Integrare nel Progetto
 
-Una volta trovato/scaricato un RMT con solo CH1+2:
+Una volta trovato un RMT adatto:
 
 ```bash
-# Copia nel skeleton
-cp mysong.rmt /path/to/RmtSkeleton/music/
-
-# Verifica
-python3 analyze_rmt_fixed.py RmtSkeleton/music/mysong.rmt
-
-# Compila
+cp mysong.rmt RmtSkeleton/music/
 cd RmtSkeleton
+python3 tools/rmt2ca65.py music/mysong.rmt /dev/null   # RMT4? instrument speed 1?
 make SONG=music/mysong.rmt
 make run
 ```
 
-## 🎼 Se Vuoi Convertire un RMT a Mano
+## 🎼 Adattare un Brano a 4 Canali
 
-Se hai un RMT con tutti 4 canali ma vuoi usare solo 1+2:
+Non esiste una conversione automatica. In Raster Music Tracker puoi:
 
-1. **Non è possibile automaticamente** - la struttura del file RMT lo vieta
-2. **Puoi re-arrangiare manualmente** in Raster Music Tracker:
-   - Apri il file
-   - Copia le tracce dai canali 3+4 ai canali 1+2 (se hai spazio)
-   - Ricompila il .rmt
-   - Testa se il risultato è musicalmente valido
+- spostare melodia e voci principali sui canali 1 e 2;
+- lasciare sui canali 3 e 4 basso, batteria o riempimenti, che durante il caricamento possono tacere senza rovinare il brano;
+- evitare, sui canali 1 e 2, gli effetti di `AUDCTL` (1,79 MHz, 16 bit, 15 kHz, filtri): durante il caricamento vale l'`AUDCTL` della seriale (`$28`) e quelle voci cambierebbero timbro o intonazione.
 
-Questo è manuale e dipende da che cosa c'è nei canali 3+4.
+## 💡 Quando Scarichi
 
-## 📊 Statistiche Approssimative
-
-In una collezione tipica di file RMT:
-
-- ~10-15% usano SOLO canali 1+2 (perfetti per te)
-- ~50% usano canali 1+2+3 (parziale loss durante SIO)
-- ~30% usano tutti 4 i canali (perdita di basso/batteria durante SIO)
-- ~5% altre combinazioni
-
-Quindi circa **1 su 6-10 file** è perfetto per il tuo use case.
-
-## 🔗 Link Utili
-
-- **HVSC Atari**: https://www.hvsc.c64.org/hvsc/Atari/
-  - Download: `wget -r https://www.hvsc.c64.org/hvsc/Atari/`
-
-- **GitHub RMT collections**:
-  ```bash
-  git clone https://github.com/search?q=rmt+collection
-  ```
-  (cerca fra i risultati i repo con file RMT)
-
-- **Atari XL XE Music Pack** (HVSC):
-  - https://www.hvsc.c64.org/ → Download → Atari collection
-
-## 💡 Pro Tips
-
-1. **Filtra per autore**: Cerca compositori che prediligono RMT
-   - Raster (autore RMT)
-   - C.P.U. (ha scritto molti RMT)
-   - Jarek Burczynski
-
-2. **Cerca demo/gara musicale Atari**:
-   - Atari demo scene (Pouet)
-   - Competition songs di anno in anno
-   - Spesso hanno canali limitati
-
-3. **Quando scarichi**:
-   - Prendi sempre `instrument speed = 1` (altrimenti suona lento)
-   - Prendi solo `RMT4` (mono), non `RMT8` (stereo)
-   - Verifica con lo script prima di usare
-
-## 📋 Workflow Completo
-
-```bash
-# 1. Scarica un batch di RMT
-wget -r https://www.hvsc.c64.org/hvsc/Atari/ -o /tmp/rmt_files
-
-# 2. Analizza tutta la cartella
-python3 batch_check_rmt.py /tmp/rmt_files/
-
-# 3. Vedi il report e la lista salvata
-cat /tmp/rmt_2channel_list.txt
-
-# 4. Copia i migliori nel tuo progetto
-for song in $(head -5 /tmp/rmt_2channel_list.txt); do
-  cp /tmp/rmt_files/$song RmtSkeleton/music/
-done
-
-# 5. Testa uno
-python3 analyze_rmt_fixed.py RmtSkeleton/music/$(head -1 /tmp/rmt_2channel_list.txt)
-cd RmtSkeleton && make SONG=music/$(head -1 /tmp/rmt_2channel_list.txt) && make run
-```
+- Solo `RMT4` (mono), non `RMT8` (stereo)
+- Solo `instrument speed = 1` (altrimenti suona rallentato)
+- Verifica con `tools/rmt2ca65.py` e con lo script dei canali prima di usarlo
 
 ---
 
-**Domande?** Leggi l'analisi tecnica di SAP/SID/RMT nel tuo prompt iniziale, o la GUIDA.md di PokeyATest.
+**Domande?** Leggi `README.md` (sezione "POKEY Channels and Disk I/O") o la GUIDA.md di PokeyATest.
 
 Buona ricerca! 🎵

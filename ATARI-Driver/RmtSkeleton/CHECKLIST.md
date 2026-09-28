@@ -15,7 +15,7 @@ Usa questa checklist quando integri il player RMT nel tuo progetto.
   ```
   RMTTAB: load = MAIN, type = ro, align = $100;
   ```
-- [ ] RMTTAB viene PRIMA di STARTUP nel file SEGMENTS
+- [ ] RMTTAB è il primo segmento di MAIN (prima di STARTUP): parte a `$2000`
 - [ ] Ho mantenuto la configurazione del resto (ZP, MAIN, etc.)
 - [ ] Il linker config è corretto (no linker errors dopo `make`)
 
@@ -66,7 +66,7 @@ Nel tuo programma in esecuzione:
 - [ ] La musica suona al tempo corretto (non accelerata/rallentata)
 - [ ] Quando premi ESC (o esci), la musica si ferma
 
-## Diagnositca
+## Diagnostica
 
 Stampa questi valori regolarmente:
 
@@ -109,22 +109,26 @@ Se usi più canzoni:
 
 Se usi SIO (disk I/O):
 
-- [ ] Quando carico un file, chiamo `rmt_io_begin()` prima
+- [ ] Quando carico un file, chiamo `rmt_io_begin()` prima (anche per leggere la directory)
 - [ ] Dopo il caricamento, chiamo `rmt_io_end()`
-- [ ] La musica si sente meno forte durante il caricamento (canali 3/4 muti = normale)
+- [ ] Non chiamo `rmt_vbi_off()` durante un trasferimento
+- [ ] Uso un loader a interrupt (come `rbl_read_sector` di PokeyATest), non il `SIOV` dell'OS
+- [ ] Durante il caricamento si sentono solo i canali 1/2 (canali 3/4 muti = normale)
+- [ ] Dopo il caricamento la musica torna su tutti e 4 i canali
 - [ ] I dati caricati sono corretti (no corruzioni di settore)
 - [ ] Nessun errore SIO e musica fluida
 
 ## Cleanup
 
-- [ ] Prima di distribuzione, aggiungo i file del player al .gitignore:
+- [ ] Il .gitignore esclude solo i file generati, **non** `*.s`
+  (altrimenti `rmtplayr.s` e `rmtvbi.s` restano fuori dal repository):
   ```
   build/
   *.o
-  song.s
   ```
-- [ ] NON committo i file generati (solo il .rmt)
-- [ ] Committo come sorgenti: main.c, rmtplayr.s, rmtvbi.s, rmt.h, rmt.inc, .cfg, Makefile
+- [ ] NON committo i file generati (`build/song.s`, eseguibile, mappa): solo il .rmt
+- [ ] Committo come sorgenti: main.c, rmtplayr.s, rmtvbi.s, rmt.h, rmt_feat.inc, .cfg, Makefile, tools/rmt2ca65.py
+- [ ] Verifico con un clone pulito che `make` funzioni
 
 ## Documentazione
 

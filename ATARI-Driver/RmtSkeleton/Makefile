@@ -1,7 +1,7 @@
 # Makefile - RmtSkeleton: minimal RMT player example
 #
 # Usage:
-#   make              build the executable (rmtskeleton.atr)
+#   make              build the executable (build/rmtskeleton.com)
 #   make run          build and run in atari800 emulator
 #   make SONG=music/other.rmt   use a different RMT song
 #   make clean        remove build artifacts

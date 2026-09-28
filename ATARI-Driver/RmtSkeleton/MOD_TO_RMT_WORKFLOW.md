@@ -273,7 +273,7 @@ Repeat **Steps 3-4** for all 4 channels:
 3. **CH3, CH4**: Often drums/bass or countermelody
 
 **Channel assignment strategy**:
-- If MOD has clear drum/percussion pattern, map to CH3+4 (as per 2+2 pattern for Atari games)
+- If MOD has clear drum/percussion pattern, map it to CH3+4 and keep melody on CH1+2: during disk loading CH3+4 are the serial baud rate and pause, CH1+2 keep playing
 - If MOD is pure melody (4-channel polyphony), keep all 4 channels for music
 
 ---
