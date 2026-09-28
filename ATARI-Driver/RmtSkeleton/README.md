@@ -29,7 +29,9 @@ RmtSkeleton/
 │   ├── rmt.h             C header with API
 │   └── rmt_feat.inc      RMT feature switches - DO NOT MODIFY
 ├── tools/
-│   └── rmt2ca65.py       converts .rmt files to relocatable ca65 source
+│   ├── rmt2ca65.py       converts .rmt files to relocatable ca65 source
+│   ├── mod2rmt4.py       converts a ProTracker MOD to RMT4 (MOD_TO_RMT_WORKFLOW.md)
+│   └── rmtplay/          RMT player for the PC (C, SDL2) running src/rmtplayr.s
 ├── music/
 │   └── gemx.rmt          example RMT song (replace with your own)
 └── build/                generated files (ignored by git)
@@ -82,6 +84,17 @@ python3 tools/rmt2ca65.py music/your_song.rmt /dev/null
 ```
 
 This shows the file size, relocations, and instrument speed. **Instrument speed must be 1.**
+
+### Listen on the PC
+
+```bash
+make -C tools/rmtplay                         # needs SDL2 (libsdl2-dev) and cc65
+tools/rmtplay/rmtplay music/your_song.rmt     # Ctrl+C to stop
+tools/rmtplay/rmtplay -io 4 music/your_song.rmt   # hear it as during disk loading
+```
+
+`rmtplay` runs the same player routine as the Atari build on a 6502 emulator,
+with a POKEY emulation. To convert a MOD file see `MOD_TO_RMT_WORKFLOW.md`.
 
 ## API Overview (C Interface)
 

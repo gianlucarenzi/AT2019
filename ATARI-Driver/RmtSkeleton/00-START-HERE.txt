@@ -95,6 +95,11 @@ RmtSkeleton/
   → Effetti sonori su CH3+4: cosa permette il player attuale e cosa no
   → Reference POKEY registers (AUDC, AUDCTL)
 
+- MOD_TO_RMT_WORKFLOW.md
+  → Convertire un MOD in RMT (tools/mod2rmt4.py)
+  → Ascoltarlo su PC (tools/rmtplay, C + SDL2, lo stesso player dell'Atari)
+  → Provarlo su disco .atr con PokeyATest
+
 - CHECKLIST.md
   → Checklist di test prima, durante e dopo l'integrazione
   → Diagnositca e troubleshooting
