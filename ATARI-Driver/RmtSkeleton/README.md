@@ -85,16 +85,53 @@ python3 tools/rmt2ca65.py music/your_song.rmt /dev/null
 
 This shows the file size, relocations, and instrument speed. **Instrument speed must be 1.**
 
-### Listen on the PC
+### Listen on the PC: tools/rmtplay
+
+`rmtplay` is an RMT player for the PC (Linux, C + SDL2). It runs the same
+player routine as the Atari build (`src/rmtplayr.s`) on a 6502 emulator, with a
+POKEY emulation, so a song sounds as it will on the Atari.
+
+**Requirements**
+
+- `gcc` and `make`
+- **cc65** (`ca65`, `ld65`): the player is assembled from the Atari source
+- **SDL2** development files, with `sdl2-config` (Debian/Ubuntu: `sudo apt install libsdl2-dev`)
+
+**Build** (from the `RmtSkeleton` directory)
 
 ```bash
-make -C tools/rmtplay                         # needs SDL2 (libsdl2-dev) and cc65
-tools/rmtplay/rmtplay music/your_song.rmt     # Ctrl+C to stop
-tools/rmtplay/rmtplay -io 4 music/your_song.rmt   # hear it as during disk loading
+make -C tools/rmtplay          # builds tools/rmtplay/rmtplay
+make -C tools/rmtplay clean    # removes the binary and tools/rmtplay/build/
 ```
 
-`rmtplay` runs the same player routine as the Atari build on a 6502 emulator,
-with a POKEY emulation. To convert a MOD file see `MOD_TO_RMT_WORKFLOW.md`.
+The Makefile:
+
+1. assembles `src/rmtplayr.s` (with `src/rmt_feat.inc`) with `ca65`;
+2. links it at a fixed address (`tools/rmtplay/rmtplay.cfg`, `$A000`) with `ld65`
+   into a raw 6502 binary;
+3. turns the binary and the player entry points into `build/rmtplayr_bin.h`;
+4. compiles `rmtplay.c`, `cpu6502.c` and `pokey.c` with SDL2.
+
+A change to `src/rmtplayr.s` or `src/rmt_feat.inc` is picked up by the next
+`make`. The binary and `build/` are not in git: build again after a clone.
+
+**Usage**
+
+```bash
+tools/rmtplay/rmtplay music/your_song.rmt                  # play, Ctrl+C to stop
+tools/rmtplay/rmtplay -t 60 music/your_song.rmt            # stop after 60 s
+tools/rmtplay/rmtplay -io 4 music/your_song.rmt            # toggle "disk loading" every 4 s
+tools/rmtplay/rmtplay -t 40 -w song.wav music/your_song.rmt   # render 40 s to a WAV file
+tools/rmtplay/rmtplay -r music/your_song.rmt               # POKEY registers, one line per frame
+tools/rmtplay/rmtplay -n music/your_song.rmt               # NTSC (60 Hz) instead of PAL
+```
+
+With `-io` only channels 1+2 play, as between `rmt_io_begin()` and
+`rmt_io_end()`. With `-r` the last column is AUDCTL: for a song meant to play
+during disk loading it should stay `00`. The module must not overlap the
+player at `$A000-$B7FF` (RMT files load at `$4000` as a rule).
+
+To convert a MOD file see `MOD_TO_RMT_WORKFLOW.md`.
 
 ## API Overview (C Interface)
 
