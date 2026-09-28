@@ -1,6 +1,5 @@
 build/
 *.o
-*.s
 *.com
 *.atr
 *.map
