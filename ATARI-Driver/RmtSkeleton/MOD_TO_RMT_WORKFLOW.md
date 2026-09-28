@@ -147,6 +147,25 @@ make run SONG=../RmtSkeleton/music/song.rmt     # atari800 -nopatchall
 ```
 
 Pass `SONG=` to `make run` too: without it the disk is rebuilt with `gemx.rmt`.
+
+**Memory.** The test program keeps the song and a load buffer as large as the
+biggest asset (16 KB by default) in RAM from `$2000` up to `$B420` (`$BC20`
+minus the 2 KB cc65 stack). Song + biggest asset can take about **28 KB**
+(28390 bytes with the current program): with the default 16 KB buffer the song
+can be up to about 12 KB. For a bigger song leave the 16 KB test asset out;
+the linker otherwise stops with "Segment 'BSS' overflows memory area 'MAIN'".
+End-Lynne (15316 bytes) runs with a 12 KB buffer:
+
+```bash
+make clean
+make run SONG=../RmtSkeleton/music/ProjectX-End-Lynne_pokey.rmt \
+         ASSET_SIZES="2048 3500 5120 8000 12288"
+```
+
+In atari800 (PAL, `-nopatchall`) End-Lynne kept playing on channels 1+2 while
+loading 75% of the time; compared with `rmtplay` over 141 s, channels 1+2
+matched except 70 single frames written one frame late (postponed ticks),
+channels 3/4 stayed at volume 0 during every transfer.
 The test is good if the screen shows `ERR 0`, `RETRY 0` and `lost 0`.
 
 To use the song in your own program, see `INTEGRATION_GUIDE.md`

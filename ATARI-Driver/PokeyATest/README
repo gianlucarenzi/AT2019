@@ -77,5 +77,10 @@ Measured in atari800 (PAL, -nopatchall, 19200 baud):
    music, OS SIOV         : shifted sectors, ~70% of the files fail
                             (803 errors vs 315 OK)
 
+Memory: song + biggest asset (the load buffer) must fit in about 28 KB
+($2000-$B420). With the default 16 KB test asset the song can be up to ~12 KB;
+for a bigger one drop it, e.g. ASSET_SIZES="2048 3500 5120 8000 12288"
+(pass SONG= and ASSET_SIZES= to make run too).
+
 Limits: 128 bytes sectors only (SD/ED), drive speed 19200 baud, mono RMT4
 modules, the VBI calls the player once per frame (instrument speed 1).

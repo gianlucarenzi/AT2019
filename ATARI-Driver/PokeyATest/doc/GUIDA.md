@@ -384,6 +384,24 @@ disco DOS 2 valido e i tuoi file possono avere qualsiasi nome.
 
 **Tempo**: ~880 byte/s, quindi un asset da 16 KB richiede circa 19 s.
 
+**Memoria: brano + buffer.** Il buffer di caricamento è grande quanto l'asset più
+grande (`ASSET_MAXSIZE` in `build/assets.h`) e sta in `BSS` insieme al brano, nella
+RAM da `$2000` a `$B420` (`$BC20` meno i 2 KB di stack cc65). Brano + asset più
+grande possono occupare circa **28 KB** (28390 byte con il programma attuale):
+con il buffer da 16 KB il brano può arrivare a circa 12 KB. Con un brano più grande
+il linker si ferma con "Segment 'BSS' overflows memory area 'MAIN'"; basta togliere
+l'asset di test da 16 KB. Esempio con `ProjectX-End-Lynne_pokey.rmt` (15316 byte,
+da `../RmtSkeleton`):
+
+```sh
+make clean
+make run SONG=../RmtSkeleton/music/ProjectX-End-Lynne_pokey.rmt \
+         ASSET_SIZES="2048 3500 5120 8000 12288"
+```
+
+`SONG` e `ASSET_SIZES` vanno passati anche a `make run`: senza, il disco viene
+ricostruito con i valori predefiniti.
+
 Nel tuo programma i file si caricano con `fs_find`/`fs_load` usando il nome a 11
 caratteri (vedi 2.3): per `LEVEL1.MAP` è `"LEVEL1  MAP"`.
 
