@@ -41,22 +41,44 @@ What is converted:
 - **Song order** with `Bxx` (position jump, becomes the RMT song loop) and `Dxx`
   (pattern break).
 - **Notes and volume**: the sample default volume or `Cxx`, 0..64 → RMT note volume 0..15.
-- **Speed**: the MOD speed at 125 BPM is the RMT speed (one line = *speed* frames
-  at 50 Hz); other BPM values are scaled.
-- **Instruments**: one RMT instrument per (sample, period) pair, made from the sample:
+- **Volume changes without a new note** become RMT volume events (the note is not
+  retriggered): `Cxx`, a sample number alone, `Axy` volume slide (and the slide of
+  `5xy`/`6xy`, one step per row), `EAx`/`EBx` fine slides, `ECx` note cut.
+- **Speed**: `Fxx` anywhere in the song becomes an RMT speed event; the MOD speed at
+  125 BPM is the RMT speed (one line = *speed* frames at 50 Hz), other BPM values
+  are scaled.
+- **Vibrato** (`4xy`, `6xy`): the note uses a copy of the instrument with the RMT
+  vibrato (smallest type), when there is room for it.
+- **Tone portamento** (`3xx`, `5xy`): approximated, the target note is played at once.
+- **Instruments**, made from the sample:
   - volume envelope = RMS of the sample, frame by frame (1/50 s) at the playback
-    rate of that note, normalised on the loudest sample (up to 48 frames);
-  - sound, by kind of sample (detected automatically, override with `--kind`):
+    rate of the note, normalised on the loudest sample (up to 48 frames);
+    a looped sample holds its last frame until the next note (sustain);
+  - sound, by kind of sample (override with `--kind`):
 
 | Kind | POKEY sound |
 |------|-------------|
 | `bass` | tonal below 125 Hz: distortion C (poly4) with the player's bass tables, note chosen from the pitch measured on the sample |
-| `tone` | tonal from 125 Hz: pure tone table |
+| `tone` | tonal from 125 Hz: pure tone table (notes outside the table are moved by octaves) |
 | `kick` | distortion C pitch sweep (`--kick-sweep HI LO`, default 110 → 40 Hz) |
 | `noise` | poly17 noise, AUDF per frame from the spectral centroid of the sample |
 
-Not converted, and listed in the report: the other effects (slides,
-portamento, vibrato, arpeggio, ...).
+  - one instrument per (sample, period) when it fits in the 64 RMT instruments;
+    otherwise tonal samples get one instrument per distortion table (the note is
+    in the track), then noise periods are grouped by octave, then the vibrato
+    copies are dropped. The report shows the grouping level used.
+
+**Kind of a sample.** First the sample name: words starting or ending with
+`bassdrum`/`kick` → kick, `hat`/`snare`/`crash`/`cymbal`/`ride`/`rim`/`clap`/
+`lazer`/`cheer`/... → noise, `bass` → bass. Otherwise the analysis: the pitch
+(normalised square difference function, peaks only after its first zero
+crossing) must be clear and the spectrum not flat, or the sample is noise.
+The report lists the kind of every sample and why; check it and fix wrong ones
+with `--kind`.
+
+Not converted, and listed in the report: arpeggio (`0xy`), pitch slides
+(`1xx`/`2xx`, `E1x`/`E2x`), tremolo, sample offset, retrigger (`E9x`); a
+note delay (`EDx`) is played at the start of the row.
 
 Options:
 
@@ -65,13 +87,25 @@ Options:
 | `--map 3:1,4:2,...` | route sample → RMT channel (1-4); unlisted samples keep their MOD channel |
 | `--kind 4:kick,...` | force the kind of a sample |
 | `--kick-sweep HI LO` | kick pitch sweep in Hz |
+| `--transpose 7:-12,...` | move a tonal sample by semitones |
+| `--tuning measured\|c` | pitch from the analysis (default) or C-tuned samples |
 | `--addr 0x4000` | load address of the module (rmt2ca65 relocates it anyway) |
 
 **Channel routing.** While the Atari loads from disk, channels 3+4 are the
 serial baud rate generator and only **channels 1+2** keep playing. Route the
 voices that must survive a loading screen to channels 1 and 2 with `--map`.
 
-The pitch of a sample is measured by autocorrelation for every note it plays;
+**Pitch and octave.** Every tonal sample gets one sound (pure tone or
+distortion C) and one octave shift for all its notes, chosen for the smallest
+total pitch error, so a melody keeps its shape and its timbre. Distortion C
+notes pick, one by one, the closer of the two bass tables (same sound). Notes
+that still fall outside the tables are moved by octaves one by one. The report
+shows, per instrument, the maximum error and how many notes are off by more
+than 30 and 50 cents. `--transpose sample:semitones` moves a sample;
+`--tuning c` assumes C-tuned samples (off by default: the Project-X samples are
+tuned to G, F, E, B♭... and their measured pitch is right).
+
+The pitch of a sample is measured for every note it plays;
 `f0 × period` is the same for all notes, so the median over the notes discards
 octave errors. The noise AUDF comes from a calibration table measured with the
 POKEY emulation of `rmtplay`.
@@ -150,6 +184,23 @@ Result: 1432 bytes, 11 instruments, 12 tracks, speed 6, loop to pattern 1
 In atari800 with PokeyATest, channels 1+2 matched `rmtplay` frame by frame
 while loading, except single frames written one frame late (ticks postponed
 by the VBI, the `late` counter), with no drift of the tempo.
+
+## Results: the Project-X MODs
+
+All converted with the default options (no `--map`, MOD channels kept), except
+LOADER (see above):
+
+| Module | Length | RMT size | Instr. | Notes | Kinds to know |
+|--------|--------|----------|--------|-------|---------------|
+| `PROJECT-X_THESMOPHORIA_pokey.rmt` | 7:24 | 7126 | 17 | 3357 | 172 tone portamentos approximated |
+| `PROJECT-X_BLADSWEDE_REMIX_pokey.rmt` | 4:36 | 7656 | 39 | 5722 | 93 pitch slides not converted |
+| `PROJECT-X_CONGRATULATIONS_pokey.rmt` | 0:20 | 1076 | 6 | 34 | the MOD plays long orchestral samples (1812 overture): POKEY can only give a rough idea |
+| `ProjectX-End-Lynne_pokey.rmt` | 6:24 | 15316 | 58 | 4837 | 836 tone portamentos approximated, speed 7 and 15 |
+| `ProjectXSE_pokey.rmt` | 4:28 | 8070 | 38 | 5530 | 78 pitch slides not converted |
+
+Checked on the player running in `rmtplay`'s 6502 emulator: every note of every
+song starts in the frame where the MOD row falls (speed changes and pattern
+breaks included), and the channel volume matches the MOD at every row.
 
 ## Older tools
 
