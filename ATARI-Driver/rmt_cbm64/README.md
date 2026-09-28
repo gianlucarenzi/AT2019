@@ -1,302 +1,127 @@
-# RMT CBM64 – Commodore 64 RMT Player
+# RMT CBM64 – RMT modules on the Commodore 64 SID
 
-## Overview
+Plays **RMT4** modules (Raster Music Tracker, Atari POKEY) on a Commodore 64.
 
-**RMT CBM64** is a complete cc65 project for playing **RMT music files** on a **Commodore 64** with the **SID chip**.
+There is no "generic" RMT format: RMT modules are written for POKEY (RMT4 mono,
+RMT8 stereo). This project does not convert the module. It runs the **Atari RMT
+player routine itself** on the C64, and turns the POKEY registers it writes
+into SID registers every frame. The same `.rmt` file used on the Atari (for
+example the ones made by `../RmtSkeleton/tools/mod2rmt4.py`) plays here.
 
-This project demonstrates a **cross-platform audio strategy**: A generic **3-channel RMT format** that plays on both:
+```
+.rmt ──rmt2ca65.py──> song.s ─┐
+                              ├─ cl65 ──> rmt_cbm64.prg ──c1541──> rmt_cbm64.d64 ──> VICE x64sc
+src/rmtplayr.s (-D RMT_C64) ──┤
+src/sidrmt.s, sidtab.s ───────┘
+```
 
-- **Commodore 64** (SID: 3 polyphonic voices)
-- **ATARI 8-bit** (POKEY: 4 channels, 1 reserved for SIO)
+## How it works
 
-## Quick Start
+1. **Player**: `src/rmtplayr.s` is the RMT 1.20090108 routine, the same source
+   as `../RmtSkeleton/src` and `../PokeyATest/src`. Assembled with
+   `-D RMT_C64` it writes the POKEY registers to `pokey_shadow` (16 bytes of
+   RAM: `$D200` on the C64 is the VIC-II) and puts its 19 zero page bytes in
+   segment `RMTZP`. Without `RMT_C64` it is the Atari code, byte for byte.
+2. **Timing** (`src/sidrmt.s`): a raster IRQ at line 0, chained to the KERNAL
+   IRQ vector `$0314`, calls the player once per frame, like the Atari VBI.
+   The KERNAL CIA IRQ (keyboard, clock) keeps running. PAL (50 Hz) or NTSC
+   (60 Hz) is detected from the number of raster lines.
+3. **POKEY → SID**, every frame:
 
-### Prerequisites
+| POKEY | SID |
+|-------|-----|
+| frequency: AUDF, AUDCTL (64 kHz / 15 kHz, 1.79 MHz, 16 bit), distortion | Fn = K / n, n = POKEY divider in machine cycles, K per kind of sound, PAL and NTSC clocks. 64 kHz 8 bit channels (the usual case) read Fn from a table (`tools/mksidtab.py`, 2.5 KB, scaled once on NTSC); the other modes divide |
+| pure tone (`$A0`) | pulse 50% |
+| distortion C (`$C0`, poly4), with the period of poly4 at that divider (15, 5 or 3 pulses) | pulse 25% |
+| poly5 tones (`$20`, `$60`) | pulse 25% |
+| poly17 / poly5 noise (`$80`, `$00`, `$40`) | noise |
+| volume 0..15 | sustain level of the envelope (attack 0, decay 0); a step 2 or more louder restarts the envelope (gate off/on), a lower one decays to it |
+| channels 1, 2, 3, 4 | voice 1 ← 1, voice 2 ← 2, voice 3 ← the louder of 3 and 4 (with 1+2 joined: 3, 2, 4) |
+
+The SID has **3 voices**: when channels 3 and 4 both play, the quieter one
+is not heard. A song made for loading on the Atari (main voices on
+channels 1+2) keeps them.
+
+Not reproduced: volume only mode (AUDC bit 4, sample playback), the high pass
+filters (AUDCTL bits 2 and 1). The timbre is the SID one: square, pulse and
+noise waves stand for POKEY's.
+
+## Build
+
+Requirements: **cc65** (`cl65`), **python3**, **c1541** and **x64sc** from VICE.
 
 ```bash
-sudo apt install cc65 python3 vice
-```
-
-- **cc65**: C compiler and assembler for 6502
-- **python3**: For RMT conversion tool
-- **vice**: Commodore 64 emulator (optional, for testing)
-
-### Build
-
-```bash
-cd rmt_cbm64
-make                    # Build rmt_cbm64.prg
-make run                # Build and run in VICE
-make SONG=music/your.rmt # Use different song
-make clean              # Remove build artifacts
-```
-
-## Project Structure
-
-```
-rmt_cbm64/
-├── 00-START-HERE.txt         Quick reference
-├── README.md                 This file
-├── Makefile                  Build automation
-├── src/
-│   ├── main.c               C64 program template
-│   ├── sid.h                C API header
-│   ├── sidplayer.s          SID player core (RMT engine)
-│   ├── sidvbi.s             CIA1 IRQ handler
-│   └── rmt_cbm64.cfg        Linker configuration
-├── tools/
-│   └── rmt2cbm64.py         RMT→ca65 converter
-├── music/
-│   └── example.rmt          Example 3-channel RMT song
-└── build/                   Generated files (ignored)
-    ├── rmt_cbm64.prg        Final executable
-    ├── rmt_data.s           Generated from .rmt
-    └── *.o                  Object files
-```
-
-## C API
-
-### Initialization
-
-```c
-#include "sid.h"
-
-// Initialize the SID player with an RMT module
-sid_init(rmt_song_data);
-
-// Start playback (attaches to CIA1 Timer A)
-sid_play_on();
-
-// Stop playback and silence SID
-sid_play_off();
-```
-
-### Diagnostic Counters
-
-```c
-extern volatile unsigned int   sid_frames;    // Frame counter (incremented ~50 Hz)
-extern volatile unsigned char  sid_status;    // 0=idle, 1=playing
-extern volatile unsigned char  sid_volume[3]; // Volume for each voice
-```
-
-## RMT File Conversion
-
-### Scenario 1: You have a 3-channel RMT (ready to use)
-
-```bash
-cp your_3ch_song.rmt music/
-make SONG=music/your_3ch_song.rmt
-```
-
-### Scenario 2: You have a 4-channel ATARI RMT
-
-```bash
-# Verify it's convertible
-python3 tools/rmt2cbm64.py your_4ch_song.rmt /dev/null
-
-# Use it (player will auto-merge channels 3+4)
-make SONG=music/your_4ch_song.rmt
-```
-
-## Cross-Platform Audio Design
-
-### Why 3 Channels?
-
-The SID chip has exactly 3 polyphonic voices, making 3-channel RMT files optimal:
-
-```
-┌─────────────────┬──────────────────────┐
-│  SID (C64)      │   POKEY (ATARI)      │
-├─────────────────┼──────────────────────┤
-│ Voice 1         │ Channel 1 (Melody)   │
-│ Voice 2         │ Channel 2 (Harmony)  │
-│ Voice 3         │ Channel 3 (Bass)     │
-│ ---             │ Channel 4 [Reserved] │
-└─────────────────┴──────────────────────┘
-```
-
-**On ATARI**: Channel 4 is reserved for SIO (disk I/O) baud rate, so using 3 channels avoids glitches during disk loading.
-
-**On C64**: All 3 voices are fully available for music.
-
-### Practical Example
-
-Playing the same RMT module on both platforms:
-
-**C64 (SID)**:
-```
-3-channel full stereo + digital effects available
-```
-
-**ATARI (during disk loading)**:
-```
-3-channel music continues uninterrupted
-Channels 3+4 silenced (used by SIO)
-```
-
-Result: **Zero audio glitches** during load, professional game feel.
-
-## Building a C64 Program with RMT
-
-### Step 1: Copy the skeleton
-
-```bash
-cp -r rmt_cbm64 my_game
-cd my_game
-```
-
-### Step 2: Add your RMT song
-
-```bash
-cp my_song.rmt music/
-make SONG=music/my_song.rmt
-```
-
-### Step 3: Customize main.c
-
-Edit `src/main.c` to add your game logic:
-
-```c
-#include "sid.h"
-
-int main(void) {
-    sid_init(rmt_song_data);
-    sid_play_on();
-    
-    // Your game code here
-    game_loop();
-    
-    sid_play_off();
-    return 0;
-}
-```
-
-## Implementation Notes
-
-### SID Player Components
-
-- **sidplayer.s**: Core RMT playback engine
-  - Parses 3-channel RMT format
-  - Converts RMT instruments to SID waveforms
-  - Outputs to $D400-$D41F (SID registers)
-
-- **sidvbi.s**: CIA1 Timer A IRQ handler
-  - Generates ~50 Hz IRQ (PAL)
-  - Calls player at correct tempo
-  - Updates diagnostic counters
-
-- **sid.h**: C interface
-  - `sid_init()` - Initialize
-  - `sid_play_on()` - Start
-  - `sid_play_off()` - Stop
-
-### CIA1 Timer Configuration
-
-The player uses **CIA1 Timer A** for timing:
-
-```
-PAL C64:  50 Hz  (20 ms per tick)
-         CPU: 985,248 Hz
-         Divide by 19,700 ≈ 50 Hz
-```
-
-The timer runs continuously and generates IRQs that trigger the player.
-
-### Memory Layout (C64)
-
-```
-$0000-$00FF    Zero page (cc65 + player variables)
-$0100-$01FF    Stack
-$0200-$07FF    Free space / BASIC area (disabled)
-$0800-$9FFF    Program + music data + RMT player (~40 KB)
-$A000-$BFFF    BASIC ROM (disabled)
-$C000-$CFFF    Character ROM (disabled)
-$D000-$DFFF    I/O area (SID at $D400-$D41F)
-$E000-$FFFF    Kernal ROM
-```
-
-## Troubleshooting
-
-### "Error: Invalid RMT file format"
-
-The input file isn't a valid RMT. Verify:
-
-```bash
-# Check header (should show "✓ RMT Header found")
-python3 tools/rmt2cbm64.py your_song.rmt /dev/null
-
-# File should start with 0xFF 0xFF
-xxd -l 16 your_song.rmt
-```
-
-### Linker error: "undefined symbol rmt_song_data"
-
-The RMT song wasn't converted. Make sure `music/example.rmt` exists:
-
-```bash
-ls -la music/
+make                                   # build/rmt_cbm64.prg and build/rmt_cbm64.d64
+make SONG=music/PROJECT-X_THESMOPHORIA_pokey.rmt
+make run                               # x64sc -autostart build/rmt_cbm64.d64
 make clean
-make
 ```
 
-### Music doesn't play
+`SONG` is any RMT4 module with instrument speed 1 (`python3 tools/rmt2ca65.py
+file.rmt /dev/null` checks it). Songs in `music/`: `gemx.rmt` (default),
+`PROJECT-X_LOADER_pokey.rmt`, `PROJECT-X_THESMOPHORIA_pokey.rmt`.
+The song in use is kept in `build/song.cfg`: changing `SONG` rebuilds.
 
-1. Check if SID is being silenced properly by `sid_play_off()`
-2. Verify CIA1 Timer A is installed (check in VICE debugger)
-3. Ensure IRQ handler is being called (add debug output)
+On the disk the program is `RMT PLAYER`: `LOAD"*",8,1` and `RUN`, or
+autostart the D64 in VICE. Any key stops the music and returns to BASIC.
 
-### Different playback speed on emulator vs real C64
+## C interface (`src/sid.h`)
 
-Some emulators don't accurately emulate CIA timing. Use **VICE** with cycle-exact mode for best results.
+```c
+#include "sid.h"
 
-## Related Documentation
+sid_init(rmt_song_data);   /* only while stopped; detects PAL / NTSC */
+sid_play_on();             /* raster IRQ on */
+/* ... */
+sid_play_off();            /* IRQ off, SID silent (also done at exit) */
 
-- **RmtSkeleton**: ATARI 8-bit version at `../RmtSkeleton/`
-- **PokeyATest**: Full RMT documentation at `../PokeyATest/`
-- **cc65 docs**: https://cc65.github.io/
-- **VICE manual**: http://vice-emu.sourceforge.net/
-
-## File Format: Generic 3-Channel RMT
-
-### RMT Header (Standard)
-
-```
-Offset  Size    Description
-------  ----    -----------
-0       2       Magic: $FFFF
-2       1       Format version
-3       1       Flags
-4       2       Unknown
-6       1       Number of samples
-7       1       Number of instruments
-8       1       Channels (3 for generic, 1-4 for ATARI)
-9+      ...     Instrument and pattern data
+sid_frames      /* frames played */
+sid_status      /* 1 = playing */
+sid_volume[3]   /* level of the 3 SID voices, 0..15 */
+sid_ntsc        /* 1 = NTSC machine */
 ```
 
-### Channels
+The module symbol is `rmt_song_data` (`tools/rmt2ca65.py song.rmt song.s
+_rmt_song_data`).
 
-```
-Channel 1: Melodic voice (lead, bass, main)
-Channel 2: Harmonic voice (chords, counterpoint)
-Channel 3: Rhythmic/bass voice (drums, bass line)
-[Channel 4: ATARI only, reserved for SIO]
-```
+## Memory and CPU
 
-## License and Attribution
+`src/rmt_cbm64.cfg` is cc65's `c64.cfg` plus:
 
-- **RMT Player**: Radek Sterba (Raster/C.P.U.)
-  - Original ATARI version
-  - Ported to ca65
-- **SID Adaptation**: This project
-- **cc65 Toolchain**: https://cc65.github.io/ (zlib license)
+- `RMTZP`: the player's zero page at `$22-$34` (BASIC work area). It is saved
+  at start-up (constructor) and given back at exit (destructor), so BASIC finds
+  its pointers again. The save buffer is in `DATA`: cc65 clears the `BSS` after
+  running the constructors.
+- `RMTTAB`, `SIDTAB`: page aligned tables of the player and of the SID
+  frequencies.
 
----
+With THESMOPHORIA the program is 16 KB (`$0801-$47A2`, song 7 KB).
 
-**Next Steps:**
+CPU time of the IRQ, measured in VICE (PAL) by colouring the border: player
+21–24 raster lines, POKEY→SID 18–23 lines, about 13–15% of a frame (312 lines).
+On a frame with heavy player work the player alone was measured at 37 lines.
 
-1. Read `00-START-HERE.txt` for a quick reference
-2. Try `make run` to build and run the skeleton
-3. Convert your own RMT song: `python3 tools/rmt2cbm64.py your_song.rmt /dev/null`
-4. Integrate into your C64 game!
+## Checked in VICE 3.9
 
-**Questions?** Refer to the embedded comments in `src/sidplayer.s` and `src/sidvbi.s`.
+- `gemx.rmt` and THESMOPHORIA, PAL: the pitch content (chroma, 0.1 s steps)
+  of the C64 audio against the same song played by `../RmtSkeleton/tools/rmtplay`
+  (Atari player + POKEY emulation) correlates 0.65 (gemx) and 0.69
+  (THESMOPHORIA), against 0.05 or less when shifted by one to three
+  semitones, with the best match at a time lag of 0–0.4 s: same notes, same
+  key, same tempo.
+- NTSC: THESMOPHORIA correlates 0.73 with `rmtplay -n`.
+- Exit: after a key, `PEEK(44)` in BASIC gives 8 again (zero page back) and
+  the keyboard works (IRQ vector back).
+
+## Files
+
+| File | |
+|------|---|
+| `src/rmtplayr.s`, `src/rmt_feat.inc` | RMT player, copied from `../RmtSkeleton/src` (keep them in sync) |
+| `src/sidrmt.s` | raster IRQ, PAL/NTSC, POKEY → SID, C interface |
+| `src/sid.h` | C header |
+| `src/main.c` | example program |
+| `src/rmt_cbm64.cfg` | linker configuration |
+| `tools/rmt2ca65.py` | `.rmt` → relocatable ca65 source (copied from RmtSkeleton) |
+| `tools/mksidtab.py` | SID frequency tables |
+| `music/` | RMT modules |

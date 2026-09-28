@@ -1,30 +1,28 @@
 /*
- * sid.h - C interface for SID RMT player (Commodore 64)
+ * sid.h - RMT player on the Commodore 64 SID (src/sidrmt.s)
  *
- * Minimal API for playing RMT modules on C64 via SID chip.
- * Uses CIA1 Timer A for 50/60 Hz IRQ sync.
+ * The Atari RMT player routine (rmtplayr.s) runs from a raster IRQ once per
+ * frame; its POKEY registers are translated to SID registers.
  */
 
 #ifndef __SID_H__
 #define __SID_H__
 
-#include <stdint.h>
-
-/* RMT module linked in the program (tools/rmt2cbm64.py) */
+/* RMT module linked in the program (tools/rmt2ca65.py) */
 extern const unsigned char rmt_song_data[];
 
-/* Initialize the player with an RMT module */
+/* Init the player on a module, only while it is stopped */
 void __fastcall__ sid_init(const void *module);
 
-/* Start playback (attach to CIA1 IRQ) */
+/* Start playback: raster IRQ chained to the KERNAL IRQ vector ($0314) */
 void sid_play_on(void);
 
-/* Stop playback and silence SID */
+/* Stop playback and silence the SID (also done at program exit) */
 void sid_play_off(void);
 
-/* Diagnostic counters (updated every IRQ) */
-extern volatile unsigned int   sid_frames;     /* IRQ counter */
-extern volatile unsigned char  sid_status;     /* Player status (0=idle, 1=playing) */
-extern volatile unsigned char  sid_volume[3];  /* Volume for each voice */
+extern volatile unsigned int  sid_frames;     /* frames played */
+extern volatile unsigned char sid_status;     /* 1 = playing */
+extern volatile unsigned char sid_volume[3];  /* level of the 3 SID voices, 0..15 */
+extern unsigned char          sid_ntsc;       /* 1 = NTSC machine, set by sid_init */
 
 #endif

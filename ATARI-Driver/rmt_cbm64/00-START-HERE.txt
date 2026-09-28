@@ -1,140 +1,32 @@
-╔════════════════════════════════════════════════════════════════════════════╗
-║                  RMT CBM64 - Commodore 64 RMT Player                     ║
-║            Play RMT Music Files on Commodore 64 with SID                 ║
-║                     (Generic 3-Channel RMT Format)                       ║
-╚════════════════════════════════════════════════════════════════════════════╝
+RMT CBM64 - moduli RMT sul SID del Commodore 64
+================================================
 
-Benvenuto! Questo è il porting del RMT Player per Commodore 64.
+Cosa fa
+-------
+Suona moduli RMT4 (Raster Music Tracker, fatti per il POKEY Atari) su un
+Commodore 64. Non converte il modulo: sul C64 gira il player RMT originale
+dell'Atari (src/rmtplayr.s, lo stesso sorgente di RmtSkeleton e PokeyATest,
+assemblato con -D RMT_C64) e a ogni frame i registri POKEY che scrive vengono
+tradotti in registri SID (src/sidrmt.s):
 
-I file RMT utilizzano un formato GENERICO a 3 canali che funziona su:
-  ✅ Commodore 64 (SID - 3 canali)
-  ✅ ATARI 8-bit (POKEY - 4 canali, 1 canale silenzioso per compatibilità)
+  frequenza   calcolata da AUDF, AUDCTL e distorsione
+  tono puro   -> onda quadra     distorsione C -> pulse 25%
+  rumore      -> rumore SID      volume -> sustain dell'inviluppo
+  canali      1 -> voce 1, 2 -> voce 2, il piu' forte tra 3 e 4 -> voce 3
 
-═══════════════════════════════════════════════════════════════════════════════
+Il SID ha 3 voci: quando suonano sia il canale 3 sia il 4, il piu' debole
+non si sente. Un formato RMT "generico a 3 canali" non esiste.
 
-🎮 COMPATIBILITÀ CROSS-PLATFORM
+Compilare
+---------
+Servono cc65, python3, c1541 e x64sc (VICE).
 
-Il formato RMT generico a 3 canali permette lo stesso file musicale di suonare
-sia su C64 che su ATARI con il medesimo risultato musicale.
+  make                                            prg + disco D64
+  make SONG=music/PROJECT-X_THESMOPHORIA_pokey.rmt
+  make run                                        VICE con il D64
+  make clean
 
-ATARI:
-  CH1: Melodia
-  CH2: Armonia
-  CH3: Effetti/Bassi
-  CH4: SILENZIOSO (riservato per SIO)
+Sul disco il programma si chiama RMT PLAYER: LOAD"*",8,1 e RUN.
+Un tasto ferma la musica e torna al BASIC.
 
-C64 SID:
-  CH1: Melodia
-  CH2: Armonia
-  CH3: Effetti/Bassi
-
-═══════════════════════════════════════════════════════════════════════════════
-
-📁 STRUTTURA DEL PROGETTO
-
-rmt_cbm64/
-  README.md                 ← Documentazione completa
-  Makefile                  ← Build automation
-  
-  src/
-    main.c                  ← Programma minimalista (template)
-    rmt_cbm64.cfg           ← Configurazione linker (C64)
-    sidplayer.s             ← SID player in ca65
-    sidvbi.s                ← VBI/timer handler
-    sid.h                   ← API C per SID
-  
-  tools/
-    rmt2cbm64.py            ← Converte .rmt a 3 canali per C64
-  
-  music/
-    example.rmt             ← Canzone di esempio (3 canali)
-
-═══════════════════════════════════════════════════════════════════════════════
-
-🚀 QUICK START
-
-1. Compila questo skeleton così com'è:
-   
-   $ cd rmt_cbm64
-   $ make
-   
-   Risultato: build/rmt_cbm64.prg (executable C64)
-
-2. Esegui con VICE (emulatore C64):
-   
-   $ make run
-
-3. Per usare la tua canzone RMT:
-   
-   $ cp your_song.rmt music/
-   $ make SONG=music/your_song.rmt
-
-═══════════════════════════════════════════════════════════════════════════════
-
-🎵 API ESSENZIALE (C64)
-
-#include "sid.h"
-
-sid_init(rmt_song);        // Inizializza il SID
-sid_play_on();             // Inizia la musica
-sid_play_off();            // Ferma la musica
-
-═══════════════════════════════════════════════════════════════════════════════
-
-🔧 TOOL DI CONVERSIONE
-
-Per convertire un file RMT ATARI (4 canali) al formato generico C64 (3 canali):
-
-  python3 tools/rmt2cbm64.py input.rmt output.rmt
-
-Questo:
-  • Legge il file RMT ATARI (4 canali)
-  • Merge i canali 3+4 in un unico canale SID-compatibile
-  • Genera un RMT a 3 canali ottimizzato per SID
-  • Output è compatibile sia con C64 che con ATARI
-
-═══════════════════════════════════════════════════════════════════════════════
-
-❓ FAQ VELOCE
-
-D: Cosa cambia tra ATARI e C64?
-R: Solo il chip audio (POKEY vs SID) e i registri.
-   I file RMT sono identici (3 canali). Il player adatta automaticamente.
-
-D: Il file RMT ATARI a 4 canali funziona?
-R: Sì, lo converte automaticamente a 3 canali (merge CH3+4).
-   Usa: python3 tools/rmt2cbm64.py song.rmt song_3ch.rmt
-
-D: Quale emulatore usi per testare?
-R: VICE (Versatile Commodore Emulator)
-   $ apt install vice
-   $ make run
-
-D: Come faccio a creare RMT su C64?
-R: Usa Raster Music Tracker (originale ATARI software).
-   Genera file a 3 canali, poi compilali con questo skeleton.
-
-═══════════════════════════════════════════════════════════════════════════════
-
-📦 REQUISITI
-
-cc65          (ca65 assembler, cl65 linker)
-Python 3      (per rmt2cbm64.py)
-VICE          (emulatore Commodore 64, opzionale)
-
-Installa su Linux:
-  $ sudo apt install cc65 python3 vice
-
-═══════════════════════════════════════════════════════════════════════════════
-
-📝 PROSSIMI PASSI
-
-1. Leggi README.md completamente
-2. Testa questo skeleton così com'è (make && make run)
-3. Convedi i tuoi RMT (se necessario) con rmt2cbm64.py
-4. Integra nel tuo progetto C64
-5. Divertiti! 🎶
-
-═══════════════════════════════════════════════════════════════════════════════
-
-Buon coding! 🎵🔊
+Dettagli, API C, memoria, tempi misurati e verifiche: README.md

@@ -1,8 +1,5 @@
-# Build artifacts
+# Build artifacts (song.s, sidtab.s, objects, prg, d64, map)
 build/
-*.o
-*.s (except src/*.s)
-*.map
 
 # Emulator savestate files
 *.vsf

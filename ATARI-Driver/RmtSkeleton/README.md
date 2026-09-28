@@ -49,7 +49,10 @@ These files are copied from `../PokeyATest` and should not be modified:
 - `src/rmt_feat.inc` – feature switches (all enabled)
 - `tools/rmt2ca65.py` – converts .rmt to relocatable ca65
 
-If you update PokeyATest, re-copy these files to stay in sync.
+If you update PokeyATest, re-copy these files to stay in sync. `rmtplayr.s` is
+also used by `../rmt_cbm64` (Commodore 64): assembled there with `-D RMT_C64` it
+writes the POKEY registers to RAM instead of `$D200`; without that define it is
+the Atari code, unchanged.
 
 ## Building
 

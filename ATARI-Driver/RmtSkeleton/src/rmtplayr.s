@@ -14,6 +14,11 @@
 ;*    channels 3+4 are the serial baud rate generator (AUDCTL=$28, 16 bit
 ;*    joined, 1.79MHz clock) so the player must NOT write AUDF3/AUDC3/
 ;*    AUDF4/AUDC4/AUDCTL. Only channels 1 and 2 keep playing.
+;*  - ca65 -D RMT_C64: Commodore 64 build (../rmt_cbm64). There is no POKEY
+;*    ($D200 is the VIC-II): the POKEY registers are written to pokey_shadow,
+;*    16 bytes of RAM imported from the C64 code, which turns them into SID
+;*    registers; the zero page variables go to segment RMTZP. Without
+;*    RMT_C64 the code is the Atari one, byte for byte.
 ;*
         .include "rmt_feat.inc"
 
@@ -28,23 +33,33 @@ _rmt_audc = trackn_audc
 TRACKS          = 4
 INSTRPAR        = 12
 
-AUDF1           = $D200
-AUDC1           = $D201
-AUDF2           = $D202
-AUDC2           = $D203
-AUDF3           = $D204
-AUDC3           = $D205
-AUDF4           = $D206
-AUDC4           = $D207
-AUDCTL          = $D208
-SKCTL           = $D20F
+.ifdef RMT_C64
+        .import pokey_shadow
+POKEY           = pokey_shadow
+.else
+POKEY           = $D200
+.endif
+AUDF1           = POKEY+$00
+AUDC1           = POKEY+$01
+AUDF2           = POKEY+$02
+AUDC2           = POKEY+$03
+AUDF3           = POKEY+$04
+AUDC3           = POKEY+$05
+AUDF4           = POKEY+$06
+AUDC4           = POKEY+$07
+AUDCTL          = POKEY+$08
+SKCTL           = POKEY+$0F
 
 FEAT_EFFECTS    = FEAT_EFFECTVIBRATO || FEAT_EFFECTFSHIFT
 
 ;* ---------------------------------------------------------------------------
 ;* RMT ZeroPage addresses (19 bytes, used only by the player)
 ;* ---------------------------------------------------------------------------
+.ifdef RMT_C64
+        .segment "RMTZP": zeropage
+.else
         .segment "ZEROPAGE"
+.endif
 p_tis:
 p_instrstable:          .res 2
 p_trackslbstable:       .res 2
