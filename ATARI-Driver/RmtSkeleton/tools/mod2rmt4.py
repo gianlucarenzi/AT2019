@@ -62,10 +62,12 @@ FRQ_PURE = [
     0x25, 0x23, 0x21, 0x1F, 0x1D, 0x1C, 0x1A, 0x18, 0x17, 0x16, 0x14, 0x13, 0x12, 0x11, 0x10, 0x0F,
     0x0E, 0x0D, 0x0C, 0x0B, 0x0A, 0x09, 0x08, 0x07, 0x06, 0x05, 0x04, 0x03, 0x02, 0x01, 0x00, 0x00]
 
-# RMT envelope distortion index (reg2 bits 1..3) -> tabbeganddistor of the player
+# RMT envelope distortion index (reg2 bits 1..3) -> tabbeganddistor of the player.
+# reg2 & $0E = 6 (index 3) is the RMT "16 bit bass" on channels 2 and 4 (BASS16:
+# joins the channel pair, sets AUDCTL, mutes channel 1/3): never used here.
 DIST_NOISE = 4      # AUDC $80: poly17 noise (pure frequency table)
 DIST_PURE = 5       # AUDC $A0: pure tone
-DIST_BASS1 = 3      # AUDC $C0: distortion C, bass table 1 (not 6: 6 = 16 bit bass)
+DIST_BASS1 = 6      # AUDC $C0: distortion C, bass table 1 (index 3 is the 16 bit bass)
 DIST_BASS2 = 7      # AUDC $C0: distortion C, bass table 2
 CMD_NOTE = 0        # AUDF = table[note + param]
 CMD_AUDF = 1        # AUDF = param

@@ -162,10 +162,17 @@ make run SONG=../RmtSkeleton/music/ProjectX-End-Lynne_pokey.rmt \
          ASSET_SIZES="2048 3500 5120 8000 12288"
 ```
 
-In atari800 (PAL, `-nopatchall`) End-Lynne kept playing on channels 1+2 while
-loading 75% of the time; compared with `rmtplay` over 141 s, channels 1+2
-matched except 70 single frames written one frame late (postponed ticks),
-channels 3/4 stayed at volume 0 during every transfer.
+In atari800 (PAL, `-nopatchall`) THESMOPHORIA played while loading 75% of the
+time, with no loader errors: compared with `rmtplay` over 80 s, channels 1+2
+matched except 11 single frames written one frame late (postponed ticks),
+channels 3/4 stayed at volume 0 during every transfer and AUDCTL stayed 0
+outside them.
+
+**Distortion 6 = 16 bit bass.** In an RMT envelope the distortion byte `$06`
+(table index 3) is the 16 bit bass on channels 2 and 4: the player joins the
+channel pair, sets AUDCTL and mutes channel 1 or 3. `mod2rmt4.py` reaches the
+bass 1 table through `$0C` instead; `rmtplay -r` shows AUDCTL, which must stay
+`00` for a song meant to play during disk loading.
 The test is good if the screen shows `ERR 0`, `RETRY 0` and `lost 0`.
 
 To use the song in your own program, see `INTEGRATION_GUIDE.md`
