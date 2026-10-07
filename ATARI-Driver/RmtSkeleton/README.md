@@ -156,7 +156,10 @@ plays them with nothing left out, and on the Atari lead and bass keep playing
 during disk loading. Rendered by `rmtplay` and by the C64 player in VICE, the
 pitch content correlates 0.85 (`claude_3ch`) and 0.80 (`claude_3ch_fast`),
 against 0.67 for `gemx.rmt`, which uses 4 channels. Melodies, chords, drum
-patterns and instruments are plain data in the script (`SONGS`). How they
+patterns and instruments are plain data in the script (`SONGS`). Like the
+files of the RMT editor, they carry a song text (name, author) and the
+instrument names in a second block; name and author are longer than 40
+characters, so they scroll in the players that show them. How they
 were made (the prompts, the choices, the checks): `CLAUDE_3CH_SONG.md`.
 
 ## API Overview (C Interface)

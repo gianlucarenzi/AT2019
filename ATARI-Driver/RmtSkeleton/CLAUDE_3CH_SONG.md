@@ -35,6 +35,15 @@ with PokeyATest):
 
 ("create another, faster 3 channel song")
 
+Later, after the C64 player with visualizer (`../rmt_cbm64/rmtplay.sh`)
+was written:
+
+> vorrei che la metadati dei file rmt generati da te siano lunghi abbastanza
+> da essere scrollati
+
+("I would like the metadata of the rmt files you generated to be long enough
+to scroll")
+
 There was no other prompt or hidden specification: the choices below were
 made by Claude.
 
@@ -77,6 +86,24 @@ Same generator, instruments and channel layout; what changes is in its
   (rows 0, 6, 8 kick, 4, 12 snare, 2, 10, 14 chord stabs)
 - pitch error: at most 18 cents (bass), 26 cents (lead and stabs)
 
+## Song text (metadata)
+
+Like the files saved by the RMT editor, both modules have a second block
+after the module: the song text, then the name of every instrument, each
+ending with a 0 byte. The music block is unchanged by it. Players that show
+the song info split the text at the first ", " (`tools/rmtinfo.py` in
+`../rmt_cbm64` and in VERA_ATARI_PBI):
+
+| Song | NAME | AUTHOR |
+|---|---|---|
+| `claude_3ch` | Claude 3ch - an original song in A minor for POKEY channels 1-3 and the C64 SID (79 characters) | composed by Claude (Opus 5.5) with RmtSkeleton/tools/song3ch.py in 2026 (72) |
+| `claude_3ch_fast` | Claude 3ch fast - an original song in E minor at 188 BPM for POKEY channels 1-3 and the C64 SID (97) | the same (72) |
+
+Both lines are longer than the 40 columns, so they scroll. DATE stays empty:
+the year is already on the AUTHOR line. Instrument names: lead, bass
+(table 1), bass (table 2), kick, snare, stab minor 0-3-7, stab major 0-4-7.
+The text is the `text` field of each `SONGS` entry.
+
 ## How it was checked
 
 - `python3 tools/rmt2ca65.py music/claude_3ch.rmt /dev/null`: valid, instr. speed 1
@@ -91,6 +118,9 @@ Same generator, instruments and channel layout; what changes is in its
 - `claude_3ch_fast`: the same checks; chords right in all 36 bars,
   C64/rmtplay correlation 0.80 (0.80–0.92 on 10 s windows, -0.08 or less
   when transposed), builds in PokeyATest and rmt_cbm64
+- with the song text added, the first block (the module) is byte for byte
+  the one before; `rmt2ca65.py` and `rmtplay` read it as before; in
+  `../rmt_cbm64/rmtplay.sh` both info lines scroll (checked in VICE)
 
 Whether the melodies are catchy was left to the user's ears: the checks above
 cover pitch, harmony and timing only.

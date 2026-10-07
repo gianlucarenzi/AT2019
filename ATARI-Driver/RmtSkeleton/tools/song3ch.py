@@ -19,7 +19,11 @@ Songs (SONGS below), track length 64 = 4 bars of 16 rows:
     claude_3ch       A minor, speed 6 (125 BPM at 50 Hz)
     claude_3ch_fast  E minor, speed 4 (188 BPM at 50 Hz)
 The module layout is the one of tools/mod2rmt4.py (song last, as
-tools/rmt2ca65.py expects).
+tools/rmt2ca65.py expects). A second block holds the song text and the
+instrument names, as the RMT editor writes them: players that show the song
+info (rmt_cbm64 rmtplay.sh, VERA_ATARI_PBI rmtplay.sh) take the name from the
+text before the first ", " and the author from the rest; both are longer than
+40 characters, so they scroll.
 """
 import argparse
 import math
@@ -62,36 +66,38 @@ def tone(vols, dist):
 
 INSTR = {}
 DATA = []
+NAMES = []                  # instrument names, for the text block
 
 
-def add(name, data):
+def add(name, data, text):
     INSTR[name] = len(DATA)
     DATA.append(data)
+    NAMES.append(text)
 
 
 # lead: quick attack, decay to a sustain, vibrato from frame 10
 add('lead', instrument(tone([11, 15, 14, 13, 12, 12, 11, 11, 11, 10], DIST_PURE),
-                       vibrato=1, delay=10))
+                       vibrato=1, delay=10), "lead")
 # bass: punch then sustain (two copies: the two distortion C tables)
 BASS_ENV = [15, 14, 13, 12, 11, 11, 10, 10, 10, 9]
-add('bass1', instrument(tone(BASS_ENV, DIST_BASS1)))
-add('bass2', instrument(tone(BASS_ENV, DIST_BASS2)))
+add('bass1', instrument(tone(BASS_ENV, DIST_BASS1)), "bass (table 1)")
+add('bass2', instrument(tone(BASS_ENV, DIST_BASS2)), "bass (table 2)")
 # kick: distortion C from 120 Hz down to 45 Hz
 kick = []
 for i, v in enumerate([15, 15, 14, 12, 10, 8, 6, 4, 2, 0]):
     f = 120 * (45 / 120) ** (i / 9)
     kick.append((v, DIST_BASS1, CMD_AUDF, distc_audf(f)))
-add('kick', instrument(kick))
+add('kick', instrument(kick), "kick")
 # snare: bright noise, then darker
 add('snare', instrument([(15, DIST_NOISE, CMD_AUDF, 6), (13, DIST_NOISE, CMD_AUDF, 8),
                          (11, DIST_NOISE, CMD_AUDF, 10), (9, DIST_NOISE, CMD_AUDF, 12),
                          (7, DIST_NOISE, CMD_AUDF, 14), (5, DIST_NOISE, CMD_AUDF, 16),
                          (3, DIST_NOISE, CMD_AUDF, 18), (1, DIST_NOISE, CMD_AUDF, 20),
-                         (0, DIST_NOISE, CMD_AUDF, 20)]))
+                         (0, DIST_NOISE, CMD_AUDF, 20)]), "snare")
 # chord stabs: arpeggio 0-3-7 (minor) / 0-4-7 (major), short decay
 STAB = tone([12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1, 0], DIST_PURE)
-add('minor', instrument(STAB, table=(0, 3, 7)))
-add('major', instrument(STAB, table=(0, 4, 7)))
+add('minor', instrument(STAB, table=(0, 3, 7)), "stab minor 0-3-7")
+add('major', instrument(STAB, table=(0, 4, 7)), "stab major 0-4-7")
 
 
 # ---------------------------------------------------------------------------
@@ -147,6 +153,11 @@ CH3 = {
 SONGS = {
     'claude_3ch': {
         'speed': 6,
+        # song text: name up to the first ", ", then the author (players show
+        # NAME / AUTHOR, a line longer than 40 characters scrolls)
+        'text': "Claude 3ch - an original song in A minor for POKEY channels 1-3 "
+                "and the C64 SID, composed by Claude (Opus 5.5) with "
+                "RmtSkeleton/tools/song3ch.py in 2026",
         'prog': {
             'A': ['Am', 'F', 'C', 'G'],
             'B': ['Dm', 'Em', 'F', 'G'],
@@ -187,6 +198,9 @@ SONGS = {
     # 16th note pickups in the B part, a kick on the "and" of beat 2
     'claude_3ch_fast': {
         'speed': 4,
+        'text': "Claude 3ch fast - an original song in E minor at 188 BPM for POKEY "
+                "channels 1-3 and the C64 SID, composed by Claude (Opus 5.5) with "
+                "RmtSkeleton/tools/song3ch.py in 2026",
         'prog': {
             'A': ['Em', 'C', 'G', 'D'],
             'B': ['Am', 'Em', 'C', 'D'],
@@ -319,8 +333,13 @@ def main():
     for line in song:
         body += bytes(line)
     body += bytes([0xFE, 0]) + struct.pack('<H', a + o_song + 4 * sng['loop'])
+    # second block, as the RMT editor writes it: song text, then the name of
+    # every instrument, each ending with a 0 byte
+    text = (sng['text'] + '\0' + ''.join(n + '\0' for n in NAMES)).encode('ascii')
+    t = a + len(body)
     with open(args.rmt, 'wb') as f:
         f.write(struct.pack('<3H', 0xFFFF, a, a + len(body) - 1) + body)
+        f.write(struct.pack('<2H', t, t + len(text) - 1) + text)
 
     secs = len(sng['lines']) * TRACKLEN * sng['speed'] / 50
     print("song3ch: %s -> %s, %d bytes, %d instruments, %d tracks, %d song lines "
