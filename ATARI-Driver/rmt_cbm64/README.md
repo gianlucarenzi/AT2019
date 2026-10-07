@@ -61,7 +61,7 @@ make clean
 file.rmt /dev/null` checks it). Songs in `music/`: `gemx.rmt` (default),
 `PROJECT-X_LOADER_pokey.rmt`, `PROJECT-X_THESMOPHORIA_pokey.rmt`,
 `ProjectX-End-Lynne_pokey.rmt` (15 KB; the D64 loads in about a minute on a
-real-speed 1541). `D64=build/other.d64` writes the disk under another name.
+real-speed 1541), `claude_3ch.rmt` (channels 1-3 only, see below). `D64=build/other.d64` writes the disk under another name.
 The song in use is kept in `build/song.cfg`: changing `SONG` rebuilds.
 
 On the disk the program is `RMT PLAYER`: `LOAD"*",8,1` and `RUN`, or
@@ -112,6 +112,14 @@ On a frame with heavy player work the player alone was measured at 37 lines.
   semitones, with the best match at a time lag of 0–0.4 s: same notes, same
   key, same tempo.
 - NTSC: THESMOPHORIA correlates 0.73 with `rmtplay -n`.
+- `claude_3ch.rmt` (PAL, reSID 6581): correlates 0.85 (0.83–0.94 on 10 s
+  windows), against -0.07 or less when transposed. The song uses only
+  channels 1-3 (written by `../RmtSkeleton/tools/song3ch.py`), so every POKEY
+  channel has its own SID voice: it is the module to compare the players with.
+  With 4 channel songs the quieter of channels 3 and 4 is lost (gemx: 0.67).
+- Recording: `x64sc -console -sound -sounddev wav -soundarg out.wav
+  -sidenginemodel 256 -limitcycles N -autostart build/rmt_cbm64.d64`, at real
+  speed (with `-warp` the WAV stays empty).
 - Exit: after a key, `PEEK(44)` in BASIC gives 8 again (zero page back) and
   the keyboard works (IRQ vector back).
 

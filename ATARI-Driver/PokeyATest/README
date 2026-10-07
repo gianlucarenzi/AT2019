@@ -15,6 +15,8 @@ make run        -> atari800 -xl -pal -nopatchall (NO SIO patch: real POKEY
                    serial timing; ~/.atari800.cfg has ENABLE_SIO_PATCH=1)
 
 make SONG=music/xxx.rmt               any mono RMT4 module, instr. speed 1
+                                      (music/claude_3ch.rmt: channels 1-3 only,
+                                      see ../RmtSkeleton/tools/song3ch.py)
 make ASSET_SIZES="2048 7000 16384"    generated test assets, 2048..16384 bytes
                                       (ASSET_SIZES= : none)
 your assets: copy them into assets/ (or make ASSETS_DIR=dir): DOS 8.3 names,

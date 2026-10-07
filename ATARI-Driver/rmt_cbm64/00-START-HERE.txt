@@ -23,6 +23,8 @@ Servono cc65, python3, c1541 e x64sc (VICE).
 
   make                                            prg + disco D64
   make SONG=music/PROJECT-X_THESMOPHORIA_pokey.rmt
+  make SONG=music/claude_3ch.rmt                  solo canali 1-3: nessuna
+                                                  voce persa sul SID
   make run                                        VICE con il D64
   make clean
 
