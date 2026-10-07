@@ -149,7 +149,8 @@ of this tree: the C64 SID (`../rmt_cbm64`) has only 3 voices and plays it with
 nothing left out, and on the Atari lead and bass keep playing during disk
 loading. Rendered by `rmtplay` and by the C64 player in VICE, the pitch
 content correlates 0.85 (0.67 for `gemx.rmt`, which uses 4 channels). Melody,
-chords and instruments are plain data at the top of the script.
+chords and instruments are plain data at the top of the script. How it was
+made (the prompts, the choices, the checks): `CLAUDE_3CH_SONG.md`.
 
 ## API Overview (C Interface)
 
