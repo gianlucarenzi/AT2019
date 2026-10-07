@@ -36,7 +36,8 @@ RmtSkeleton/
 ├── music/
 │   ├── gemx.rmt          example RMT song (replace with your own)
 │   ├── claude_3ch.rmt    3 channel song (channel 4 silent): same on POKEY and C64 SID
-│   └── claude_3ch_fast.rmt  faster 3 channel song (188 BPM)
+│   ├── claude_3ch_fast.rmt  faster 3 channel song (188 BPM)
+│   └── claude_3ch_slow.rmt  slower 3 channel ballad (94 BPM)
 └── build/                generated files (ignored by git)
     ├── rmtskeleton.com   the final executable
     ├── rmtskeleton.map   linker map
@@ -141,20 +142,22 @@ To convert a MOD file see `MOD_TO_RMT_WORKFLOW.md`.
 
 ### Songs on 3 channels: tools/song3ch.py
 
-`tools/song3ch.py` writes two original songs:
+`tools/song3ch.py` writes three original songs:
 
 ```bash
 python3 tools/song3ch.py music/claude_3ch.rmt                               # A minor, speed 6 (125 BPM), ~61 s
 python3 tools/song3ch.py --song claude_3ch_fast music/claude_3ch_fast.rmt   # E minor, speed 4 (188 BPM), ~41 s
+python3 tools/song3ch.py --song claude_3ch_slow music/claude_3ch_slow.rmt   # D minor, speed 8 (94 BPM), ~82 s
 ```
 
-Both have 8 song lines and loop to line 2. Channel 1 lead (pure tone,
+All have 8 song lines and loop to line 2. Channel 1 lead (pure tone,
 vibrato), channel 2 bass (distortion C), channel 3 drums and arpeggio chord
 stabs; **channel 4 is always silent**. They are the common test songs for
 every player of this tree: the C64 SID (`../rmt_cbm64`) has only 3 voices and
 plays them with nothing left out, and on the Atari lead and bass keep playing
 during disk loading. Rendered by `rmtplay` and by the C64 player in VICE, the
-pitch content correlates 0.85 (`claude_3ch`) and 0.80 (`claude_3ch_fast`),
+pitch content correlates 0.85 (`claude_3ch`), 0.80 (`claude_3ch_fast`) and
+0.89 (`claude_3ch_slow`),
 against 0.67 for `gemx.rmt`, which uses 4 channels. Melodies, chords, drum
 patterns and instruments are plain data in the script (`SONGS`). Like the
 files of the RMT editor, they carry a song text (name, author) and the

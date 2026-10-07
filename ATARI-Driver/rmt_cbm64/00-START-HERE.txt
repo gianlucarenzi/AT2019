@@ -26,6 +26,7 @@ Servono cc65, python3, c1541 e x64sc (VICE).
   make SONG=music/claude_3ch.rmt                  solo canali 1-3: nessuna
                                                   voce persa sul SID
   make SONG=music/claude_3ch_fast.rmt             idem, piu' veloce (188 BPM)
+  make SONG=music/claude_3ch_slow.rmt             idem, piu' lento (94 BPM)
   make run                                        VICE con il D64
   make clean
 

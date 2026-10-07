@@ -18,6 +18,7 @@ bass) also keep playing on the Atari while it loads from disk.
 Songs (SONGS below), track length 64 = 4 bars of 16 rows:
     claude_3ch       A minor, speed 6 (125 BPM at 50 Hz)
     claude_3ch_fast  E minor, speed 4 (188 BPM at 50 Hz)
+    claude_3ch_slow  D minor, speed 8 (94 BPM at 50 Hz), half-time drums
 The module layout is the one of tools/mod2rmt4.py (song last, as
 tools/rmt2ca65.py expects). A second block holds the song text and the
 instrument names, as the RMT editor writes them: players that show the song
@@ -138,7 +139,8 @@ def table_note(m, dists):
 CHORDS = {
     'Am': ('A', 'minor'), 'Dm': ('D', 'minor'), 'Em': ('E', 'minor'),
     'C': ('C', 'major'), 'D': ('D', 'major'), 'E': ('E', 'major'), 'F': ('F', 'major'),
-    'G': ('G', 'major'), 'B': ('B', 'major'),
+    'G': ('G', 'major'), 'B': ('B', 'major'), 'A': ('A', 'major'),
+    'Gm': ('G', 'minor'), 'Bb': ('A#', 'major'),
 }
 
 # channel 3, rows of a bar: kick, snare, chord stab
@@ -148,6 +150,9 @@ CH3 = {
              8: 'kick', 10: 'stab', 12: 'snare', 14: 'stab'},
     'drive': {0: 'kick', 2: 'stab', 4: 'snare', 6: 'kick',
               8: 'kick', 10: 'stab', 12: 'snare', 14: 'stab'},
+    # half time: snare on beat 3 only
+    'half': {0: 'kick', 8: 'snare', 14: 'kick'},
+    'half_full': {0: 'kick', 4: 'stab', 8: 'snare', 12: 'stab', 14: 'kick'},
 }
 
 SONGS = {
@@ -233,6 +238,49 @@ SONGS = {
             ('B2', 'B2', 'octaves', 'drive'),
             ('A1', 'A', 'octaves', 'drive'),
             ('A2', 'A', 'octaves', 'drive'),
+        ],
+        'loop': 2,
+    },
+    # slower, D minor ballad: i-VI-III-VII (Dm Bb F C), then iv-i-VI-VII
+    # and an A major turnaround back to D minor; long lead notes with
+    # vibrato, half-time drums, chord stabs on beats 2 and 4
+    'claude_3ch_slow': {
+        'speed': 8,
+        'text': "Claude 3ch slow - an original ballad in D minor at 94 BPM for POKEY "
+                "channels 1-3 and the C64 SID, composed by Claude (Opus 5.5) with "
+                "RmtSkeleton/tools/song3ch.py in 2026",
+        'prog': {
+            'A': ['Dm', 'Bb', 'F', 'C'],
+            'B': ['Gm', 'Dm', 'Bb', 'C'],
+            'B2': ['Gm', 'Dm', 'Bb', 'A'],
+        },
+        'melody': {
+            'A1': ["0:D5:4 4:F5:4 8:E5:2 10:D5:2 12:A4:4",
+                   "0:A#4:6 6:C5:2 8:D5:4 12:F5:4",
+                   "0:C5:4 4:A4:4 8:C5:2 10:F5:2 12:E5:4",
+                   "0:E5:6 6:D5:2 8:C5:4 12:G4:4"],
+            'A2': ["0:D5:4 4:F5:4 8:E5:2 10:D5:2 12:A4:4",
+                   "0:A#4:6 6:C5:2 8:D5:4 12:F5:4",
+                   "0:C5:4 4:A4:4 8:C5:2 10:F5:2 12:E5:4",
+                   "0:E5:4 4:D5:2 6:C5:2 8:D5:8"],
+            'B1': ["0:G4:2 2:A#4:2 4:D5:4 8:G5:4 12:F5:2 14:D5:2",
+                   "0:F5:4 4:E5:2 6:D5:2 8:A4:8",
+                   "0:A#4:2 2:D5:2 4:F5:4 8:A#4:2 10:D5:2 12:F5:4",
+                   "0:G5:6 6:F5:2 8:E5:4 12:C5:4"],
+            'B2': ["0:G4:2 2:A#4:2 4:D5:4 8:G5:4 12:F5:2 14:D5:2",
+                   "0:F5:4 4:E5:2 6:D5:2 8:A4:8",
+                   "0:A#4:2 2:D5:2 4:F5:4 8:A#4:2 10:D5:2 12:F5:4",
+                   "0:C#5:4 4:E5:4 8:A4:4 12:C#5:4"],
+        },
+        'lines': [
+            (None, 'A', 'roots', 'half'),
+            (None, 'A', 'octaves', 'half_full'),
+            ('A1', 'A', 'octaves', 'half_full'),
+            ('A2', 'A', 'octaves', 'half_full'),
+            ('B1', 'B', 'octaves', 'half_full'),
+            ('B2', 'B2', 'octaves', 'half_full'),
+            ('A1', 'A', 'octaves', 'half_full'),
+            ('A2', 'A', 'octaves', 'half_full'),
         ],
         'loop': 2,
     },
