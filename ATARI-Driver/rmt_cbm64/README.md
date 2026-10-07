@@ -61,7 +61,7 @@ make clean
 file.rmt /dev/null` checks it). Songs in `music/`: `gemx.rmt` (default),
 `PROJECT-X_LOADER_pokey.rmt`, `PROJECT-X_THESMOPHORIA_pokey.rmt`,
 `ProjectX-End-Lynne_pokey.rmt` (15 KB; the D64 loads in about a minute on a
-real-speed 1541), `claude_3ch.rmt` (channels 1-3 only, see below). `D64=build/other.d64` writes the disk under another name.
+real-speed 1541), `claude_3ch.rmt` and `claude_3ch_fast.rmt` (channels 1-3 only, see below). `D64=build/other.d64` writes the disk under another name.
 The song in use is kept in `build/song.cfg`: changing `SONG` rebuilds.
 
 On the disk the program is `RMT PLAYER`: `LOAD"*",8,1` and `RUN`, or
@@ -117,6 +117,8 @@ On a frame with heavy player work the player alone was measured at 37 lines.
   channels 1-3 (written by `../RmtSkeleton/tools/song3ch.py`), so every POKEY
   channel has its own SID voice: it is the module to compare the players with.
   With 4 channel songs the quieter of channels 3 and 4 is lost (gemx: 0.67).
+- `claude_3ch_fast.rmt` (same song generator, speed 4, 188 BPM): correlates
+  0.80 (0.80–0.92 on 10 s windows), -0.08 or less when transposed.
 - Recording: `x64sc -console -sound -sounddev wav -soundarg out.wav
   -sidenginemodel 256 -limitcycles N -autostart build/rmt_cbm64.d64`, at real
   speed (with `-warp` the WAV stays empty).

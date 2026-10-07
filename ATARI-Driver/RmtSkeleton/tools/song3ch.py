@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-song3ch.py - writes an original RMT4 module that uses only channels 1, 2, 3
+song3ch.py - writes original RMT4 modules that use only channels 1, 2, 3
 
     python3 tools/song3ch.py music/claude_3ch.rmt
+    python3 tools/song3ch.py --song claude_3ch_fast music/claude_3ch_fast.rmt
 
 Channel 4 is always empty, so the song sounds the same on every player of
 this tree: Atari POKEY (RmtSkeleton, PokeyATest) and the C64 SID
@@ -14,20 +15,21 @@ bass) also keep playing on the Atari while it loads from disk.
     channel 3  drums (kick: distortion C pitch sweep, snare: noise) and
                chord stabs (pure tone, arpeggio from the instrument table)
 
-A minor, speed 6 (125 BPM at 50 Hz), track length 64 = 4 bars of 16 rows.
+Songs (SONGS below), track length 64 = 4 bars of 16 rows:
+    claude_3ch       A minor, speed 6 (125 BPM at 50 Hz)
+    claude_3ch_fast  E minor, speed 4 (188 BPM at 50 Hz)
 The module layout is the one of tools/mod2rmt4.py (song last, as
 tools/rmt2ca65.py expects).
 """
+import argparse
 import math
 import struct
-import sys
 
 from mod2rmt4 import (FRQ_BASS1, FRQ_BASS2, FRQ_PURE, DIST_NOISE, DIST_PURE,
                       DIST_BASS1, DIST_BASS2, CMD_NOTE, CMD_AUDF,
                       pokey_freq, distc_audf, encode_track)
 
 TRACKLEN = 64
-SPEED = 6
 ADDR = 0x4000
 TABLE = {DIST_PURE: FRQ_PURE, DIST_BASS1: FRQ_BASS1, DIST_BASS2: FRQ_BASS2}
 
@@ -125,56 +127,109 @@ def table_note(m, dists):
 
 
 # ---------------------------------------------------------------------------
-# score: one string per bar, "row:note:length" (16 rows per bar)
+# scores: melodies one string per bar, "row:note:length" (16 rows per bar)
 # ---------------------------------------------------------------------------
 CHORDS = {
-    'Am': ('A', 'minor'), 'F': ('F', 'major'), 'C': ('C', 'major'), 'G': ('G', 'major'),
-    'Dm': ('D', 'minor'), 'Em': ('E', 'minor'), 'E': ('E', 'major'),
-}
-PROG = {
-    'A': ['Am', 'F', 'C', 'G'],
-    'B': ['Dm', 'Em', 'F', 'G'],
-    'B2': ['Dm', 'Em', 'F', 'E'],
+    'Am': ('A', 'minor'), 'Dm': ('D', 'minor'), 'Em': ('E', 'minor'),
+    'C': ('C', 'major'), 'D': ('D', 'major'), 'E': ('E', 'major'), 'F': ('F', 'major'),
+    'G': ('G', 'major'), 'B': ('B', 'major'),
 }
 
-MELODY = {
-    'A1': ["0:A4:2 2:C5:2 4:E5:4 8:D5:2 10:C5:2 12:E5:4",
-           "0:F5:3 3:E5:3 6:C5:2 8:A4:6 14:C5:2",
-           "0:G5:3 3:E5:3 6:C5:2 8:E5:2 10:G5:2 12:E5:4",
-           "0:D5:6 6:B4:2 8:G4:4 12:B4:2 14:D5:2"],
-    'A2': ["0:A4:2 2:C5:2 4:E5:4 8:D5:2 10:C5:2 12:E5:4",
-           "0:F5:3 3:E5:3 6:C5:2 8:A4:6 14:C5:2",
-           "0:G5:3 3:E5:3 6:C5:2 8:E5:2 10:G5:2 12:A5:4",
-           "0:B4:2 2:C5:2 4:D5:4 8:E5:6"],
-    'B1': ["0:F5:2 2:E5:2 4:D5:2 6:A4:2 8:D5:4 12:F5:4",
-           "0:G5:2 2:F5:2 4:E5:2 6:B4:2 8:E5:4 12:G5:4",
-           "0:A5:4 4:G5:2 6:F5:2 8:E5:2 10:F5:2 12:C5:4",
-           "0:D5:2 2:B4:2 4:G4:2 6:B4:2 8:D5:4 12:F5:2 14:G5:2"],
-    'B2': ["0:F5:2 2:E5:2 4:D5:2 6:A4:2 8:D5:4 12:F5:4",
-           "0:G5:2 2:F5:2 4:E5:2 6:B4:2 8:E5:4 12:G5:4",
-           "0:A5:4 4:G5:2 6:F5:2 8:E5:2 10:F5:2 12:C5:4",
-           "0:B4:2 2:G#4:2 4:B4:2 6:D5:2 8:E5:6"],
+# channel 3, rows of a bar: kick, snare, chord stab
+CH3 = {
+    'drums': {0: 'kick', 4: 'snare', 8: 'kick', 10: 'kick', 12: 'snare'},
+    'full': {0: 'kick', 2: 'stab', 4: 'snare', 6: 'stab',
+             8: 'kick', 10: 'stab', 12: 'snare', 14: 'stab'},
+    'drive': {0: 'kick', 2: 'stab', 4: 'snare', 6: 'kick',
+              8: 'kick', 10: 'stab', 12: 'snare', 14: 'stab'},
 }
 
-# song lines: (melody or None, progression, bass style, channel 3 style)
-SONG = [
-    (None, 'A', 'roots', 'drums'),
-    (None, 'A', 'octaves', 'full'),
-    ('A1', 'A', 'octaves', 'full'),
-    ('A2', 'A', 'octaves', 'full'),
-    ('B1', 'B', 'octaves', 'full'),
-    ('B2', 'B2', 'octaves', 'full'),
-    ('A1', 'A', 'octaves', 'full'),
-    ('A2', 'A', 'octaves', 'full'),
-]
-LOOP_TO = 2
+SONGS = {
+    'claude_3ch': {
+        'speed': 6,
+        'prog': {
+            'A': ['Am', 'F', 'C', 'G'],
+            'B': ['Dm', 'Em', 'F', 'G'],
+            'B2': ['Dm', 'Em', 'F', 'E'],
+        },
+        'melody': {
+            'A1': ["0:A4:2 2:C5:2 4:E5:4 8:D5:2 10:C5:2 12:E5:4",
+                   "0:F5:3 3:E5:3 6:C5:2 8:A4:6 14:C5:2",
+                   "0:G5:3 3:E5:3 6:C5:2 8:E5:2 10:G5:2 12:E5:4",
+                   "0:D5:6 6:B4:2 8:G4:4 12:B4:2 14:D5:2"],
+            'A2': ["0:A4:2 2:C5:2 4:E5:4 8:D5:2 10:C5:2 12:E5:4",
+                   "0:F5:3 3:E5:3 6:C5:2 8:A4:6 14:C5:2",
+                   "0:G5:3 3:E5:3 6:C5:2 8:E5:2 10:G5:2 12:A5:4",
+                   "0:B4:2 2:C5:2 4:D5:4 8:E5:6"],
+            'B1': ["0:F5:2 2:E5:2 4:D5:2 6:A4:2 8:D5:4 12:F5:4",
+                   "0:G5:2 2:F5:2 4:E5:2 6:B4:2 8:E5:4 12:G5:4",
+                   "0:A5:4 4:G5:2 6:F5:2 8:E5:2 10:F5:2 12:C5:4",
+                   "0:D5:2 2:B4:2 4:G4:2 6:B4:2 8:D5:4 12:F5:2 14:G5:2"],
+            'B2': ["0:F5:2 2:E5:2 4:D5:2 6:A4:2 8:D5:4 12:F5:4",
+                   "0:G5:2 2:F5:2 4:E5:2 6:B4:2 8:E5:4 12:G5:4",
+                   "0:A5:4 4:G5:2 6:F5:2 8:E5:2 10:F5:2 12:C5:4",
+                   "0:B4:2 2:G#4:2 4:B4:2 6:D5:2 8:E5:6"],
+        },
+        # song lines: (melody or None, progression, bass style, channel 3 style)
+        'lines': [
+            (None, 'A', 'roots', 'drums'),
+            (None, 'A', 'octaves', 'full'),
+            ('A1', 'A', 'octaves', 'full'),
+            ('A2', 'A', 'octaves', 'full'),
+            ('B1', 'B', 'octaves', 'full'),
+            ('B2', 'B2', 'octaves', 'full'),
+            ('A1', 'A', 'octaves', 'full'),
+            ('A2', 'A', 'octaves', 'full'),
+        ],
+        'loop': 2,
+    },
+    # faster, E minor: i-VI-III-VII, then iv-i-VI-VII and a B major turnaround;
+    # 16th note pickups in the B part, a kick on the "and" of beat 2
+    'claude_3ch_fast': {
+        'speed': 4,
+        'prog': {
+            'A': ['Em', 'C', 'G', 'D'],
+            'B': ['Am', 'Em', 'C', 'D'],
+            'B2': ['Am', 'Em', 'C', 'B'],
+        },
+        'melody': {
+            'A1': ["0:E5:2 2:B4:2 4:E5:2 6:G5:2 8:F#5:2 10:E5:2 12:D5:2 14:B4:2",
+                   "0:C5:2 2:E5:2 4:G5:4 8:E5:2 10:G5:2 12:A5:4",
+                   "0:G5:4 4:F#5:2 6:G5:2 8:D5:2 10:B4:2 12:D5:4",
+                   "0:F#5:3 3:E5:3 6:D5:2 8:A4:4 12:D5:2 14:F#5:2"],
+            'A2': ["0:E5:2 2:B4:2 4:E5:2 6:G5:2 8:F#5:2 10:E5:2 12:D5:2 14:B4:2",
+                   "0:C5:2 2:E5:2 4:G5:4 8:E5:2 10:G5:2 12:A5:4",
+                   "0:G5:4 4:F#5:2 6:G5:2 8:D5:2 10:B4:2 12:D5:4",
+                   "0:F#5:2 2:E5:2 4:D5:2 6:F#5:2 8:E5:8"],
+            'B1': ["0:A4:1 1:C5:1 2:E5:2 4:A5:4 8:G5:2 10:E5:2 12:C5:4",
+                   "0:B4:1 1:E5:1 2:G5:2 4:B4:2 6:E5:2 8:G5:4 12:F#5:2 14:E5:2",
+                   "0:E5:2 2:G5:2 4:C5:2 6:E5:2 8:G5:4 12:A5:4",
+                   "0:F#5:2 2:A5:2 4:D5:2 6:F#5:2 8:A5:4 12:F#5:2 14:D5:2"],
+            'B2': ["0:A4:1 1:C5:1 2:E5:2 4:A5:4 8:G5:2 10:E5:2 12:C5:4",
+                   "0:B4:1 1:E5:1 2:G5:2 4:B4:2 6:E5:2 8:G5:4 12:F#5:2 14:E5:2",
+                   "0:E5:2 2:G5:2 4:C5:2 6:E5:2 8:G5:4 12:A5:4",
+                   "0:D#5:2 2:F#5:2 4:B4:2 6:D#5:2 8:F#5:4 12:D#5:2 14:B4:2"],
+        },
+        'lines': [
+            (None, 'A', 'roots', 'drums'),
+            (None, 'A', 'octaves', 'drive'),
+            ('A1', 'A', 'octaves', 'drive'),
+            ('A2', 'A', 'octaves', 'drive'),
+            ('B1', 'B', 'octaves', 'drive'),
+            ('B2', 'B2', 'octaves', 'drive'),
+            ('A1', 'A', 'octaves', 'drive'),
+            ('A2', 'A', 'octaves', 'drive'),
+        ],
+        'loop': 2,
+    },
+}
 
 VOL_LEAD, VOL_BASS, VOL_DRUM, VOL_STAB = 13, 15, 15, 10
 
 
-def lead_rows(name):
+def lead_rows(melody):
     rows, ends = {}, []
-    for bar, text in enumerate(MELODY[name]):
+    for bar, text in enumerate(melody):
         for ev in text.split():
             r, n, ln = ev.split(':')
             r = 16 * bar + int(r)
@@ -189,7 +244,7 @@ def lead_rows(name):
 
 def bass_rows(prog, style):
     rows = {}
-    for bar, ch in enumerate(PROG[prog]):
+    for bar, ch in enumerate(prog):
         root = midi(CHORDS[ch][0] + '2')
         if root > midi('D#2'):
             root -= 12                      # E1..D#2
@@ -203,25 +258,23 @@ def bass_rows(prog, style):
 
 def ch3_rows(prog, style):
     rows = {}
-    for bar, ch in enumerate(PROG[prog]):
+    for bar, ch in enumerate(prog):
         root, kind = CHORDS[ch]
         _, note = table_note(midi(root + '4'), (DIST_PURE,))
-        b = 16 * bar
-        rows[b + 0] = {'ev': (0, INSTR['kick'], VOL_DRUM)}
-        rows[b + 4] = {'ev': (0, INSTR['snare'], VOL_DRUM)}
-        rows[b + 8] = {'ev': (0, INSTR['kick'], VOL_DRUM)}
-        rows[b + 12] = {'ev': (0, INSTR['snare'], VOL_DRUM)}
-        if style == 'full':
-            for r in (2, 6, 10, 14):
-                rows[b + r] = {'ev': (note, INSTR[kind], VOL_STAB)}
-        else:
-            rows[b + 10] = {'ev': (0, INSTR['kick'], VOL_DRUM)}
+        for r, what in sorted(CH3[style].items()):
+            if what == 'stab':
+                rows[16 * bar + r] = {'ev': (note, INSTR[kind], VOL_STAB)}
+            else:
+                rows[16 * bar + r] = {'ev': (0, INSTR[what], VOL_DRUM)}
     return rows
 
 
 def main():
-    if len(sys.argv) != 2:
-        sys.exit("usage: song3ch.py out.rmt")
+    ap = argparse.ArgumentParser(description="original 3 channel RMT4 songs")
+    ap.add_argument('--song', choices=sorted(SONGS), default='claude_3ch')
+    ap.add_argument('rmt')
+    args = ap.parse_args()
+    sng = SONGS[args.song]
     tracks, track_id, song = [], {}, []
 
     def track(rows):
@@ -233,8 +286,9 @@ def main():
             tracks.append(data)
         return track_id[data]
 
-    for mel, prog, bass, drums in SONG:
-        song.append([track(lead_rows(mel)) if mel else 0xFF,
+    for mel, prog, bass, drums in sng['lines']:
+        prog = sng['prog'][prog]
+        song.append([track(lead_rows(sng['melody'][mel])) if mel else 0xFF,
                      track(bass_rows(prog, bass)),
                      track(ch3_rows(prog, drums)),
                      0xFF])                 # channel 4: always silent
@@ -246,7 +300,7 @@ def main():
     o_idata = o_thi + len(tracks)
     o_tdata = o_idata + sum(len(b) for b in DATA)
     o_song = o_tdata + sum(len(t) for t in tracks)
-    body = bytearray(b'RMT4' + bytes([TRACKLEN, SPEED, 1, 1]))
+    body = bytearray(b'RMT4' + bytes([TRACKLEN, sng['speed'], 1, 1]))
     body += struct.pack('<4H', a + o_instr, a + o_tlo, a + o_thi, a + o_song)
     p = a + o_idata
     for b in DATA:
@@ -264,15 +318,15 @@ def main():
         body += t
     for line in song:
         body += bytes(line)
-    body += bytes([0xFE, 0]) + struct.pack('<H', a + o_song + 4 * LOOP_TO)
-    with open(sys.argv[1], 'wb') as f:
+    body += bytes([0xFE, 0]) + struct.pack('<H', a + o_song + 4 * sng['loop'])
+    with open(args.rmt, 'wb') as f:
         f.write(struct.pack('<3H', 0xFFFF, a, a + len(body) - 1) + body)
 
-    secs = len(SONG) * TRACKLEN * SPEED / 50
-    print("song3ch: %s, %d bytes, %d instruments, %d tracks, %d song lines (loop to %d), "
-          "%d:%02d at 50 Hz, channel 4 silent"
-          % (sys.argv[1], len(body), len(DATA), len(tracks), len(SONG), LOOP_TO,
-             secs // 60, secs % 60))
+    secs = len(sng['lines']) * TRACKLEN * sng['speed'] / 50
+    print("song3ch: %s -> %s, %d bytes, %d instruments, %d tracks, %d song lines "
+          "(loop to %d), speed %d, %d:%02d at 50 Hz, channel 4 silent"
+          % (args.song, args.rmt, len(body), len(DATA), len(tracks), len(sng['lines']),
+             sng['loop'], sng['speed'], secs // 60, secs % 60))
     for dists, errs in ERRORS.items():
         print("  %s: max pitch error %.0f cents" % (
             'lead/stabs (pure)' if dists == (DIST_PURE,) else 'bass (distortion C)', max(errs)))

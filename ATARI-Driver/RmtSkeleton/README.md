@@ -31,11 +31,12 @@ RmtSkeleton/
 ├── tools/
 │   ├── rmt2ca65.py       converts .rmt files to relocatable ca65 source
 │   ├── mod2rmt4.py       converts a ProTracker MOD to RMT4 (MOD_TO_RMT_WORKFLOW.md)
-│   ├── song3ch.py        writes music/claude_3ch.rmt (original song, channels 1-3 only)
+│   ├── song3ch.py        writes music/claude_3ch*.rmt (original songs, channels 1-3 only)
 │   └── rmtplay/          RMT player for the PC (C, SDL2) running src/rmtplayr.s
 ├── music/
 │   ├── gemx.rmt          example RMT song (replace with your own)
-│   └── claude_3ch.rmt    3 channel song (channel 4 silent): same on POKEY and C64 SID
+│   ├── claude_3ch.rmt    3 channel song (channel 4 silent): same on POKEY and C64 SID
+│   └── claude_3ch_fast.rmt  faster 3 channel song (188 BPM)
 └── build/                generated files (ignored by git)
     ├── rmtskeleton.com   the final executable
     ├── rmtskeleton.map   linker map
@@ -138,19 +139,25 @@ player at `$A000-$B7FF` (RMT files load at `$4000` as a rule).
 
 To convert a MOD file see `MOD_TO_RMT_WORKFLOW.md`.
 
-### A song on 3 channels: tools/song3ch.py
+### Songs on 3 channels: tools/song3ch.py
 
-`music/claude_3ch.rmt` is an original song written by `tools/song3ch.py`
-(`python3 tools/song3ch.py music/claude_3ch.rmt`): A minor, speed 6, 8 song
-lines (about 61 s, loops to line 2). Channel 1 lead (pure tone, vibrato),
-channel 2 bass (distortion C), channel 3 drums and arpeggio chord stabs;
-**channel 4 is always silent**. It is the common test song for every player
-of this tree: the C64 SID (`../rmt_cbm64`) has only 3 voices and plays it with
-nothing left out, and on the Atari lead and bass keep playing during disk
-loading. Rendered by `rmtplay` and by the C64 player in VICE, the pitch
-content correlates 0.85 (0.67 for `gemx.rmt`, which uses 4 channels). Melody,
-chords and instruments are plain data at the top of the script. How it was
-made (the prompts, the choices, the checks): `CLAUDE_3CH_SONG.md`.
+`tools/song3ch.py` writes two original songs:
+
+```bash
+python3 tools/song3ch.py music/claude_3ch.rmt                               # A minor, speed 6 (125 BPM), ~61 s
+python3 tools/song3ch.py --song claude_3ch_fast music/claude_3ch_fast.rmt   # E minor, speed 4 (188 BPM), ~41 s
+```
+
+Both have 8 song lines and loop to line 2. Channel 1 lead (pure tone,
+vibrato), channel 2 bass (distortion C), channel 3 drums and arpeggio chord
+stabs; **channel 4 is always silent**. They are the common test songs for
+every player of this tree: the C64 SID (`../rmt_cbm64`) has only 3 voices and
+plays them with nothing left out, and on the Atari lead and bass keep playing
+during disk loading. Rendered by `rmtplay` and by the C64 player in VICE, the
+pitch content correlates 0.85 (`claude_3ch`) and 0.80 (`claude_3ch_fast`),
+against 0.67 for `gemx.rmt`, which uses 4 channels. Melodies, chords, drum
+patterns and instruments are plain data in the script (`SONGS`). How they
+were made (the prompts, the choices, the checks): `CLAUDE_3CH_SONG.md`.
 
 ## API Overview (C Interface)
 
