@@ -51,7 +51,7 @@ noise waves stand for POKEY's.
 Requirements: **cc65** (`cl65`), **python3**, **c1541** and **x64sc** from VICE.
 
 ```bash
-make                                   # build/rmt_cbm64.prg and build/rmt_cbm64.d64
+make                                   # build/rmt_cbm64.prg, build/rmtplay.prg and their D64s
 make SONG=music/PROJECT-X_THESMOPHORIA_pokey.rmt
 make run                               # x64sc -autostart build/rmt_cbm64.d64
 make clean
@@ -67,6 +67,38 @@ The song in use is kept in `build/song.cfg`: changing `SONG` rebuilds.
 On the disk the program is `RMT PLAYER`: `LOAD"*",8,1` and `RUN`, or
 autostart the D64 in VICE. Any key stops the music and returns to BASIC.
 
+## Player with visualizer: rmtplay.sh
+
+`build/rmtplay.prg` (`src/rmtplay.c`) is the same player with a screen in the
+style of `RMTPLAY.COM` of VERA_ATARI_PBI (`./rmtplay.sh` there) and of the
+XEX/SAP export of Raster Music Tracker:
+
+```bash
+./rmtplay.sh music/claude_3ch_fast.rmt       # build for that song, run it in x64sc
+RMT_NAME="My song" RMT_AUTHOR="Me" RMT_DATE=2026 ./rmtplay.sh song.rmt
+VICE_OPTS="-ntsc" ./rmtplay.sh song.rmt      # extra x64sc options (default -pal)
+make rmtplay SONG=song.rmt [NAME=.. AUTHOR=.. DATE=..]   # build only
+```
+
+- song name, author and date: from the text RMT stores in the `.rmt`
+  (`tools/rmtinfo.py`, same rules as VERA_ATARI_PBI), otherwise the file name;
+  a line longer than 40 characters scrolls after 5 seconds
+- volume bars of the 3 SID voices (what is heard), centred on the screen
+  (6 characters wide, columns 7-12, 17-22, 27-32), labelled 1 2 3 under the
+  fourth column of each bar; a voice turned off shows `OFF`
+- AUDF / AUDC / AUDCTL; frequency and waveform of every SID voice and the
+  POKEY channel it plays; song line, row, speed, play time; PAL / NTSC
+- keys: `SPACE` pause, `R` restart, `1` `2` `3` SID voice off / on,
+  `RUN/STOP` or `←` exit
+
+`rmtplay.sh` builds with `make rmtplay` and starts `x64sc -autostartprgmode 1`
+(the program goes straight into RAM); `build/rmtplay.d64` holds the program
+(`RMTPLAY`) for a real C64. The play time is counted from the IRQ frames.
+The screen work (bars every frame, the other fields every other frame, a
+field written only when it changes) fits in the time the player IRQ leaves
+in a frame, PAL and NTSC: checked in VICE by colouring the border, about 150
+raster lines in the heaviest frame with the IRQ.
+
 ## C interface (`src/sid.h`)
 
 ```c
@@ -81,6 +113,13 @@ sid_frames      /* frames played */
 sid_status      /* 1 = playing */
 sid_volume[3]   /* level of the 3 SID voices, 0..15 */
 sid_ntsc        /* 1 = NTSC machine */
+sid_mute        /* bit 0..2: SID voice 1..3 kept silent */
+
+/* last frame, for a display (src/rmtplay.c) */
+sid_pokey[16]   /* POKEY registers written by the player */
+sid_src[3]      /* POKEY channel of each SID voice */
+sid_freq_lo[3], sid_freq_hi[3], sid_wave[3]
+rmt_p_song, rmt_abeat, rmt_maxtracklen, rmt_speed   /* song position (rmtplayr.s) */
 ```
 
 The module symbol is `rmt_song_data` (`tools/rmt2ca65.py song.rmt song.s
@@ -133,6 +172,9 @@ On a frame with heavy player work the player alone was measured at 37 lines.
 | `src/sidrmt.s` | raster IRQ, PAL/NTSC, POKEY → SID, C interface |
 | `src/sid.h` | C header |
 | `src/main.c` | example program |
+| `src/rmtplay.c` | player with visualizer (`rmtplay.sh`) |
+| `rmtplay.sh` | builds `build/rmtplay.prg` for a song and runs it in x64sc |
+| `tools/rmtinfo.py` | song name / author / date / length of a `.rmt` as a C header (from VERA_ATARI_PBI) |
 | `src/rmt_cbm64.cfg` | linker configuration |
 | `tools/rmt2ca65.py` | `.rmt` → relocatable ca65 source (copied from RmtSkeleton) |
 | `tools/mksidtab.py` | SID frequency tables |

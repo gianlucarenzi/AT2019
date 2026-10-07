@@ -32,4 +32,14 @@ Servono cc65, python3, c1541 e x64sc (VICE).
 Sul disco il programma si chiama RMT PLAYER: LOAD"*",8,1 e RUN.
 Un tasto ferma la musica e torna al BASIC.
 
+Player con visualizzatore (come rmtplay.sh di VERA_ATARI_PBI)
+-------------------------------------------------------------
+  ./rmtplay.sh music/claude_3ch_fast.rmt          compila e lancia x64sc
+  RMT_NAME=".." RMT_AUTHOR=".." RMT_DATE=.. ./rmtplay.sh brano.rmt
+  VICE_OPTS="-ntsc" ./rmtplay.sh brano.rmt
+
+Nome, autore e data del brano, barre di volume delle 3 voci SID centrate
+(numerate 1 2 3, OFF se spenta), registri, posizione e tempo. Tasti: SPAZIO pausa, R ricomincia,
+1 2 3 voce SID on/off, RUN/STOP o <- esce. Disco: build/rmtplay.d64.
+
 Dettagli, API C, memoria, tempi misurati e verifiche: README.md

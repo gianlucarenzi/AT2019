@@ -26,6 +26,13 @@
         .export RASTERMUSICTRACKER
         .export rmt_ioactive
         .export _rmt_audc
+;* song position for players that show it (rmt_cbm64 src/rmtplay.c): song
+;* line pointer (next line), row in the track, track length, song speed
+        .exportzp _rmt_p_song := p_song
+        .export _rmt_abeat := v_abeat, _rmt_maxtracklen := v_maxtracklen
+.if FEAT_CONSTANTSPEED = 0
+        .export _rmt_speed := v_speed
+.endif
 
 ;* current AUDC values computed by the player (C: rmt_audc[4], VU meter)
 _rmt_audc = trackn_audc

@@ -3,6 +3,9 @@
 #   make                          build/rmt_cbm64.prg and build/rmt_cbm64.d64
 #   make run                      autostart the D64 in VICE (x64sc)
 #   make SONG=music/other.rmt     another RMT4 module (instrument speed 1)
+#   make rmtplay [NAME=.. AUTHOR=.. DATE=..]
+#                                 build/rmtplay.prg and build/rmtplay.d64: the
+#                                 player with a visualizer (./rmtplay.sh runs it)
 #   make clean
 #
 # The player is the Atari RMT routine (src/rmtplayr.s, same source as
@@ -23,7 +26,17 @@ SONG ?= music/gemx.rmt
 # ASCII into uppercase PETSCII)
 DISKNAME ?= rmt player
 
-all: $(TARGET) $(D64)
+# RMTPLAY: the same player with a visualizer (src/rmtplay.c); song name,
+# author and date from the text in the .rmt (tools/rmtinfo.py) unless given
+RMTPLAY     = $(BUILD)/rmtplay.prg
+RMTPLAY_D64 = $(BUILD)/rmtplay.d64
+NAME   ?=
+AUTHOR ?=
+DATE   ?=
+
+all: $(TARGET) $(D64) $(RMTPLAY) $(RMTPLAY_D64)
+
+rmtplay: $(RMTPLAY) $(RMTPLAY_D64)
 
 # build/song.cfg changes when SONG does, so "make SONG=x" then "make" rebuilds
 $(BUILD)/song.cfg: FORCE
@@ -64,10 +77,31 @@ $(D64): $(TARGET)
 	rm -f $@
 	$(C1541) -format "rmt cbm64,01" d64 $@ -write $(TARGET) "$(DISKNAME)" -list
 
+# song info options kept in a stamp file: changing them regenerates the header
+$(BUILD)/songinfo.cfg: FORCE
+	@mkdir -p $(BUILD)
+	@printf '%s\n' '$(SONG)|$(NAME)|$(AUTHOR)|$(DATE)' | cmp -s - $@ || \
+		printf '%s\n' '$(SONG)|$(NAME)|$(AUTHOR)|$(DATE)' > $@
+
+$(BUILD)/songinfo.h: $(SONG) $(BUILD)/songinfo.cfg tools/rmtinfo.py
+	$(PYTHON) tools/rmtinfo.py $(SONG) $@ --name "$(NAME)" --author "$(AUTHOR)" --date "$(DATE)"
+
+$(BUILD)/rmtplay.o: src/rmtplay.c src/sid.h $(BUILD)/songinfo.h
+	$(CL) -t c64 -Osir -I $(BUILD) -c -o $@ src/rmtplay.c
+
+RMTPLAY_OBJS = $(BUILD)/rmtplay.o $(BUILD)/sidrmt.o $(BUILD)/rmtplayr.o $(BUILD)/sidtab.o $(BUILD)/song.o
+
+$(RMTPLAY): $(RMTPLAY_OBJS) $(CFG)
+	$(CL) -t c64 -C $(CFG) -m $(BUILD)/rmtplay.map -o $@ $(RMTPLAY_OBJS)
+
+$(RMTPLAY_D64): $(RMTPLAY)
+	rm -f $@
+	$(C1541) -format "rmt cbm64,01" d64 $@ -write $(RMTPLAY) "rmtplay" -list
+
 run: $(D64)
 	$(EMULATOR) -autostart $(D64)
 
 clean:
 	rm -rf $(BUILD)
 
-.PHONY: all run clean FORCE
+.PHONY: all rmtplay run clean FORCE

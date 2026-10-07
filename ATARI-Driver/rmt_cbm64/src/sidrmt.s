@@ -26,6 +26,10 @@
         .export _sid_init, _sid_play_on, _sid_play_off
         .export _sid_frames, _sid_status, _sid_volume, _sid_ntsc
         .export pokey_shadow
+        ; state shown by src/rmtplay.c
+        .export _sid_mute, _sid_src
+        .export _sid_pokey := pokey_shadow
+        .export _sid_freq_lo := v_flo, _sid_freq_hi := v_fhi, _sid_wave := v_wave
         .import RASTERMUSICTRACKER
         .import __RMTZPMEM_START__, __RMTZPMEM_SIZE__
         .import sidtab_lo, sidtab_hi
@@ -57,6 +61,8 @@ _sid_frames:    .res 2          ; frames played
 _sid_status:    .res 1          ; 1 = playing
 _sid_volume:    .res 3          ; volume of the 3 SID voices (0..15)
 _sid_ntsc:      .res 1          ; 1 = NTSC machine (60 Hz), 0 = PAL
+_sid_mute:      .res 1          ; bit 0..2 set: SID voice 1..3 kept silent
+_sid_src:       .res 3          ; POKEY channel (0..3) of each SID voice
 
 old_irq:        .res 2
 ktab_ofs:       .res 1          ; 0 = PAL constants, 21 = NTSC
@@ -117,6 +123,8 @@ distc_k:
 
 sid_ofs:
         .byte 0, 7, 14
+voice_bit:
+        .byte $01, $02, $04
 
         .segment "CODE"
 
@@ -599,11 +607,15 @@ simple_mask:
 voice_out:
         stx voice
         sta src
+        sta _sid_src,x
         tay                             ; Y = channel
+        lda voice_bit,x
+        and _sid_mute
+        bne @off                        ; voice muted by the program
         lda c_vol,y
         bne @on
         ; silent: sustain 0, the envelope decays to 0 (gate stays on)
-        lda sid_ofs,x
+@off:   lda sid_ofs,x
         tax
         lda #0
         sta SID+6,x
