@@ -147,8 +147,11 @@ static void bit(cpu6502_t *c, uint8_t v)
 static void branch(cpu6502_t *c, int cond)
 {
 	int8_t off = (int8_t)rd(c, c->pc++);
-	if (cond)
-		c->pc = (uint16_t)(c->pc + off);
+	if (cond) {
+		uint16_t t = (uint16_t)(c->pc + off);
+		c->cycles += 1 + ((t ^ c->pc) >> 8 != 0);       /* taken, page crossed */
+		c->pc = t;
+	}
 }
 
 /* effective addresses */
@@ -156,10 +159,16 @@ static uint16_t a_zp(cpu6502_t *c)  { return rd(c, c->pc++); }
 static uint16_t a_zpx(cpu6502_t *c) { return (uint8_t)(rd(c, c->pc++) + c->x); }
 static uint16_t a_zpy(cpu6502_t *c) { return (uint8_t)(rd(c, c->pc++) + c->y); }
 static uint16_t a_abs(cpu6502_t *c) { uint16_t a = rd16(c, c->pc); c->pc += 2; return a; }
-static uint16_t a_abx(cpu6502_t *c) { return (uint16_t)(a_abs(c) + c->x); }
-static uint16_t a_aby(cpu6502_t *c) { return (uint16_t)(a_abs(c) + c->y); }
+static uint16_t indexed(cpu6502_t *c, uint16_t base, uint8_t i)
+{
+	uint16_t a = (uint16_t)(base + i);
+	c->cross = (a ^ base) >> 8 != 0;
+	return a;
+}
+static uint16_t a_abx(cpu6502_t *c) { return indexed(c, a_abs(c), c->x); }
+static uint16_t a_aby(cpu6502_t *c) { return indexed(c, a_abs(c), c->y); }
 static uint16_t a_izx(cpu6502_t *c) { return rd16zp(c, (uint8_t)(rd(c, c->pc++) + c->x)); }
-static uint16_t a_izy(cpu6502_t *c) { return (uint16_t)(rd16zp(c, rd(c, c->pc++)) + c->y); }
+static uint16_t a_izy(cpu6502_t *c) { return indexed(c, rd16zp(c, rd(c, c->pc++)), c->y); }
 static uint16_t a_imm(cpu6502_t *c) { return c->pc++; }
 
 /* read-modify-write helper */
@@ -196,9 +205,49 @@ static int alu(cpu6502_t *c, uint8_t op)
 	return 0;
 }
 
+/* NMOS 6502 cycles per opcode (documented ones), without the extra cycle of
+ * a page crossing or of a taken branch */
+static const uint8_t cycletab[256] = {
+	7,6,0,0,0,3,5,0,3,2,2,0,0,4,6,0, 2,5,0,0,0,4,6,0,2,4,0,0,0,4,7,0,
+	6,6,0,0,3,3,5,0,4,2,2,0,4,4,6,0, 2,5,0,0,0,4,6,0,2,4,0,0,0,4,7,0,
+	6,6,0,0,0,3,5,0,3,2,2,0,3,4,6,0, 2,5,0,0,0,4,6,0,2,4,0,0,0,4,7,0,
+	6,6,0,0,0,3,5,0,4,2,2,0,5,4,6,0, 2,5,0,0,0,4,6,0,2,4,0,0,0,4,7,0,
+	0,6,0,0,3,3,3,0,2,0,2,0,4,4,4,0, 2,6,0,0,4,4,4,0,2,5,2,0,0,5,0,0,
+	2,6,2,0,3,3,3,0,2,2,2,0,4,4,4,0, 2,5,0,0,4,4,4,0,2,4,2,0,4,4,4,0,
+	2,6,0,0,3,3,5,0,2,2,2,0,4,4,6,0, 2,5,0,0,0,4,6,0,2,4,0,0,0,4,7,0,
+	2,6,0,0,3,3,5,0,2,2,2,0,4,4,6,0, 2,5,0,0,0,4,6,0,2,4,0,0,0,4,7,0,
+};
+
+/* reads with abs,X / abs,Y / (zp),Y: one more cycle when the page is crossed */
+static int cross_penalty(uint8_t op)
+{
+	switch (op) {
+	case 0x11: case 0x19: case 0x1D: case 0x31: case 0x39: case 0x3D:
+	case 0x51: case 0x59: case 0x5D: case 0x71: case 0x79: case 0x7D:
+	case 0xB1: case 0xB9: case 0xBD: case 0xD1: case 0xD9: case 0xDD:
+	case 0xF1: case 0xF9: case 0xFD: case 0xBC: case 0xBE:
+		return 1;
+	}
+	return 0;
+}
+
+static int exec(cpu6502_t *c, uint8_t op);
+
 static int step(cpu6502_t *c)
 {
 	uint8_t op = rd(c, c->pc++);
+	int r;
+
+	c->cross = 0;
+	c->cycles += cycletab[op];
+	r = exec(c, op);
+	if (c->cross && cross_penalty(op))
+		c->cycles++;
+	return r;
+}
+
+static int exec(cpu6502_t *c, uint8_t op)
+{
 	uint16_t ea;
 
 	if ((op & 0x03) == 0x01)
