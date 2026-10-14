@@ -1,7 +1,8 @@
 ;
-; RMT player driven by the IMMEDIATE vertical blank interrupt (VVBLKI)
+; RMT player driven by the vertical blank interrupt: the immediate one (VVBLKI),
+; the deferred one (VVBLKD) when the OS runs stage 2 (see below)
 ;
-; Why immediate and not deferred: during every SIO operation the OS sets
+; Why the immediate VBI too: during every SIO operation the OS sets
 ; CRITIC ($42) and in that case the deferred VBI (VVBLKD) is skipped. The
 ; immediate VBI always runs, so the music keeps playing while loading.
 ;
@@ -30,6 +31,21 @@
 ; tracker spreads the calls over the frame). A postponed tick stands for N
 ; calls too.
 ;
+; Where the player runs: the OS stage 2 VBI copies the shadow registers to
+; the hardware (SDLSTL to DLISTL, the colours...) after the immediate VBI. A
+; player that ran first in the immediate VBI and took most of the vertical
+; blank (instrument speed 4: up to 66 lines, the blank is about 72 lines on
+; PAL) pushed that copy past the start of the display list, and ANTIC,
+; given DLISTL again in the middle of it, started the display list over: a
+; jumping screen. So when the OS will run stage 2 (CRITIC = 0 and the
+; interrupted code had IRQs enabled, the OS's own test) the immediate VBI only
+; asks for a tick and the deferred VBI (VVBLKD, after the shadow copy) plays
+; it, as the XEX with the RMT player of RITMO does: a long player then only
+; takes time from the program. When the OS skips stage 2 (CRITIC set during
+; SIO, or a VBI inside an IRQ) there is no shadow copy in that frame and the
+; player runs in the immediate VBI (or is postponed) as before, so the music
+; goes on while loading.
+;
 ; Stack at VBI entry: $101,X = Y  $102,X = X  $103,X = A  $104,X = P
 ;
 ; C interface (see rmt.h)
@@ -45,6 +61,8 @@
 SETVBV  = $E45C
 SYSVBV  = $E45F
 VVBLKI  = $0222
+VVBLKD  = $0224
+CRITIC  = $42                   ; <> 0: the OS skips stage 2 (SIO running)
 VCOUNT  = $D40B
 AUDC3   = $D205
 AUDC4   = $D207
@@ -54,6 +72,8 @@ _rmt_frames:    .res 2          ; frame counter incremented by the VBI
 _rmt_lines:     .res 1          ; last player duration (scanlines)
 _rmt_maxlines:  .res 1          ; worst player duration (scanlines)
 oldvbi:         .res 2
+oldvbd:         .res 2          ; deferred VBI vector before rmt_vbi_on
+dtick:          .res 1          ; ticks the deferred VBI has to play
 busy:           .res 1
 vstart:         .res 1
 vbion:          .res 1
@@ -94,7 +114,16 @@ _rmt_vbi_on:
         lda #0
         sta busy
         sta pending
+        sta dtick
         sta _rmt_maxlines
+        lda VVBLKD
+        sta oldvbd
+        lda VVBLKD+1
+        sta oldvbd+1
+        ldy #<dvbi
+        ldx #>dvbi
+        lda #7                  ; 7 = deferred VBI vector
+        jsr SETVBV
         lda VVBLKI
         sta oldvbi
         lda VVBLKI+1
@@ -114,8 +143,13 @@ _rmt_vbi_off:
         ldx oldvbi+1
         lda #6
         jsr SETVBV
+        ldy oldvbd
+        ldx oldvbd+1
+        lda #7
+        jsr SETVBV
         lda #0
         sta vbion
+        sta dtick
         jsr rmt_silence
 @done:  rts
 
@@ -189,29 +223,14 @@ vbi:
         bne @defer              ; or a SEI section, no CLI allowed
         lda busy                ; previous player call still running
         bne @defer              ; (can only happen with IRQs enabled)
-        inc busy
-        lda VCOUNT
-        sta vstart
+        lda CRITIC              ; the OS will run stage 2 (I flag clear,
+        bne @now                ; CRITIC = 0): the deferred VBI plays,
+        inc dtick               ; after the shadow registers are copied
+        jmp SYSVBV
+@now:   inc busy                ; no stage 2 in this frame: play here
         cli                     ; let SIO serial IRQs in while we play
-        jsr play_tick
-        lda pending             ; catch up one postponed tick
-        beq @nocatch
-        dec pending
-        jsr play_tick
-@nocatch:
+        jsr play_ticks
         sei
-        lda VCOUNT
-        sec
-        sbc vstart
-        bcs @nowrap             ; VCOUNT wrapped around the frame end
-        adc #156                ; (PAL value, only a diagnostic)
-@nowrap:
-        asl a                   ; VCOUNT counts line pairs
-        sta _rmt_lines
-        cmp _rmt_maxlines
-        bcc @nomax
-        sta _rmt_maxlines
-@nomax:
         lda #0
         sta busy
         jmp SYSVBV
@@ -230,3 +249,57 @@ vbi:
 @keep:  inc pending
 @exit:
         jmp SYSVBV
+
+; ---------------------------------------------------------------------------
+; Deferred VBI handler: the tick the immediate VBI left (OS stage 2, IRQs
+; enabled, the shadow registers already copied)
+; ---------------------------------------------------------------------------
+dvbi:
+        lda dtick
+        beq @exit
+        lda #0
+        sta dtick
+        sei
+        lda busy                ; rmt_irqtick is playing (an IRQ between
+        beq @play               ; the two VBI stages): one tick more later
+        lda pending
+        cmp #4
+        bcs @lost
+        inc pending
+        cli
+        jmp @exit
+@lost:  inc _rmt_dropped
+        bne @lo
+        inc _rmt_dropped+1
+@lo:    cli
+        jmp @exit
+@play:  inc busy
+        cli
+        jsr play_ticks
+        lda #0
+        sta busy
+@exit:  jmp (oldvbd)            ; XITVBV, or what was there before
+
+; one frame of music and one postponed tick if any, with the player time in
+; _rmt_lines / _rmt_maxlines
+play_ticks:
+        lda VCOUNT
+        sta vstart
+        jsr play_tick
+        lda pending             ; catch up one postponed tick
+        beq @nocatch
+        dec pending
+        jsr play_tick
+@nocatch:
+        lda VCOUNT
+        sec
+        sbc vstart
+        bcs @nowrap             ; VCOUNT wrapped around the frame end
+        adc #156                ; (PAL value, only a diagnostic)
+@nowrap:
+        asl a                   ; VCOUNT counts line pairs
+        sta _rmt_lines
+        cmp _rmt_maxlines
+        bcc @nomax
+        sta _rmt_maxlines
+@nomax: rts

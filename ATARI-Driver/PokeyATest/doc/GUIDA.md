@@ -101,7 +101,7 @@ python3 tools/rmt2ca65.py level1.rmt build/level1.s _rmt_level1
 extern const unsigned char rmt_song[];                 /* modulo convertito */
 
 unsigned char __fastcall__ rmt_init(const void *module); /* ritorna l'instrument speed */
-void rmt_vbi_on(void);      /* aggancia il player al VBI immediato (VVBLKI) */
+void rmt_vbi_on(void);      /* aggancia il player al VBI (immediato + differito) */
 void rmt_vbi_off(void);     /* ripristina il vettore precedente e zittisce POKEY */
 
 void rmt_io_begin(void);    /* inizio trasferimento SIO: canali 3/4 alla seriale */
@@ -154,7 +154,15 @@ Regole:
 ### 1.6 Perché il VBI immediato e il `CLI`
 
 - Durante ogni operazione SIO l'OS mette `CRITIC` a 1 e **salta il VBI differito**
-  (`VVBLKD`). Solo il VBI immediato (`VVBLKI`) gira sempre, quindi il player sta lì.
+  (`VVBLKD`). Solo il VBI immediato (`VVBLKI`) gira sempre, quindi in quei frame il
+  player suona lì.
+- Quando l'OS esegue lo stage 2 (`CRITIC` = 0 e IRQ abilitati nel codice interrotto) il
+  VBI immediato chiede solo un tick e lo suona il **VBI differito**, dopo che l'OS ha
+  copiato i registri ombra (`SDLSTL` in `DLISTL`, i colori), come l'XEX con il player RMT
+  di RITMO. Un player lungo nel VBI immediato (instrument speed 4: fino a 66 righe, il
+  vertical blank PAL ne ha circa 72) spingeva quella copia oltre l'inizio della display
+  list e ANTIC la ricominciava: lo schermo saltava (in atari800, 63 frame su 4000 con
+  `claude_3ch_mono_speed_4.rmt`, nessuno ora; registri POKEY identici).
 - Il player può durare 10–40 scanline. La ricezione seriale è a interrupt e a 19200 baud
   arriva un byte ogni ~930 cicli, quindi il VBI esegue un **`CLI`** prima del player
   per non far perdere byte alla seriale.

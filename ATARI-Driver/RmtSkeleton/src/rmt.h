@@ -7,7 +7,7 @@ extern const unsigned char rmt_song[];
 /* Init the player on a module; returns the instrument speed (1 = 1x/frame) */
 unsigned char __fastcall__ rmt_init(const void *module);
 
-/* Install/remove the player on the immediate VBI */
+/* Install/remove the player on the VBI (immediate + deferred, see rmtvbi.s) */
 void rmt_vbi_on(void);
 void rmt_vbi_off(void);
 

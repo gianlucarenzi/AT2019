@@ -313,7 +313,7 @@ See `src/rmt.h` for the full interface. Basic usage:
 // Initialize the player (do this BEFORE attaching to VBI)
 rmt_init(rmt_song);
 
-// Attach to the immediate VBI (music starts)
+// Attach to the VBI (music starts)
 rmt_vbi_on();
 
 // ... your program runs here ...
@@ -396,12 +396,23 @@ would be needed.
 
 ## Key Implementation Details
 
-### Why Immediate VBI?
+### Immediate and deferred VBI
 
-The player runs in the **immediate VBI** (`VVBLKI`), not the deferred one. Why?
+The player is installed on both VBI vectors (`src/rmtvbi.s`):
 
 - During SIO operations, the OS sets `CRITIC` and **skips the deferred VBI** (`VVBLKD`).
-- Only the immediate VBI always runs, so music keeps playing while loading.
+  Only the immediate VBI (`VVBLKI`) always runs: in those frames the player runs there,
+  so music keeps playing while loading.
+- When the OS runs its stage 2 (`CRITIC` = 0, IRQs enabled in the interrupted code), the
+  immediate VBI only asks for a tick and the **deferred VBI** plays it, after the OS has
+  copied the shadow registers (`SDLSTL` to `DLISTL`, colours) to the hardware, as the XEX
+  with the RMT player of RITMO does. A player that took most of the vertical blank in the
+  immediate VBI (instrument speed 4: up to 66 lines, the blank is about 72) pushed that
+  copy past the start of the display list, and ANTIC started it over: a jumping screen.
+  Measured in atari800 (monitor breakpoint on the `STA DLISTL` of the OS, `$C140`, 4000
+  frames of `claude_3ch_mono_speed_4.rmt`): PokeyATest wrote `DLISTL` after the display
+  list had started (up to scanline 25) in 63 frames before, in none now; the POKEY
+  registers (`-pokeyrec`) are the same in every frame.
 
 ### IRQ Handling
 
