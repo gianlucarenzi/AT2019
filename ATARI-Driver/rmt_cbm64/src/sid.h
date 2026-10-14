@@ -43,4 +43,8 @@ extern volatile unsigned char rmt_abeat;       /* row in the track */
 extern volatile unsigned char rmt_maxtracklen; /* rows per track */
 extern volatile unsigned char rmt_speed;       /* frames per row */
 
+/* LZSS player (src/lzsplayr.s, a .sap/.xex song): stream position */
+extern volatile unsigned char lzs_section;     /* section of the next frame (intro, loop) */
+extern volatile unsigned char lzs_pos[3];      /* its frame in the section, 24 bit */
+
 #endif

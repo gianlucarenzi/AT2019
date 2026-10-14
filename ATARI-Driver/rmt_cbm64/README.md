@@ -24,8 +24,13 @@ src/sidrmt.s, sidtab.s ───────┘
    segment `RMTZP`. Without `RMT_C64` it is the Atari code, byte for byte.
 2. **Timing** (`src/sidrmt.s`): a raster IRQ at line 0, chained to the KERNAL
    IRQ vector `$0314`, calls the player once per frame, like the Atari VBI.
-   The KERNAL CIA IRQ (keyboard, clock) keeps running. PAL (50 Hz) or NTSC
-   (60 Hz) is detected from the number of raster lines.
+   With instrument speed N > 1 it calls it N times per frame, at evenly
+   spaced raster lines (every 312 / N lines on PAL, as the `FASTPLAY` of a
+   SAP exported by RMT; 262 or 263 / N on NTSC), and the SID is updated after
+   every call: the instruments step N times per frame as on the Atari. A
+   call that runs past the line of the next one makes that one at once, so
+   no call is lost. The KERNAL CIA IRQ (keyboard, clock) keeps running. PAL
+   (50 Hz) or NTSC (60 Hz) is detected from the number of raster lines.
 3. **POKEY → SID**, every frame:
 
 | POKEY | SID |
@@ -46,6 +51,50 @@ Not reproduced: volume only mode (AUDC bit 4, sample playback), the high pass
 filters (AUDCTL bits 2 and 1). The timbre is the SID one: square, pulse and
 noise waves stand for POKEY's.
 
+## SAP / XEX exported by RITMO: lzsplayr.s
+
+A `.sap` or `.xex` exported by RITMO (or Raster Music Tracker 1.31 and later)
+does not hold the RMT module: it holds the POKEY registers RMT recorded frame
+by frame, with the tracker driver chosen in its options (Patch16 by default),
+compressed with LZSS (LZ16 by DMSC) and played by VU-Player v2. With such a
+file as `SONG`, `src/lzsplayr.s` takes the place of `src/rmtplayr.s`: the
+same entry points, the same `-D RMT_C64` build, the same POKEY → SID
+translation. The C64 then plays what the SAP / XEX plays on the Atari.
+
+```bash
+make SONG=music/gemx.sap                 # gemx exported by RITMO (Patch16)
+make SONG=other.xex SUBSONG=1            # another subtune of the file
+./rmtplay.sh music/gemx.sap              # with the visualizer, in x64sc
+```
+
+```
+.sap / .xex ──sap2ca65.py──> song.s ─┐
+src/lzsplayr.s (-D RMT_C64) ─────────┼─ cl65 ──> rmt_cbm64.prg / rmtplay.prg
+src/sidrmt.s, sidtab.s ──────────────┘
+```
+
+- `tools/sap2ca65.py` takes the subtune out of the VU-Player memory of the
+  file (song index at `$1F40`, instrument speed, stereo flag) and writes its
+  intro and loop sections as a relocatable source; it decodes every section
+  once to check it. With `--info` it writes `songinfo.h` from the SAP tags
+  (`NAME`, `AUTHOR`, `DATE`) or the XEX screen text.
+- `src/lzsplayr.s` decodes one frame per `rmt_play` (9 byte streams with a
+  256 byte window each, 2.3 KB of BSS, 4 zero page bytes in `RMTZP`): intro,
+  then the loop over and over. As `rmtplayr.s` it writes `pokey_shadow`
+  first and then decodes the next frame.
+- The visualizer shows `SECT` (section of the stream: 0 intro, 1 loop, or 0
+  when the song loops to its start) and `FRAME` (frame in the section / last
+  frame) in place of song line, row and speed.
+- Only mono files (a stereo one stops the build: there is no second POKEY).
+  Instrument speed N > 1: N calls per frame as with an `.rmt` (the stream
+  holds N frames per video frame).
+
+Checked in VICE 3.9 (PAL): `gemx.rmt` with `rmtplayr.s` and the same song
+exported by RITMO with the "RMT 1.28 Unpatched" driver, with `lzsplayr.s`,
+give the same SID registers in every one of 6954 frames (`-sounddev dump`).
+`lzsplayr.s` (also the `RMT_C64` build) gives the POKEY registers of
+VU-Player v2 byte for byte on a 6502 emulator, on 22 SAP exports.
+
 ## Build
 
 Requirements: **cc65** (`cl65`), **python3**, **c1541** and **x64sc** from VICE.
@@ -57,8 +106,8 @@ make run                               # x64sc -autostart build/rmt_cbm64.d64
 make clean
 ```
 
-`SONG` is any RMT4 module with instrument speed 1 (`python3 tools/rmt2ca65.py
-file.rmt /dev/null` checks it). Songs in `music/`: `gemx.rmt` (default),
+`SONG` is any RMT4 module (`python3 tools/rmt2ca65.py file.rmt /dev/null`
+checks it and shows its instrument speed). Songs in `music/`: `gemx.rmt` (default),
 `PROJECT-X_LOADER_pokey.rmt`, `PROJECT-X_THESMOPHORIA_pokey.rmt`,
 `ProjectX-End-Lynne_pokey.rmt` (15 KB; the D64 loads in about a minute on a
 real-speed 1541), `claude_3ch.rmt`, `claude_3ch_fast.rmt` and `claude_3ch_slow.rmt` (channels 1-3 only, see below). `D64=build/other.d64` writes the disk under another name.
@@ -120,10 +169,11 @@ sid_pokey[16]   /* POKEY registers written by the player */
 sid_src[3]      /* POKEY channel of each SID voice */
 sid_freq_lo[3], sid_freq_hi[3], sid_wave[3]
 rmt_p_song, rmt_abeat, rmt_maxtracklen, rmt_speed   /* song position (rmtplayr.s) */
+lzs_section, lzs_pos[3]   /* stream position (lzsplayr.s): section, frame in it */
 ```
 
 The module symbol is `rmt_song_data` (`tools/rmt2ca65.py song.rmt song.s
-_rmt_song_data`).
+_rmt_song_data`, `tools/sap2ca65.py song.sap song.s _rmt_song_data`).
 
 ## Memory and CPU
 
@@ -141,6 +191,9 @@ With THESMOPHORIA the program is 16 KB (`$0801-$47A2`, song 7 KB).
 CPU time of the IRQ, measured in VICE (PAL) by colouring the border: player
 21–24 raster lines, POKEY→SID 18–23 lines, about 13–15% of a frame (312 lines).
 On a frame with heavy player work the player alone was measured at 37 lines.
+With instrument speed N (1 to 4, the RMT range) the IRQ runs N times per
+frame: at speed 4 about 4 x 40-47 of the 312 lines (from the figures above),
+and the visualizer still keeps up (VICE, PAL).
 
 ## Checked in VICE 3.9
 
@@ -160,6 +213,14 @@ On a frame with heavy player work the player alone was measured at 37 lines.
   0.80 (0.80–0.92 on 10 s windows), -0.08 or less when transposed.
 - `claude_3ch_slow.rmt` (speed 8, 94 BPM, played by `build/rmtplay.prg`):
   correlates 0.89 (0.91–0.96 on 10 s windows), -0.01 or less when transposed.
+- Instrument speed > 1 (`-sounddev dump`, PAL): `enchanted_lands.rmt`
+  (speed 2) and `garydenise.rmt` (speed 4, from the songs of RITMO) make
+  exactly 2.000 and 4.000 player calls per frame, about 156 and 78 raster
+  lines apart; the SID registers of the `.rmt` (`rmtplayr.s`) and of the same
+  song exported by RITMO with the Unpatched driver (`lzsplayr.s`) are the
+  same at every call (5275 calls at speed 4; at speed 2 all but the first 21,
+  where the SAP holds the tail of the song's last note, its loop section
+  being recorded on the second pass).
 - Recording: `x64sc -console -sound -sounddev wav -soundarg out.wav
   -sidenginemodel 256 -limitcycles N -autostart build/rmt_cbm64.d64`, at real
   speed (with `-warp` the WAV stays empty).
@@ -171,6 +232,7 @@ On a frame with heavy player work the player alone was measured at 37 lines.
 | File | |
 |------|---|
 | `src/rmtplayr.s`, `src/rmt_feat.inc` | RMT player, copied from `../RmtSkeleton/src` (keep them in sync) |
+| `src/lzsplayr.s` | player of the LZSS streams of a SAP / XEX, copied from `../RmtSkeleton/src` |
 | `src/sidrmt.s` | raster IRQ, PAL/NTSC, POKEY → SID, C interface |
 | `src/sid.h` | C header |
 | `src/main.c` | example program |
@@ -179,5 +241,6 @@ On a frame with heavy player work the player alone was measured at 37 lines.
 | `tools/rmtinfo.py` | song name / author / date / length of a `.rmt` as a C header (from VERA_ATARI_PBI) |
 | `src/rmt_cbm64.cfg` | linker configuration |
 | `tools/rmt2ca65.py` | `.rmt` → relocatable ca65 source (copied from RmtSkeleton) |
+| `tools/sap2ca65.py` | `.sap` / `.xex` → relocatable ca65 source and `songinfo.h` (copied from RmtSkeleton) |
 | `tools/mksidtab.py` | SID frequency tables |
-| `music/` | RMT modules |
+| `music/` | RMT modules; `gemx.sap`: gemx exported by RITMO (driver Patch16) |

@@ -2,9 +2,12 @@
 ;
 ; The music is played by the Atari RMT player routine (rmtplayr.s, the same
 ; source as PokeyATest and RmtSkeleton, assembled with -D RMT_C64): it writes
-; the POKEY registers to pokey_shadow instead of $D200. Once per frame, from
-; a raster IRQ chained to the KERNAL IRQ vector ($0314), this code calls the
-; player and turns the shadow registers into SID registers:
+; the POKEY registers to pokey_shadow instead of $D200. From a raster IRQ
+; chained to the KERNAL IRQ vector ($0314) this code calls the player and
+; turns the shadow registers into SID registers, once per frame or, with
+; instrument speed N > 1, N times per frame at evenly spaced raster lines
+; (every 312 / N lines on PAL, as the FASTPLAY of an RMT SAP; 262 or 263 / N
+; on NTSC), so the SID follows the instruments as POKEY does on the Atari:
 ;
 ;   frequency  from AUDF, AUDCTL (64/15 kHz, 1.79 MHz, 16 bit) and the
 ;              distortion: SID Fn = K / n, n = POKEY divider in machine
@@ -65,6 +68,11 @@ _sid_mute:      .res 1          ; bit 0..2 set: SID voice 1..3 kept silent
 _sid_src:       .res 3          ; POKEY channel (0..3) of each SID voice
 
 old_irq:        .res 2
+ispeed:         .res 1          ; player calls per frame (instrument speed, 1..4)
+tick:           .res 1          ; call of the frame the next raster IRQ makes
+line_lo:        .res 4          ; raster line of each call (bit 8 in line_hi: $80)
+line_hi:        .res 4
+lines:          .res 2          ; raster lines per frame
 ktab_ofs:       .res 1          ; 0 = PAL constants, 21 = NTSC
 tab_ntsc:       .res 1          ; 1 = sidtab already scaled for NTSC
 
@@ -169,7 +177,59 @@ _sid_init:
         pla
         tay
         lda #0                          ; start from song line 0
-        jmp rmt_init
+        jsr rmt_init                    ; A = instrument speed
+        jmp tick_lines
+
+; the raster lines of the ispeed player calls of a frame: k * (lines / ispeed)
+tick_lines:
+        cmp #1                          ; clamp to 1..4 (RMT format range)
+        bcs @lo
+        lda #1
+@lo:    cmp #5
+        bcc @hi
+        lda #4
+@hi:    sta ispeed
+        lda lines                       ; dvd = lines / ispeed
+        sta rem
+        lda lines+1
+        sta rem+1
+        lda #0
+        sta dvd
+        sta dvd+1
+@div:   lda rem
+        sec
+        sbc ispeed
+        tax
+        lda rem+1
+        sbc #0
+        bcc @step
+        sta rem+1
+        stx rem
+        inc dvd
+        bne @div
+        inc dvd+1
+        bne @div
+@step:  lda #0                          ; line of call 0: the top of the frame
+        sta rem
+        sta rem+1
+        ldx #0
+@l:     lda rem
+        sta line_lo,x
+        lda rem+1
+        beq @h
+        lda #$80                        ; bit 8 of the line, as in VIC_CTRL1
+@h:     sta line_hi,x
+        clc
+        lda rem
+        adc dvd
+        sta rem
+        lda rem+1
+        adc dvd+1
+        sta rem+1
+        inx
+        cpx ispeed
+        bcc @l
+        rts
 
 ; PAL / NTSC from the number of raster lines (codebase64): the low byte of
 ; the last line is $37 on PAL (312 lines), $05/$06 on NTSC (262/263 lines)
@@ -181,6 +241,10 @@ detect_video:
         beq @l2
         bmi @l1
         plp
+        sta lines                       ; last line + 1: 312, 262 or 263
+        ldx #1
+        stx lines+1
+        inc lines
         ldx #0
         cmp #$20
         bcs @pal
@@ -277,7 +341,8 @@ sid_clear:
         rts
 
 ; ---------------------------------------------------------------------------
-; void sid_play_on(void): raster IRQ at line 0, chained to the KERNAL one
+; void sid_play_on(void): raster IRQ at line 0 (and at the lines of the other
+; player calls with instrument speed > 1), chained to the KERNAL one
 _sid_play_on:
         php
         sei
@@ -293,6 +358,7 @@ _sid_play_on:
         sta CINV+1
         lda #0
         sta VIC_RASTER
+        sta tick
         sta _sid_frames
         sta _sid_frames+1
         lda VIC_CTRL1
@@ -332,12 +398,43 @@ irq:
         lda VIC_IRQ
         and #$01
         beq @kernal
+@tick:  lda #$01
         sta VIC_IRQ                     ; acknowledge the raster IRQ
         jsr rmt_play                    ; writes pokey_shadow, computes next frame
         jsr pokey_to_sid
+        ldx tick
+        bne @next                       ; frames: counted at the first call
         inc _sid_frames
-        bne @x
+        bne @next
         inc _sid_frames+1
+@next:  inx
+        cpx ispeed
+        bcc @set
+        ldx #0
+@set:   stx tick
+        lda line_lo,x                   ; raster IRQ of the next call
+        sta VIC_RASTER
+        lda VIC_CTRL1
+        and #$7F
+        ora line_hi,x
+        sta VIC_CTRL1
+        txa
+        beq @x                          ; call 0: line 0 of the next frame
+        ; the line may be behind already (a long call): make the call now,
+        ; otherwise the IRQ would come one frame late and the tempo slip
+@rd:    lda VIC_RASTER
+        ldy VIC_CTRL1
+        cmp VIC_RASTER
+        bne @rd
+        sta tmp
+        tya
+        and #$80
+        cmp line_hi,x
+        bcc @x                          ; before the line (bit 8 lower)
+        bne @tick                       ; past it (bit 8 higher)
+        lda tmp
+        cmp line_lo,x
+        bcs @tick                       ; at or past the line
 @x:     jmp IRQ_EXIT
 @kernal:
         jmp (old_irq)                   ; CIA timer: keyboard, clock

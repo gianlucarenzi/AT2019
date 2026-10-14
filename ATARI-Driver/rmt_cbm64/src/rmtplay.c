@@ -10,14 +10,17 @@
  *   at the bottom
  *   AUDF / AUDC of every channel and AUDCTL; SID frequency, waveform and
  *   POKEY channel of every voice, in hex
- *   song line, row in the track, speed, play time
+ *   song line, row in the track, speed, play time; for a .sap/.xex song
+ *   (RMT_LZSS, src/lzsplayr.s) the section of the LZSS stream (intro, loop)
+ *   and the frame in it
  *
  *   SPACE  pause / play       R  restart the song
  *   1 2 3  SID voice on/off   RUN/STOP or <-  stop and exit
  *
  * Text screen at $0400 in the upper/lower case character set; the bars use
  * the block characters of the ROM font (1/8 to 8/8 of a cell).
- * Sound: the same player as build/rmt_cbm64.prg (rmtplayr.s + sidrmt.s).
+ * Sound: the same player as build/rmt_cbm64.prg (rmtplayr.s or lzsplayr.s
+ * + sidrmt.s).
  */
 
 #include <c64.h>
@@ -101,7 +104,12 @@ static unsigned char changed(unsigned char f, unsigned int v)
     return 1;
 }
 
+#ifdef RMT_LZSS
+/* rmt_play calls of each section (sap2ca65.py) */
+static const unsigned long sec_frames[RMT_INFO_SECTIONS] = RMT_INFO_FRAMES;
+#else
 static const unsigned char *song_start;
+#endif
 
 /* ---- screen helpers --------------------------------------------------- */
 
@@ -236,7 +244,11 @@ static void draw_static(void)
     put_text(0, ROW_FREQ, "SID FREQ", 0);
     put_text(0, ROW_WAVE, "SID WAVE", 0);
     put_text(26, ROW_WAVE, "FROM", 0);
+#ifdef RMT_LZSS
+    put_text(0, ROW_POS, "SECT   /     FRAME       /", 0);
+#else
     put_text(0, ROW_POS, "LINE   /      ROW   /     SPEED", 0);
+#endif
     put_text(0, ROW_STATE, "TIME   :", 0);
     put_text(0, ROW_KEYS, "SPC PAUSE  R RESTART  123 SID  STOP EXIT", 0);
     put_color(0, ROW_KEYS, COL_DIM, 40);
@@ -377,6 +389,35 @@ static void draw_mute(void)
     }
 }
 
+#ifdef RMT_LZSS
+static void put_hex24(unsigned char x, unsigned char y, unsigned long v)
+{
+    put_hex(x, y, (unsigned char)(v >> 16));
+    put_hex(x + 2, y, (unsigned char)(v >> 8));
+    put_hex(x + 4, y, (unsigned char)v);
+}
+
+/* LZSS: section of the stream and frame in it, of the next frame */
+static void draw_position(void)
+{
+    unsigned char sec, lo, mid, hi;
+
+    /* the IRQ may change them between the reads */
+    do {
+        sec = lzs_section;
+        lo = lzs_pos[0];
+        mid = lzs_pos[1];
+        hi = lzs_pos[2];
+    } while (sec != lzs_section || lo != lzs_pos[0]);
+
+    if (changed(F_LINE, sec)) {
+        put_hex(5, ROW_POS, sec);
+        put_hex24(26, ROW_POS, sec_frames[sec] - 1);
+    }
+    if (changed(F_ROW, ((unsigned int)mid << 8) | lo) | changed(F_ROWS, hi))
+        put_hex24(19, ROW_POS, ((unsigned long)hi << 16) | ((unsigned int)mid << 8) | lo);
+}
+#else
 static void draw_position(void)
 {
     const unsigned char *a, *b;
@@ -401,6 +442,7 @@ static void draw_position(void)
     if (changed(F_SPEED, rmt_speed))
         put_hex(32, ROW_POS, rmt_speed);
 }
+#endif
 
 static void draw_state(unsigned int s, unsigned char paused)
 {
@@ -453,7 +495,9 @@ int main(void)
     unsigned char old_addr = VIC.addr, old_lock = SHFLAG_LOCK;
     unsigned long frames = 0;
 
+#ifndef RMT_LZSS
     song_start = (const unsigned char *)(rmt_song_data[14] | (rmt_song_data[15] << 8));
+#endif
     sid_init(rmt_song_data);
     fps = sid_ntsc ? 60 : 50;
 
@@ -466,7 +510,11 @@ int main(void)
     memset(shown, 0xFF, sizeof shown);
     regs_reset();
     draw_static();
+#ifdef RMT_LZSS
+    put_hex(8, ROW_POS, RMT_INFO_SECTIONS - 1);
+#else
     put_hex(8, ROW_POS, RMT_INFO_LINES - 1);
+#endif
 
     sid_play_on();
     for (;;) {

@@ -2,16 +2,20 @@
 # rmtplay.sh — build the C64 RMT player with visualizer (build/rmtplay.prg)
 # for an RMT song and play it in VICE (x64sc).
 #
-#   ./rmtplay.sh SONG.rmt
+#   ./rmtplay.sh SONG.rmt|SONG.sap|SONG.xex
 #
-#   SONG.rmt   RMT4 module with instrument speed 1 (any path)
+#   SONG.rmt   RMT4 module (any path)
+#   SONG.sap   SAP or XEX exported by RITMO / RMT (mono): its LZSS streams,
+#   SONG.xex   played by src/lzsplayr.s (RMT_SUBSONG=n: another subtune)
 #
 # Environment (optional):
 #   X64SC      emulator to run (default: x64sc from PATH)
 #   VICE_OPTS  extra emulator options, e.g. "-ntsc" or "-sidenginemodel 256"
 #              (default machine: PAL)
 #   RMT_NAME, RMT_AUTHOR, RMT_DATE   song info shown by the player instead
-#              of the text stored in the .rmt (see tools/rmtinfo.py)
+#              of the text stored in the .rmt (see tools/rmtinfo.py) or of
+#              the SAP tags (tools/sap2ca65.py)
+#   RMT_SUBSONG  subtune of a .sap / .xex (default 0)
 #
 # Keys in the player: SPACE pause, R restart, 1/2/3 SID voice on/off,
 # RUN/STOP or <- exit. The program is also written to build/rmtplay.d64
@@ -20,7 +24,7 @@
 set -euo pipefail
 
 usage() {
-    sed -n '2,14p' "$0" | sed 's/^# \{0,1\}//' >&2
+    sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//' >&2
     exit 2
 }
 
@@ -32,10 +36,20 @@ if [ ! -f "$song" ]; then
     echo "rmtplay.sh: $song: no such file" >&2
     exit 1
 fi
-if [ "$(head -c 2 "$song" | od -An -tx1 | tr -d ' \n')" != "ffff" ]; then
-    echo "rmtplay.sh: $song: not an RMT module (no Atari binary header)" >&2
-    exit 1
-fi
+case $song in
+    *.sap|*.SAP)
+        if [ "$(head -c 4 "$song")" != "$(printf 'SAP\r')" ]; then
+            echo "rmtplay.sh: $song: not a SAP file" >&2
+            exit 1
+        fi
+        ;;
+    *)
+        if [ "$(head -c 2 "$song" | od -An -tx1 | tr -d ' \n')" != "ffff" ]; then
+            echo "rmtplay.sh: $song: not an RMT module or XEX (no Atari binary header)" >&2
+            exit 1
+        fi
+        ;;
+esac
 
 dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
 emu=${X64SC:-x64sc}
@@ -57,7 +71,7 @@ case $song_abs in
 esac
 
 echo "rmtplay.sh: building build/rmtplay.prg for $(basename "$song")"
-make -C "$dir" --no-print-directory rmtplay SONG="$song_abs" \
+make -C "$dir" --no-print-directory rmtplay SONG="$song_abs" SUBSONG="${RMT_SUBSONG:-0}" \
      NAME="${RMT_NAME:-}" AUTHOR="${RMT_AUTHOR:-}" DATE="${RMT_DATE:-}"
 
 echo "rmtplay.sh: starting $emu"
