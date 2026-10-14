@@ -126,7 +126,7 @@ XEX/SAP export of Raster Music Tracker:
 ```bash
 ./rmtplay.sh music/claude_3ch_fast.rmt       # build for that song, run it in x64sc
 RMT_NAME="My song" RMT_AUTHOR="Me" RMT_DATE=2026 ./rmtplay.sh song.rmt
-VICE_OPTS="-ntsc" ./rmtplay.sh song.rmt      # extra x64sc options (default -pal)
+VICE_OPTS="-ntsc" ./rmtplay.sh song.rmt      # extra x64sc options (default -pal -VICIIfilter 0 -residsamp 0)
 make rmtplay SONG=song.rmt [NAME=.. AUTHOR=.. DATE=..]   # build only
 ```
 
@@ -142,7 +142,12 @@ make rmtplay SONG=song.rmt [NAME=.. AUTHOR=.. DATE=..]   # build only
   `RUN/STOP` or `←` exit
 
 `rmtplay.sh` builds with `make rmtplay` and starts `x64sc -autostartprgmode 1`
-(the program goes straight into RAM); `build/rmtplay.d64` holds the program
+(the program goes straight into RAM) without the CRT emulation and with the fast
+reSID sampling (`-VICIIfilter 0 -residsamp 0`): on a Celeron N3060 VICE with
+its window ran at 78-88% of the speed of a C64 (also with the C64 idle at the
+BASIC prompt, 90-93%), and music, bars and scroll stuttered; with the two
+options it runs at 100% (measured from the CPU clock of the VICE monitor
+against the real time); `build/rmtplay.d64` holds the program
 (`RMTPLAY`) for a real C64. The play time is counted from the IRQ frames.
 The screen work (bars every frame, the other fields every other frame, a
 field written only when it changes) fits in the time the player IRQ leaves

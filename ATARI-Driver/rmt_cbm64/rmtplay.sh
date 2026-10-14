@@ -11,7 +11,11 @@
 # Environment (optional):
 #   X64SC      emulator to run (default: x64sc from PATH)
 #   VICE_OPTS  extra emulator options, e.g. "-ntsc" or "-sidenginemodel 256"
-#              (default machine: PAL)
+#              (default machine: PAL, no CRT emulation and fast reSID
+#              sampling, "-VICIIfilter 0 -residsamp 0": on a slow PC VICE
+#              with its window ran at 78-88% of the speed of a C64, so music,
+#              bars and scroll stuttered; VICE_OPTS="-VICIIfilter 1
+#              -residsamp 2" brings them back)
 #   RMT_NAME, RMT_AUTHOR, RMT_DATE   song info shown by the player instead
 #              of the text stored in the .rmt (see tools/rmtinfo.py) or of
 #              the SAP tags (tools/sap2ca65.py)
@@ -24,7 +28,7 @@
 set -euo pipefail
 
 usage() {
-    sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//' >&2
+    sed -n '2,26p' "$0" | sed 's/^# \{0,1\}//' >&2
     exit 2
 }
 
@@ -77,4 +81,4 @@ make -C "$dir" --no-print-directory rmtplay SONG="$song_abs" SUBSONG="${RMT_SUBS
 echo "rmtplay.sh: starting $emu"
 # -autostartprgmode 1: the program goes straight into RAM (no disk loading)
 # shellcheck disable=SC2086 # VICE_OPTS is a list of options
-exec "$emu" -pal ${VICE_OPTS:-} -autostartprgmode 1 -autostart "$dir/build/rmtplay.prg"
+exec "$emu" -pal -VICIIfilter 0 -residsamp 0 ${VICE_OPTS:-} -autostartprgmode 1 -autostart "$dir/build/rmtplay.prg"
