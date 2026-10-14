@@ -195,13 +195,15 @@ Riduci il carico di CPU altrove, soprattutto negli altri gestori di interrupt.
 
 **✓ Supportato:**
 - RMT4 mono (4 tracce, un solo POKEY)
-- Instrument speed 1 (player eseguito una volta per frame)
+- RMT8 stereo (8 tracce): canali 5-8 sul PSG della VERA o su un secondo
+  POKEY, altrimenti non si sentono (README.md, "RMT8 (stereo) songs");
+  servono anche src/psgrmt.s, src/vera.inc e le tabelle di tools/mkpsgtab.py,
+  assemblati con -D RMT_TRACKS=8
+- Instrument speed 1-4 (player chiamato N volte per frame)
 - Canzone di qualunque lunghezza
 - Cambio canzone a runtime (tra rmt_vbi_off e rmt_vbi_on)
 
 **✗ NON supportato:**
-- RMT8 stereo (rifiutato da rmt2ca65.py)
-- Instrument speed > 1 (il brano suona rallentato)
 - Player in ROM/cartuccia (è automodificante, va in RAM)
 - Fermare il player durante un trasferimento SIO
 - Effetti sonori su CH3+4 gestiti dal player (vedi `SFX_INTEGRATION.md`)

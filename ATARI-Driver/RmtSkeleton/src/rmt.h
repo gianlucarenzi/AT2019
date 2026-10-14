@@ -20,6 +20,21 @@ extern volatile unsigned char rmt_lines;      /* last player time (scanlines) */
 extern volatile unsigned char rmt_maxlines;   /* worst player time (scanlines) */
 extern volatile unsigned int  rmt_deferred;   /* ticks postponed (VBI with I=1), caught up next frame */
 extern volatile unsigned int  rmt_dropped;    /* ticks lost: song tempo error */
-extern volatile unsigned char rmt_audc[4];    /* AUDC values computed by the player */
+/* Tracks of the song: 4 (RMT4, mono SAP) or 8 (RMT8, stereo SAP); the
+ * Makefile builds with -DRMT_TRACKS from the song file */
+#ifndef RMT_TRACKS
+#define RMT_TRACKS 4
+#endif
+
+extern volatile unsigned char rmt_audc[RMT_TRACKS]; /* AUDC values computed by the player */
+
+/* Where the channels are played: rmt_init chooses it (rmtvbi.s). With 8
+ * tracks channels 5-8 (the right POKEY of the song) go to the VERA PSG if
+ * there is a VeraX16 card, else to a second POKEY at $D210, else nowhere */
+#define RMT_OUT_POKEY   0       /* 4 tracks: one POKEY */
+#define RMT_OUT_VERA    1       /* POKEY plays channels 1-4, VERA PSG 5-8 */
+#define RMT_OUT_POKEY2  2       /* two POKEYs */
+#define RMT_OUT_LEFT    3       /* one POKEY: only channels 1-4 are heard */
+extern unsigned char rmt_output;
 
 #endif

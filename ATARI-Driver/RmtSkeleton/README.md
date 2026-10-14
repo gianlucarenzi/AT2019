@@ -27,11 +27,14 @@ RmtSkeleton/
 │   ├── rmtplayr.s        RMT player (from PokeyATest) - DO NOT MODIFY
 │   ├── lzsplayr.s        player of the LZSS streams of a SAP / XEX exported by RITMO
 │   ├── rmtvbi.s          VBI handler and C interface - DO NOT MODIFY
+│   ├── psgrmt.s          RMT8: channels 5-8 on the VERA PSG (from VERA_ATARI_PBI)
+│   ├── vera.inc          the VeraX16 card registers psgrmt.s uses
 │   ├── rmt.h             C header with API
 │   └── rmt_feat.inc      RMT feature switches - DO NOT MODIFY
 ├── tools/
 │   ├── rmt2ca65.py       converts .rmt files to relocatable ca65 source
 │   ├── sap2ca65.py       converts the LZSS streams of a .sap / .xex to ca65 source
+│   ├── mkpsgtab.py       VERA PSG frequency tables for psgrmt.s (RMT8 builds)
 │   ├── mod2rmt4.py       converts a ProTracker MOD to RMT4 (MOD_TO_RMT_WORKFLOW.md)
 │   ├── song3ch.py        writes music/claude_3ch*.rmt (original songs, channels 1-3 only;
 │   │                     the *_speed_4 ones at instrument speed 4, mono and stereo)
@@ -54,7 +57,8 @@ RmtSkeleton/
 ## Files from PokeyATest
 
 These files are copied from `../PokeyATest` and should not be modified:
-- `src/rmtplayr.s` – the RMT 1.20090108 player in ca65 (mono, 4 channels)
+- `src/rmtplayr.s` – the RMT 1.20090108 player in ca65 (4 channels, or 8 for
+  RMT8 songs, see "RMT8 (stereo) songs")
 - `src/rmtvbi.s` – VBI handler and C wrapper
 - `src/rmt.h` – C API (used by main.c)
 - `src/rmt_feat.inc` – feature switches (all enabled)
@@ -151,9 +155,12 @@ the program plays exactly what the SAP / XEX plays:
 - During disk I/O it does what the `rmtplayr.s` of VERA_ATARI_PBI does:
   `CRITIC` <> 0 (the OS SIO) counts as `rmt_io_begin()`, and `AUDC3`/`AUDC4`
   are kept at volume 0 while the SIO owns channels 3+4.
-- Mono only: a stereo SAP stops the link (the module states its track count,
-  `rmt_song_tracks`). Instrument speed N > 1: N calls per frame as with an
-  `.rmt` (the stream holds N frames per video frame).
+- A stereo SAP / XEX is built with 8 channels, as an RMT8 song (see "RMT8
+  (stereo) songs"). The stream holds the right POKEY first, then the left
+  one: VU-Player writes the first to `$D210`, and so does `lzsplayr.s` now
+  (channels 5-8); the copy of VERA_ATARI_PBI had them the other way round.
+- Instrument speed N > 1: N calls per frame as with an `.rmt` (the stream
+  holds N frames per video frame).
 
 Checked: on a 6502 emulator `lzsplayr.s` gives the POKEY registers of VU-Player
 v2 byte for byte (22 SAP exports of 11 songs, Patch16 and Unpatched drivers,
@@ -167,6 +174,60 @@ sets to `$FF` (endless), so at the second end of the loop it starts a fade out
 that stops after one step: from the third pass on it plays one volume step
 lower and one frame earlier. `lzsplayr.s` keeps looping at full volume, as
 the export meant and as a SAP of RITMO 2.6 plays.
+
+### RMT8 (stereo) songs
+
+```bash
+make SONG=music/claude_3ch_stereo_speed_4.rmt          # RMT8: 8 channels
+make SONG=music/stereo.sap                             # stereo SAP / XEX exported by RITMO
+make run SONG=music/claude_3ch_stereo_speed_4.rmt EMUSTEREO=-stereo   # atari800 with 2 POKEYs
+```
+
+An RMT8 song is made for two POKEYs: channels 1-4 on the left one (`$D200`),
+5-8 on the right one (`$D210`). The Makefile reads the track count from the
+song (`RMT8` in the header, the stereo flag of a SAP / XEX) and builds
+everything with `RMT_TRACKS=8` (`-D RMT_TRACKS=8` for ca65 and cc65):
+
+- `src/rmtplayr.s` uses the 8 track mode of the original player
+  (`STEREOMODE 1`): song lines of 8 tracks, the volume of the right tracks in
+  the high nibble of the envelope, filters and bass16 of the right POKEY
+  (`FEAT_*R` in `rmt_feat.inc`). Built with 4 tracks it is the same code as
+  before, byte for byte.
+- `rmt_init` (`src/rmtvbi.s`) chooses where channels 5-8 go, in this order,
+  and leaves it in `rmt_output` (`rmt.h`):
+  1. **VERA PSG** (`RMT_OUT_VERA`), when there is a VeraX16 card at `$D100`
+     (the identity test of VERA_ATARI_PBI's `vera_detect()`): POKEY plays
+     channels 1-4, `src/psgrmt.s` turns channels 5-8 into PSG voices 4-7
+     after every player tick, in the same VBI.
+  2. **second POKEY** (`RMT_OUT_POKEY2`): the player writes `$D210`-`$D218`
+     too. The test: `SKCTL = 0` stops the left POKEY, so `RANDOM` stops
+     moving; `$D21F = 3` starts it again when `$D210` is only an image of
+     `$D200`. If `RANDOM` stays frozen there is a second POKEY.
+  3. **neither** (`RMT_OUT_LEFT`): channels 1-4 only, the song plays as an
+     RMT4 one would. `$D210` is never written: on a stock Atari it would be
+     the left POKEY again.
+- `main.c` shows the choice and the volumes of the 8 channels.
+- Cost: `psgrmt.s` with its tables (5 KB, page aligned, `PSGTAB` segment in
+  `src/rmtskeleton.cfg`) and the 8 track player variables; the player takes
+  longer with 8 tracks (`rmt_lines` / `rmt_maxlines` show it).
+
+The SIO (PokeyATest) still takes the left channels 3+4 while loading; the
+VERA PSG and a second POKEY are not touched by it, so channels 5-8 go on.
+
+Checked in atari800 (`-pokeyrec -pokeyrec-stereo`) with
+`claude_3ch_stereo_speed_4.rmt` and its SAP export, against the SAP-R export of
+RITMO 2.6 (driver Unpatched) for the whole song (3070 frames): with `-stereo`
+both POKEYs give in every frame one of the 4 sub-frames of the SAP-R (the
+4 player calls of a frame run back to back; one frame of the SAP caught in
+the middle of `SetPokey`); without it, and with `-verax16`, the left POKEY
+is the same and `$D210` stays at 0. With `-verax16` the sound has the VERA
+PSG on top (louder output in every second of an audio capture). In a stereo
+SAP-R RITMO writes the right POKEY first (see `PokeyStream.cpp`).
+
+The deferred VBI now leaves through a `JMP` whose operand `rmt_vbi_on` sets
+(as VERA_ATARI_PBI does), not `JMP (oldvbd)`: an indirect jump through a
+vector at `$xxFF` reads its high byte from `$xx00` on the 6502, and where the
+linker puts `oldvbd` changes with the program.
 
 ### Listen on the PC: tools/rmtplay
 
@@ -234,7 +295,8 @@ tools/rmtplay/rmtplay -c64 music/gemx.sap                  # the same on the C64
 A `.sap` (type B) or `.xex` is recognised by its contents: one subtune is
 taken out of the VU-Player memory of the file into a module at `$1000`, byte
 for byte the one `tools/sap2ca65.py` writes (checked with `gemx.sap`), and
-played by `lzsplayr.s`. Mono only, as the Atari and C64 programs. With `-r`
+played by `lzsplayr.s`. Mono only (the Atari programs play RMT8 too, see
+"RMT8 (stereo) songs"; the C64 one does not). With `-r`
 the last column is the section and the frame in it (`s0:1234`).
 
 With `-io` only channels 1+2 play, as between `rmt_io_begin()` and
@@ -299,8 +361,9 @@ echo on channel 4: `mono_reference_song.rmt` puts it in the melody channel
 where the melody rests, but the lead of `claude_3ch` is legato and no echo
 note would fit (`--echo-in-rests` shows it: 0 of 131). So the mono song uses
 4 channels; on the C64 SID voice 3 plays the louder of channels 3 and 4.
-The stereo one plays in RITMO (and its XEX with the RMT player, two POKEYs),
-not in the mono players of this tree. Both checked in RITMO 2.6-rc9 (open, WAV,
+The stereo one plays in RITMO (and its XEX with the RMT player, two POKEYs)
+and in RmtSkeleton / PokeyATest (VERA PSG or second POKEY for channels 5-8),
+not in `tools/rmtplay` nor on the C64. Both checked in RITMO 2.6-rc9 (open, WAV,
 SAP, SAP-R, XEX with the RMT player): see `CLAUDE_3CH_SONG.md`.
 
 ## API Overview (C Interface)
@@ -335,7 +398,8 @@ rmt_lines    // duration of last player call (scanlines)
 rmt_maxlines // worst-case player time
 rmt_deferred // ticks postponed and caught up later (normal)
 rmt_dropped  // ticks lost (must be 0 - indicates a problem)
-rmt_audc[4]  // AUDC values for channels 1..4 (for VU meter)
+rmt_audc[RMT_TRACKS]  // AUDC values for channels 1..4 (1..8 for RMT8, VU meter)
+rmt_output   // RMT_OUT_*: where the channels play (set by rmt_init)
 ```
 
 ## POKEY Channels and Disk I/O
@@ -385,10 +449,11 @@ would be needed.
 
 ## Supported Modules
 
-- **SAP / XEX exported by RITMO / RMT** (mono): played from their LZSS streams
-  by `src/lzsplayr.s`, see "Play a SAP or XEX exported by RITMO"
-- **RMT4 mono only** (4 channels, single POKEY)
-  - RMT8 stereo modules are rejected by rmt2ca65.py
+- **SAP / XEX exported by RITMO / RMT** (mono and stereo): played from their
+  LZSS streams by `src/lzsplayr.s`, see "Play a SAP or XEX exported by RITMO"
+- **RMT4** (4 channels, one POKEY)
+- **RMT8** (8 channels): channels 5-8 on the VERA PSG or on a second POKEY,
+  else not heard; see "RMT8 (stereo) songs"
 - **Instrument speed 1 to 4**: the player is called that many times per frame,
   back to back (see "Instrument speed")
 - Both "stripped" modules and modules with song/instrument names work
@@ -498,7 +563,7 @@ The `align = $100` ensures the player tables start at a page boundary. Putting
 
 ### .rmt file is rejected
 
-- Make sure it's **RMT4 mono**, not RMT8 stereo
+- Make sure it's an **RMT4** or **RMT8** module
 - Test with: `python3 tools/rmt2ca65.py music/your.rmt /dev/null`
 
 ## Related Documentation

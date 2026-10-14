@@ -4,7 +4,7 @@ Usa questa checklist quando integri il player RMT nel tuo progetto.
 
 ## Pre-Integrazione
 
-- [ ] Ho una canzone in formato .rmt (RMT4 mono, instrument speed 1)
+- [ ] Ho una canzone in formato .rmt (RMT4, o RMT8 con psgrmt.s e -D RMT_TRACKS=8)
 - [ ] Ho copiato i file dal skeleton: rmtplayr.s, rmtvbi.s, rmt.h, rmt_feat.inc
 - [ ] Ho copiato tools/rmt2ca65.py
 - [ ] Ho un progetto cc65 funzionante (compila, linka, esegue su Atari)

@@ -33,7 +33,10 @@
 ;* As rmtplayr.s, rmt_play first writes POKEY (SetPokey: the frame decoded
 ;* by the previous call) then decodes the next frame into trackn_audf,
 ;* trackn_audc and v_audctl. A stereo module decodes two frames per call:
-;* the left one into channels 1-4, the right one into 5-8 (v_audctl2).
+;* first the right POKEY into channels 5-8 (v_audctl2), then the left one
+;* into channels 1-4. That is the order of the export (VU-Player plays the
+;* first one on $D210): the echo on channel 8 of an RMT8 song is heard on
+;* the right POKEY, as the RMT player plays it.
 ;*
 ;* The intro is played once, then the loop for ever, as a SAP of RITMO 2.6
 ;* plays in VU-Player (in an older SAP the INIT of VU-Player cleared the
@@ -75,10 +78,16 @@ TRACKS          = 4
 .if TRACKS <> 4 && TRACKS <> 8
 .error "RMT_TRACKS must be 4 (mono) or 8 (stereo)"
 .endif
-.if TRACKS > 4 && .not .defined(RMT_VERA)
-.error "8 tracks need RMT_VERA: there is no second POKEY to write"
+.if TRACKS > 4 && .defined(RMT_C64)
+.error "RMT_C64: 8 tracks are not supported"
 .endif
-        .assert rmt_song_tracks = TRACKS, error, "LZSS module and player track count differ (RMT_TRACKS; a stereo SAP/XEX needs the RMT_VERA build)"
+;* 8 tracks without RMT_VERA (RmtSkeleton / PokeyATest): channels 5-8 for
+;* psgrmt.s (VERA PSG) or a second POKEY at $D210 (_rmt_pokey2), see rmtvbi.s
+.if TRACKS > 4 && .not .defined(RMT_VERA)
+        .export trackn_audf, trackn_audc, v_audctl, v_audctl2
+        .export _rmt_pokey2
+.endif
+        .assert rmt_song_tracks = TRACKS, error, "LZSS module and player track count differ (RMT_TRACKS; a stereo SAP/XEX needs RMT_TRACKS=8)"
 
 .ifdef RMT_C64
         .import pokey_shadow
@@ -96,6 +105,7 @@ AUDF4           = POKEY+$06
 AUDC4           = POKEY+$07
 AUDCTL          = POKEY+$08
 SKCTL           = POKEY+$0F
+POKEY2          = $D210         ;* right POKEY (8 tracks, _rmt_pokey2 <> 0)
 CRITIC          = $42           ;* OS: <> 0 during SIO
 
 ;* ---------------------------------------------------------------------------
@@ -148,6 +158,9 @@ rmt_ioactive:   .byte 0
 _rmt_pokey_mute: .byte 0
 ;* tracks the player was built for (4 or 8)
 _rmt_tracks:    .byte TRACKS
+.elseif TRACKS > 4
+;* != 0: a second POKEY at $D210 plays channels 5-8 (rmtvbi.s detects it)
+_rmt_pokey2:    .byte 0
 .endif
 
 ;*
@@ -202,6 +215,18 @@ rmt_silence:
 @si:    sta AUDF1,y
         dey
         bpl @si
+.if TRACKS > 4 && .not .defined(RMT_VERA)
+        ldy _rmt_pokey2
+        beq @s3
+        sta POKEY2+8            ;* right AUDCTL
+        ldy #3
+        sty POKEY2+$0F          ;* right SKCTL
+        ldy #8
+@s2:    sta POKEY2,y
+        dey
+        bpl @s2
+@s3:
+.endif
         lda lz_ispeed
         rts
 
@@ -217,15 +242,15 @@ rmt_p3:
         bne @p
         inc _lzs_pos+2
 @p:
+.if TRACKS > 4
+        ldy #4                  ;* stereo: the right POKEY comes first (as
+        jsr lz_tracks           ;* in the SAP-R of RITMO; VU-Player writes
+        sta v_audctl2           ;* it to $D210)
+        jsr lz_frame            ;* then the left one
+.endif
         ldy #0
         jsr lz_tracks
         sta v_audctl
-.if TRACKS > 4
-        jsr lz_frame            ;* stereo: the right POKEY
-        ldy #4
-        jsr lz_tracks
-        sta v_audctl2
-.endif
         rts
 
 ;* lz_val -> trackn_audf/audc + Y (channels Y..Y+3); returns A = AUDCTL
@@ -383,9 +408,34 @@ lz_bit:
         sta lz_bits
 @x:     rts
 
-;* L1 L2 L3 L4 (mono; the right POKEY of a stereo module is only in
-;* trackn_audf/audc+4 and v_audctl2)
+;* L1 L2 L3 L4 (mono). The right POKEY of a stereo module is in
+;* trackn_audf/audc+4 and v_audctl2; without RMT_VERA (the 8 track build of
+;* RmtSkeleton / PokeyATest) it is also written to a second POKEY at $D210
+;* when _rmt_pokey2 is set
 SetPokey:
+.if TRACKS > 4 && .not .defined(RMT_VERA)
+        lda _rmt_pokey2         ;* no second POKEY: channels 5-8 stay in
+        beq sp_left             ;* trackn_audf/audc+4 (VERA PSG or nothing)
+        ldy v_audctl2
+        lda trackn_audf+0+4
+        ldx trackn_audc+0+4
+        sta POKEY2+0
+        stx POKEY2+1
+        lda trackn_audf+1+4
+        ldx trackn_audc+1+4
+        sta POKEY2+2
+        stx POKEY2+3
+        lda trackn_audf+2+4
+        ldx trackn_audc+2+4
+        sta POKEY2+4
+        stx POKEY2+5
+        lda trackn_audf+3+4
+        ldx trackn_audc+3+4
+        sta POKEY2+6
+        stx POKEY2+7
+        sty POKEY2+8
+sp_left:
+.endif
         ldy v_audctl
 .ifdef RMT_VERA
         lda _rmt_pokey_mute     ;* VERA only: keep POKEY silent

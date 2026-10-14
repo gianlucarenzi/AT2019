@@ -9,7 +9,13 @@
 ;*  - relocatable: zero page vars in ZEROPAGE, track vars in BSS, tables in
 ;*    RODATA (frqtab is page aligned through .align), code in CODE.
 ;*    The original "PLAYER must be at $xx00" constraint is gone.
-;*  - mono only (STEREOMODE 0).
+;*  - mono (STEREOMODE 0); with -D RMT_TRACKS=8 (Atari only) the 8-track
+;*    stereo mode of the original (STEREOMODE 1: L1 L2 L3 L4 R1 R2 R3 R4,
+;*    filters and bass16 of the right POKEY included) for RMT8 modules. The
+;*    right POKEY ($D210) is written only when _rmt_pokey2 is set: on a stock
+;*    Atari $D210 is an image of $D200. Channels 5-8 are always computed in
+;*    trackn_audf/audc+4 and v_audctl2, so another output (the VERA PSG,
+;*    psgrmt.s) can play them; rmtvbi.s chooses the output.
 ;*  - SetPokey honours rmt_ioactive: while a SIO transfer is running POKEY
 ;*    channels 3+4 are the serial baud rate generator (AUDCTL=$28, 16 bit
 ;*    joined, 1.79MHz clock) so the player must NOT write AUDF3/AUDC3/
@@ -26,6 +32,13 @@
         .export RASTERMUSICTRACKER
         .export rmt_ioactive
         .export _rmt_audc
+.ifdef RMT_TRACKS
+.if RMT_TRACKS > 4
+;* channel state for psgrmt.s (VERA PSG) and the right POKEY switch
+        .export trackn_audf, trackn_audc, v_audctl, v_audctl2
+        .export _rmt_pokey2
+.endif
+.endif
 ;* song position for players that show it (rmt_cbm64 src/rmtplay.c): song
 ;* line pointer (next line), row in the track, track length, song speed
         .exportzp _rmt_p_song := p_song
@@ -37,7 +50,17 @@
 ;* current AUDC values computed by the player (C: rmt_audc[4], VU meter)
 _rmt_audc = trackn_audc
 
+.ifdef RMT_TRACKS
+TRACKS          = RMT_TRACKS
+.else
 TRACKS          = 4
+.endif
+.if TRACKS <> 4 && TRACKS <> 8
+.error "RMT_TRACKS must be 4 (RMT4, mono) or 8 (RMT8, stereo)"
+.endif
+.if TRACKS > 4 && .defined(RMT_C64)
+.error "RMT_C64: 8 tracks are not supported"
+.endif
 INSTRPAR        = 12
 
 .ifdef RMT_C64
@@ -56,6 +79,7 @@ AUDF4           = POKEY+$06
 AUDC4           = POKEY+$07
 AUDCTL          = POKEY+$08
 SKCTL           = POKEY+$0F
+POKEY2          = $D210         ;* right POKEY (8 tracks, _rmt_pokey2 <> 0)
 
 FEAT_EFFECTS    = FEAT_EFFECTVIBRATO || FEAT_EFFECTFSHIFT
 
@@ -152,7 +176,7 @@ trackn_audctl:          .res TRACKS
 v_aspeed:               .res 1
 track_endvariables:
 
-        .assert track_endvariables - track_variables < 256, error, "RMT track variables too big"
+        .assert track_endvariables - track_variables < 512, error, "RMT track variables too big (rmt_init clears at most 512 bytes)"
 
 ;* ---------------------------------------------------------------------------
 ;* Tables (RMTTAB segment is page aligned by src/pokeyatest.cfg)
@@ -239,6 +263,12 @@ vibtabnext:
 
 ;* != 0 while SIO is active: channels 3/4 and AUDCTL belong to the serial port
 rmt_ioactive:   .byte 0
+.if TRACKS > 4
+;* != 0: a second POKEY at $D210 plays channels 5-8 (rmtvbi.s detects it)
+_rmt_pokey2:    .byte 0
+;* AUDCTL of the right POKEY
+v_audctl2:      .byte 0
+.endif
 
 ;*
 ;* Set of RMT main vectors:
@@ -260,11 +290,20 @@ rmt_init:
 .if FEAT_NOSTARTINGSONGLINE = 0
         pha
 .endif
+.if track_endvariables-track_variables > 255
+        ldy #0                  ;* 8 tracks: more than 255 bytes to clear
+        tya
+ri0:    sta track_variables,y
+        sta track_endvariables-$100,y
+        iny
+        bne ri0
+.else
         ldy #track_endvariables-track_variables
         lda #0
 ri0:    sta track_variables-1,y
         dey
         bne ri0
+.endif
         ldy #4
         lda (ns),y
         sta v_maxtracklen
@@ -291,6 +330,21 @@ ri1:    lda (ns),y
 .if FEAT_NOSTARTINGSONGLINE = 0
         pla
         pha
+.if TRACKS > 4
+        asl a                   ;* song line = 8 bytes
+        asl a
+        asl a
+        clc
+        adc p_song
+        sta p_song
+        pla
+        php
+        and #$e0
+        asl a
+        rol a
+        rol a
+        rol a
+.else
         asl a
         asl a
         clc
@@ -302,6 +356,7 @@ ri1:    lda (ns),y
         asl a
         rol a
         rol a
+.endif
         plp
         adc p_song+1
         sta p_song+1
@@ -316,6 +371,18 @@ rmt_silence:
 si1:    sta AUDF1,y
         dey
         bpl si1
+.if TRACKS > 4
+        ldy _rmt_pokey2
+        beq si3
+        sta POKEY2+8            ;* right AUDCTL
+        ldy #3
+        sty POKEY2+$0F          ;* right SKCTL
+        ldy #8
+si2:    sta POKEY2,y
+        dey
+        bpl si2
+si3:
+.endif
 .if FEAT_INSTRSPEED = 0
         lda v_instrspeed
 .else
@@ -661,6 +728,15 @@ pp1b:
         lda trackn_instrlop,x
 pp2:    sta trackn_instridx,x
         lda reg1
+.if TRACKS > 4
+        cpx #4                  ;* right tracks: volume in the high nibble
+        bcc pp2s
+        lsr a
+        lsr a
+        lsr a
+        lsr a
+pp2s:
+.endif
         and #$0f
         ora trackn_volume,x
         tay
@@ -1125,6 +1201,126 @@ qq4a:
 .endif
 qq5:
         stx v_audctl
+.if TRACKS > 4
+;* the right POKEY: AUDCTL, filters and bass16 of channels 5-8, as above
+.if FEAT_AUDCTLMANUALSET
+        lda trackn_audctl+4
+        ora trackn_audctl+5
+        ora trackn_audctl+6
+        ora trackn_audctl+7
+        tax
+.else
+        ldx #0
+.endif
+        stx v_audctl2
+.if FEAT_FILTER
+.if FEAT_FILTERG0R
+        lda trackn_command+0+4
+        bpl qs2
+        lda trackn_audc+0+4
+        and #$0f
+        beq qs2
+        lda trackn_audf+0+4
+        clc
+        adc trackn_filter+0+4
+        sta trackn_audf+2+4
+.if FEAT_COMMAND7VOLUMEONLY && FEAT_VOLUMEONLYG2R
+        lda trackn_audc+2+4
+        and #$10
+        bne qs1a
+.endif
+        lda #0
+        sta trackn_audc+2+4
+qs1a:
+        txa
+        ora #4
+        tax
+.endif
+qs2:
+.if FEAT_FILTERG1R
+        lda trackn_command+1+4
+        bpl qs3
+        lda trackn_audc+1+4
+        and #$0f
+        beq qs3
+        lda trackn_audf+1+4
+        clc
+        adc trackn_filter+1+4
+        sta trackn_audf+3+4
+.if FEAT_COMMAND7VOLUMEONLY && FEAT_VOLUMEONLYG3R
+        lda trackn_audc+3+4
+        and #$10
+        bne qs2a
+.endif
+        lda #0
+        sta trackn_audc+3+4
+qs2a:
+        txa
+        ora #2
+        tax
+.endif
+qs3:
+.if FEAT_FILTERG0R || FEAT_FILTERG1R
+        cpx v_audctl2
+        bne qs5
+.endif
+.endif
+.if FEAT_BASS16
+.if FEAT_BASS16G1R
+        lda trackn_command+1+4
+        and #$0e
+        cmp #6
+        bne qs4
+        lda trackn_audc+1+4
+        and #$0f
+        beq qs4
+        ldy trackn_outnote+1+4
+        lda frqtabbasslo,y
+        sta trackn_audf+0+4
+        lda frqtabbasshi,y
+        sta trackn_audf+1+4
+.if FEAT_COMMAND7VOLUMEONLY && FEAT_VOLUMEONLYG0R
+        lda trackn_audc+0+4
+        and #$10
+        bne qs3a
+.endif
+        lda #0
+        sta trackn_audc+0+4
+qs3a:
+        txa
+        ora #$50
+        tax
+.endif
+qs4:
+.if FEAT_BASS16G3R
+        lda trackn_command+3+4
+        and #$0e
+        cmp #6
+        bne qs5
+        lda trackn_audc+3+4
+        and #$0f
+        beq qs5
+        ldy trackn_outnote+3+4
+        lda frqtabbasslo,y
+        sta trackn_audf+2+4
+        lda frqtabbasshi,y
+        sta trackn_audf+3+4
+.if FEAT_COMMAND7VOLUMEONLY && FEAT_VOLUMEONLYG2R
+        lda trackn_audc+2+4
+        and #$10
+        bne qs4a
+.endif
+        lda #0
+        sta trackn_audc+2+4
+qs4a:
+        txa
+        ora #$28
+        tax
+.endif
+.endif
+qs5:
+        stx v_audctl2
+.endif
 rmt_p5:
 .if FEAT_INSTRSPEED = 0 || FEAT_INSTRSPEED > 1
         lda #$ff
@@ -1134,8 +1330,31 @@ v_ainstrspeed = *-1
 .endif
         rts
 
-;* L1 L2 L3 L4 (mono)
+;* L1 L2 L3 L4 (mono); with 8 tracks and a second POKEY also R1 R2 R3 R4
 SetPokey:
+.if TRACKS > 4
+        lda _rmt_pokey2         ;* no second POKEY: channels 5-8 stay in
+        beq sp_left             ;* trackn_audf/audc+4 (VERA PSG or nothing)
+        ldy v_audctl2
+        lda trackn_audf+0+4
+        ldx trackn_audc+0+4
+        sta POKEY2+0
+        stx POKEY2+1
+        lda trackn_audf+1+4
+        ldx trackn_audc+1+4
+        sta POKEY2+2
+        stx POKEY2+3
+        lda trackn_audf+2+4
+        ldx trackn_audc+2+4
+        sta POKEY2+4
+        stx POKEY2+5
+        lda trackn_audf+3+4
+        ldx trackn_audc+3+4
+        sta POKEY2+6
+        stx POKEY2+7
+        sty POKEY2+8
+sp_left:
+.endif
         ldy #$ff
 v_audctl = *-1
         lda trackn_audf+0

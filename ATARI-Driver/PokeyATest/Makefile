@@ -7,6 +7,11 @@
 # make SONG=music/other.rmt
 # make SONG=music/gemx.sap  a SAP or XEX exported by RITMO / RMT: its LZSS
 #                           streams with src/lzsplayr.s (SUBSONG=n: subtune)
+# make SONG=music/claude_3ch_stereo_speed_4.rmt   an RMT8 (stereo) song, or a
+#                           stereo SAP / XEX: channels 5-8 go to the VERA PSG
+#                           if there is a VeraX16 card, else to a second POKEY,
+#                           else they are not heard
+# make run EMUSTEREO=-stereo   atari800 with a second POKEY
 # make ASSET_SIZES="2048 4096 16384"   generated test assets (empty = none)
 # make ASSETS_DIR=path/to/files        your assets (default: assets/, see doc/GUIDA.md)
 # make clean all DEFS=-DTEST_NOMUSIC    baseline: loader without the music player
@@ -33,10 +38,17 @@ ifneq ($(filter .sap .SAP .xex .XEX,$(suffix $(SONG))),)
 PLAYER  = src/lzsplayr.s
 SONG_S  = $(PYTHON) tools/sap2ca65.py $(SONG) $@ --subsong $(SUBSONG)
 SONG_PY = tools/sap2ca65.py
+TRACKS := $(shell $(PYTHON) tools/sap2ca65.py $(SONG) --tracks)
 else
 PLAYER  = src/rmtplayr.s
 SONG_S  = $(PYTHON) tools/rmt2ca65.py $(SONG) $@
 SONG_PY = tools/rmt2ca65.py
+TRACKS := $(shell $(PYTHON) -c "d=open('$(SONG)','rb').read(10); print(8 if d[6:10]==b'RMT8' else 4)")
+endif
+# 4 tracks (RMT4, mono SAP) or 8 (RMT8, stereo SAP): an 8 track song also
+# links the VERA PSG output (src/psgrmt.s and its frequency tables)
+ifeq ($(TRACKS),8)
+PSG_SOURCES = src/psgrmt.s $(BUILD)/psgtab.s
 endif
 # generated test assets, sizes in bytes: 2K..16K, also not multiple of a sector
 ASSET_SIZES ?= 2048 3500 5120 8000 12288 16384
@@ -64,6 +76,7 @@ EMUSWITCHES = \
 	$(ROMSWITCH) $(ROM) \
 	$(MACHINE) \
 	$(VIDEO) \
+	$(EMUSTEREO) \
 	-nobasic \
 	-nopatchall \
 	-run $(TARGET) \
@@ -78,6 +91,7 @@ ASM_SOURCES = \
 	src/rmtvbi.s \
 	src/sio.s \
 	$(BUILD)/song.s \
+	$(PSG_SOURCES) \
 
 SONGNAME = $(basename $(notdir $(SONG)))
 
@@ -87,7 +101,7 @@ all: $(ATR)
 # "make" rebuilds even when the new song file is older than build/song.s
 $(BUILD)/song.cfg: FORCE
 	@mkdir -p $(BUILD)
-	@echo '$(SONG) $(SUBSONG)' | cmp -s - $@ || echo '$(SONG) $(SUBSONG)' > $@
+	@echo '$(SONG) $(SUBSONG) $(TRACKS)' | cmp -s - $@ || echo '$(SONG) $(SUBSONG) $(TRACKS)' > $@
 
 $(BUILD)/song.s: $(SONG) $(SONG_PY) $(BUILD)/song.cfg
 	@mkdir -p $(BUILD)
@@ -107,8 +121,15 @@ $(BUILD)/assets.h: $(BUILD)/assets.cfg $(MY_ASSETS) tools/mkassets.py
 	$(PYTHON) tools/mkassets.py --out $(DISK) --header $@ --reserved $(notdir $(TARGET)) \
 		--sizes $(ASSET_SIZES) --files $(MY_ASSETS)
 
-$(TARGET): $(C_SOURCES) $(ASM_SOURCES) $(BUILD)/assets.h src/*.h src/*.inc src/pokeyatest.cfg
+# VERA PSG frequency tables (8 track builds)
+$(BUILD)/psgtab.s: tools/mkpsgtab.py
+	@mkdir -p $(BUILD)
+	$(PYTHON) $< $@
+
+# song.cfg: rebuilt when the track count changes
+$(TARGET): $(C_SOURCES) $(ASM_SOURCES) $(BUILD)/assets.h src/*.h src/*.inc src/pokeyatest.cfg $(BUILD)/song.cfg
 	$(CL) -Osir -t $(MACH) -C src/pokeyatest.cfg -I src -I $(BUILD) --asm-include-dir src \
+		--asm-define RMT_TRACKS=$(TRACKS) -DRMT_TRACKS=$(TRACKS) \
 		-DSONGNAME=\"$(SONGNAME)\" $(DEFS) -m $(BUILD)/pkatest.map \
 		-o $@ $(C_SOURCES) $(ASM_SOURCES)
 

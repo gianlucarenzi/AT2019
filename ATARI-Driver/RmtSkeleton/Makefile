@@ -7,6 +7,11 @@
 #   make SONG=music/gemx.sap    play a SAP or XEX exported by RITMO / RMT:
 #                               its LZSS streams with src/lzsplayr.s
 #   make SONG=x.sap SUBSONG=1   another subtune of the file
+#   make SONG=music/claude_3ch_stereo_speed_4.rmt
+#                     an RMT8 (stereo) song, or a stereo SAP / XEX: channels
+#                     5-8 go to the VERA PSG if there is a VeraX16 card, else
+#                     to a second POKEY, else they are not heard
+#   make run EMUSTEREO=-stereo   atari800 with a second POKEY
 #   make clean        remove build artifacts
 
 CL ?= cl65
@@ -34,10 +39,19 @@ ifneq ($(filter .sap .SAP .xex .XEX,$(suffix $(SONG))),)
 PLAYER  = src/lzsplayr.s
 SONG_S  = $(PYTHON) tools/sap2ca65.py $(SONG) $@ --subsong $(SUBSONG)
 SONG_PY = tools/sap2ca65.py
+TRACKS := $(shell $(PYTHON) tools/sap2ca65.py $(SONG) --tracks)
 else
 PLAYER  = src/rmtplayr.s
 SONG_S  = $(PYTHON) tools/rmt2ca65.py $(SONG) $@
 SONG_PY = tools/rmt2ca65.py
+TRACKS := $(shell $(PYTHON) -c "d=open('$(SONG)','rb').read(10); print(8 if d[6:10]==b'RMT8' else 4)")
+endif
+
+# 4 tracks (RMT4, mono SAP) or 8 (RMT8, stereo SAP): an 8 track song also
+# links the VERA PSG output (src/psgrmt.s and its frequency tables)
+ASFLAGS = --asm-define RMT_TRACKS=$(TRACKS) --asm-include-dir src
+ifeq ($(TRACKS),8)
+PSG_SOURCES = src/psgrmt.s $(BUILD)/psgtab.s
 endif
 
 # Source files
@@ -47,6 +61,7 @@ ASM_SOURCES = \
 	$(PLAYER) \
 	src/rmtvbi.s \
 	$(BUILD)/song.s \
+	$(PSG_SOURCES) \
 
 all: $(TARGET)
 
@@ -54,22 +69,27 @@ all: $(TARGET)
 # "make" rebuilds even when the new song file is older than build/song.s
 $(BUILD)/song.cfg: FORCE
 	@mkdir -p $(BUILD)
-	@echo '$(SONG) $(SUBSONG)' | cmp -s - $@ || echo '$(SONG) $(SUBSONG)' > $@
+	@echo '$(SONG) $(SUBSONG) $(TRACKS)' | cmp -s - $@ || echo '$(SONG) $(SUBSONG) $(TRACKS)' > $@
 
 # Convert the song to relocatable ca65 source
 $(BUILD)/song.s: $(SONG) $(SONG_PY) $(BUILD)/song.cfg
 	@mkdir -p $(BUILD)
 	$(SONG_S)
 
-# Link the executable
-$(TARGET): $(C_SOURCES) $(ASM_SOURCES) src/rmtskeleton.cfg
+# VERA PSG frequency tables (8 track builds)
+$(BUILD)/psgtab.s: tools/mkpsgtab.py
 	@mkdir -p $(BUILD)
-	$(CL) -t atari -C src/rmtskeleton.cfg -o $@ $(C_SOURCES) $(ASM_SOURCES) -m $(BUILD)/rmtskeleton.map
+	$(PYTHON) $< $@
+
+# Link the executable (song.cfg: rebuilt when the track count changes)
+$(TARGET): $(C_SOURCES) $(ASM_SOURCES) src/rmtskeleton.cfg src/rmt.h src/rmt_feat.inc src/vera.inc $(BUILD)/song.cfg
+	@mkdir -p $(BUILD)
+	$(CL) -t atari -C src/rmtskeleton.cfg $(ASFLAGS) -DRMT_TRACKS=$(TRACKS) -o $@ $(C_SOURCES) $(ASM_SOURCES) -m $(BUILD)/rmtskeleton.map
 	@echo "Build complete: $@"
 
 # Run in emulator (no SIO patch: real serial timing)
 run: $(TARGET)
-	$(EMULATOR) $(ROMSWITCH) $(ROM) $(MACHINE) $(VIDEO) -nobasic -nopatchall $<
+	$(EMULATOR) $(ROMSWITCH) $(ROM) $(MACHINE) $(VIDEO) $(EMUSTEREO) -nobasic -nopatchall $<
 
 # Clean up
 clean:

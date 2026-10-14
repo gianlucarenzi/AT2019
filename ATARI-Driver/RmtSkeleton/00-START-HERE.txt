@@ -143,10 +143,13 @@ D: Come cambio la canzone?
 R: Copia il file .rmt in music/, poi: make SONG=music/your_song.rmt
 
 D: Che format di file musicale vuole?
-R: Solo RMT4 mono, instrument speed 1. Usa Raster Music Tracker.
+R: RMT4 o RMT8, instrument speed 1-4 (o un SAP / XEX esportato da RITMO).
+   Usa Raster Music Tracker o RITMO.
 
 D: Posso usare RMT8 stereo?
-R: No, il player è mono. RMT8 viene rifiutato.
+R: Sì. I canali 1-4 vanno sul POKEY; i canali 5-8 sul PSG della VERA se c'è
+   la scheda VeraX16, altrimenti su un secondo POKEY ($D210) se c'è,
+   altrimenti non si sentono. Vedi "RMT8 (stereo) songs" in README.md.
 
 D: Se ho più canzoni?
 R: Genera un .s per ciascuna, linkale tutte, cambia con rmt_init().

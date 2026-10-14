@@ -10,8 +10,23 @@
 #include <atari.h>
 #include "rmt.h"
 
+// 8 channels: a shorter VU line, it must fit in 40 columns
+#if RMT_TRACKS > 4
+#define CH_TITLE "Ch: "
+#define CH_FORMAT "%u:%X "
+#else
+#define CH_TITLE "Channels: "
+#define CH_FORMAT "%u:%X  "
+#endif
+
 int main(void)
 {
+	static const char * const output[] = {
+		"POKEY",
+		"POKEY 1-4, VERA PSG 5-8",
+		"POKEY 1-4, 2nd POKEY 5-8",
+		"POKEY 1-4, no 5-8"
+	};
 	unsigned char speed, i, vol;
 
 	clrscr();
@@ -21,6 +36,7 @@ int main(void)
 	// Initialize the player with the song module
 	speed = rmt_init(rmt_song);
 	cprintf("Song loaded, instrument speed: %u\r\n", speed);
+	cprintf("%u tracks: %s\r\n", RMT_TRACKS, output[rmt_output]);
 
 	// Attach the player to the immediate VBI
 	rmt_vbi_on();
@@ -33,7 +49,7 @@ int main(void)
 
 	// Main loop: just display diagnostics while music plays
 	for (;;) {
-		gotoxy(0, 8);
+		gotoxy(0, 9);
 		cprintf("Frames: %5u  ", rmt_frames);
 		cprintf("Last:  %3u  ", rmt_lines);
 		cprintf("Max: %3u\r\n", rmt_maxlines);
@@ -41,11 +57,11 @@ int main(void)
 		cprintf("Dropped: %5u", rmt_dropped);
 
 		// Show channel volumes (VU meter)
-		gotoxy(0, 11);
-		cputs("Channels: ");
-		for (i = 0; i < 4; i++) {
+		gotoxy(0, 12);
+		cputs(CH_TITLE);
+		for (i = 0; i < RMT_TRACKS; i++) {
 			vol = rmt_audc[i] & 0x0F;
-			cprintf("%u:%X  ", i + 1, vol);
+			cprintf(CH_FORMAT, i + 1, vol);
 		}
 
 		// Check for ESC key

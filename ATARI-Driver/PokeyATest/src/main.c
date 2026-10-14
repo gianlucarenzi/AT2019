@@ -11,6 +11,10 @@
 // SIOV, which can lose the first data byte of a sector when the VBI player
 // runs right after the drive "Complete" byte (see sio.s).
 //
+// An RMT8 (stereo) song plays channels 5-8 on the VERA PSG or on a second
+// POKEY when there is one (rmt_output, chosen by rmt_init): neither is used
+// by SIO, so channels 5-8 keep playing while loading.
+//
 // Keys: L = toggle loader   S = toggle OS SIO noise (SOUNDR)   ESC = quit
 //
 
@@ -33,9 +37,14 @@ extern unsigned char secbuf[];
 #define ATRACT      0x4D
 #define PAL_REG     0xD014
 
+#define ROW_OUTPUT  4
 #define ROW_MODE    5
-#define ROW_VU      6
+#define ROW_VU      6       // RMT8: channels 5-8 on the next row
+#if RMT_TRACKS > 4
+#define ROW_PLAYER  8
+#else
 #define ROW_PLAYER  7
+#endif
 #define ROW_PASS    9
 #define ROW_FIRST   11
 #define ASSET_ROWS  10      // more assets than rows: lines are reused
@@ -82,10 +91,32 @@ static void show_soundr(void)
 static void show_mode(unsigned char io)
 {
 	gotoxy(0, ROW_MODE);
+#if RMT_TRACKS > 4
+	if (rmt_output != RMT_OUT_LEFT) {
+		if (io)
+			cputs("Music: CH1+2, 5..8 (SIO owns CH3+4)");
+		else
+			cputs("Music: CH1..8 full                  ");
+		return;
+	}
+#endif
 	if (io)
 		cputs("Music: CH1+2 only (SIO owns CH3+4)");
 	else
 		cputs("Music: CH1..4 full                 ");
+}
+
+static void show_output(void)
+{
+	static const char * const output[] = {
+		"POKEY",
+		"POKEY 1-4, VERA PSG 5-8",
+		"POKEY 1-4, 2nd POKEY 5-8",
+		"POKEY 1-4, no 5-8"
+	};
+
+	gotoxy(0, ROW_OUTPUT);
+	cprintf("%u ch: %s", RMT_TRACKS, output[rmt_output]);
 }
 
 static void show_vu(void)
@@ -93,7 +124,9 @@ static void show_vu(void)
 	unsigned char ch, v, i;
 
 	gotoxy(0, ROW_VU);
-	for (ch = 0; ch < 4; ch++) {
+	for (ch = 0; ch < RMT_TRACKS; ch++) {
+		if (ch == 4)
+			gotoxy(0, ROW_VU + 1);
 		v = rmt_audc[ch] & 0x0F;
 		cputc('1' + ch);
 		cputc(':');
@@ -208,6 +241,7 @@ int main(void)
 	show_soundr();
 
 	speed = rmt_init(rmt_song);
+	show_output();
 	if (speed != 1) {
 		gotoxy(0, ROW_MSG);
 		cprintf("Instr speed %u: %u player calls/VBI", speed, speed);

@@ -46,6 +46,18 @@
 ; player runs in the immediate VBI (or is postponed) as before, so the music
 ; goes on while loading.
 ;
+; RMT8 (stereo) songs, built with -D RMT_TRACKS=8: rmt_init first looks for
+; an output for channels 5-8 (the right POKEY of the module), in this order:
+;  1. the VERA PSG (VeraX16 PBI card, $D100): POKEY plays channels 1-4, the
+;     VERA PSG voices 4-7 play channels 5-8 (psgrmt.s, after the player in
+;     the same VBI)
+;  2. a second POKEY at $D210 (stereo upgrade): the player writes it
+;  3. none: only channels 1-4 are heard, as an RMT4 song
+; The second POKEY: SKCTL = 0 stops the poly counters of a POKEY, so RANDOM
+; stops changing. With the left POKEY stopped, $D21F = 3 starts it again
+; when $D210 is an image of $D200 (stock Atari): RANDOM moves again. With a
+; second POKEY the left one stays stopped.
+;
 ; Stack at VBI entry: $101,X = Y  $102,X = X  $103,X = A  $104,X = P
 ;
 ; C interface (see rmt.h)
@@ -53,10 +65,28 @@
         .export _rmt_init, _rmt_vbi_on, _rmt_vbi_off
         .export _rmt_io_begin, _rmt_io_end
         .export _rmt_frames, _rmt_lines, _rmt_maxlines, _rmt_deferred, _rmt_dropped
+        .export _rmt_output
 
         .export rmt_irqtick
         .import rmt_init, rmt_play, rmt_silence
         .import rmt_ioactive
+
+.ifdef RMT_TRACKS
+STEREO  = RMT_TRACKS > 4
+.else
+STEREO  = 0
+.endif
+.if STEREO
+        .import _rmt_pokey2
+        .import psg_update, psg_silence         ; psgrmt.s: VERA PSG output
+        .import _psg_init, _psg_enable, _psg_hybrid
+.endif
+
+; _rmt_output (rmt.h RMT_OUT_*)
+OUT_POKEY       = 0             ; RMT4 song: one POKEY
+OUT_VERA        = 1             ; RMT8: POKEY channels 1-4, VERA PSG 5-8
+OUT_POKEY2      = 2             ; RMT8: two POKEYs
+OUT_LEFT        = 3             ; RMT8: no output for channels 5-8
 
 SETVBV  = $E45C
 SYSVBV  = $E45F
@@ -66,6 +96,12 @@ CRITIC  = $42                   ; <> 0: the OS skips stage 2 (SIO running)
 VCOUNT  = $D40B
 AUDC3   = $D205
 AUDC4   = $D207
+RANDOM  = $D20A
+SKCTL   = $D20F
+SKCTL2  = $D21F                 ; second POKEY, or SKCTL again
+SSKCTL  = $0232                 ; OS shadow of SKCTL
+VERA_ADDR_L = $D100
+VERA_CTRL   = $D105
 
         .segment "BSS"
 _rmt_frames:    .res 2          ; frame counter incremented by the VBI
@@ -82,6 +118,7 @@ _rmt_deferred:  .res 2          ; statistics: how many ticks were postponed
 _rmt_dropped:   .res 2          ; statistics: ticks lost (tempo error)
 ispeed:         .res 1          ; player calls per frame = instrument speed (1..4)
 ticks:          .res 1          ; calls left in the current play_tick
+_rmt_output:    .res 1          ; OUT_*: where the channels are played
 
         .segment "CODE"
 
@@ -93,6 +130,17 @@ _rmt_init:
         tay
         pla
         tax
+.if STEREO
+        txa
+        pha
+        tya
+        pha
+        jsr find_output
+        pla
+        tay
+        pla
+        tax
+.endif
         lda #0                  ; start from song line 0
         jsr rmt_init
         pha                     ; A = instrument speed of the module
@@ -118,8 +166,10 @@ _rmt_vbi_on:
         sta _rmt_maxlines
         lda VVBLKD
         sta oldvbd
+        sta vbd_next+1
         lda VVBLKD+1
         sta oldvbd+1
+        sta vbd_next+2
         ldy #<dvbi
         ldx #>dvbi
         lda #7                  ; 7 = deferred VBI vector
@@ -151,7 +201,62 @@ _rmt_vbi_off:
         sta vbion
         sta dtick
         jsr rmt_silence
+.if STEREO
+        lda _rmt_output
+        cmp #OUT_VERA
+        bne @done
+        jsr psg_silence
+.endif
 @done:  rts
+
+.if STEREO
+; ---------------------------------------------------------------------------
+; find_output: the output of channels 5-8, in _rmt_output (see the top)
+find_output:
+        lda #0
+        sta _rmt_pokey2
+        sta _psg_enable
+        lda #$7E                ; VERA: DCSEL 63 shows the identity, 'V'
+        sta VERA_CTRL           ; and the version (47 or later), which an
+        ldx VERA_CTRL+4         ; empty bus cannot echo ($7E <> 'V')
+        ldy VERA_CTRL+5
+        lda #0
+        sta VERA_CTRL
+        cpx #'V'
+        bne @pokey
+        cpy #47
+        bcc @pokey
+        sta VERA_ADDR_L         ; A = 0: VRAM address 0
+        sta VERA_ADDR_L+1
+        sta VERA_ADDR_L+2
+        jsr _psg_init           ; PAL / NTSC, voices silent
+        lda #1
+        sta _psg_hybrid         ; voices of channels 1-4 silent: POKEY
+        sta _psg_enable
+        lda #OUT_VERA
+        bne @set
+@pokey: php
+        sei
+        lda #0
+        sta SKCTL               ; left POKEY stopped: RANDOM frozen
+        lda #3
+        sta SKCTL2              ; one POKEY only: the left one runs again
+        ldx RANDOM
+        ldy #8
+@r:     cpx RANDOM              ; RANDOM moves: $D21F was the left POKEY
+        bne @one
+        dey
+        bne @r
+        lda #OUT_POKEY2         ; frozen: there is a second POKEY
+        sta _rmt_pokey2
+        bne @two
+@one:   lda #OUT_LEFT
+@two:   ldx SSKCTL              ; the OS value (keyboard, serial port)
+        stx SKCTL
+        plp
+@set:   sta _rmt_output
+        rts
+.endif
 
 ; void rmt_io_begin(void)
 ; From now on the player leaves POKEY channels 3/4 and AUDCTL to the SIO.
@@ -278,7 +383,7 @@ dvbi:
         jsr play_ticks
         lda #0
         sta busy
-@exit:  jmp (oldvbd)            ; XITVBV, or what was there before
+@exit:  jmp vbd_next             ; XITVBV, or what was there before
 
 ; one frame of music and one postponed tick if any, with the player time in
 ; _rmt_lines / _rmt_maxlines
@@ -291,6 +396,13 @@ play_ticks:
         dec pending
         jsr play_tick
 @nocatch:
+.if STEREO
+        lda _rmt_output         ; channels 5-8 on the VERA PSG
+        cmp #OUT_VERA
+        bne @nopsg
+        jsr psg_update
+@nopsg:
+.endif
         lda VCOUNT
         sec
         sbc vstart
@@ -303,3 +415,11 @@ play_ticks:
         bcc @nomax
         sta _rmt_maxlines
 @nomax: rts
+
+; Exit to the previous deferred VBI. A plain JMP whose operand is set by
+; _rmt_vbi_on, not JMP (oldvbd): an indirect jump through a vector at $xxFF
+; reads its high byte from $xx00 on the 6502, and where the linker puts
+; oldvbd depends on the program.
+        .segment "DATA"
+vbd_next:
+        jmp $FFFF

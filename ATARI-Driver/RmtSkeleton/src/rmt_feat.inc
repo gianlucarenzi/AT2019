@@ -22,18 +22,25 @@ FEAT_COMMAND7SETNOTE    = 1
 FEAT_COMMAND7VOLUMEONLY = 1
 ;* PORTAMENTO
 FEAT_PORTAMENTO         = 1
-;* FILTER
+;* FILTER (R: right POKEY, 8-track RMT8 builds only)
 FEAT_FILTER             = 1
 FEAT_FILTERG0L          = 1
 FEAT_FILTERG1L          = 1
+FEAT_FILTERG0R          = 1
+FEAT_FILTERG1R          = 1
 ;* BASS16B (i.e. distortion value 6)
 FEAT_BASS16             = 1
 FEAT_BASS16G1L          = 1
 FEAT_BASS16G3L          = 1
+FEAT_BASS16G1R          = 1
+FEAT_BASS16G3R          = 1
 ;* VOLUME ONLY for particular generators
 FEAT_VOLUMEONLYG0L      = 1
 FEAT_VOLUMEONLYG2L      = 1
 FEAT_VOLUMEONLYG3L      = 1
+FEAT_VOLUMEONLYG0R      = 1
+FEAT_VOLUMEONLYG2R      = 1
+FEAT_VOLUMEONLYG3R      = 1
 ;* TABLE TYPE (i.e. TABLETYPE=1)
 FEAT_TABLETYPE          = 1
 ;* TABLE MODE (i.e. TABLEMODE=1)

@@ -17,16 +17,22 @@ make run        -> atari800 -xl -pal -nopatchall (NO SIO patch: real POKEY
                    ../RmtSkeleton: in atari800 the MyPicoDos autorun does not
                    start it), the ATR in D1: for the test files
 
-make SONG=music/xxx.rmt               any mono RMT4 module (instr. speed N:
+make SONG=music/xxx.rmt               any RMT4 or RMT8 module (instr. speed N:
                                       N player calls per VBI, back to back)
                                       (music/claude_3ch.rmt, claude_3ch_fast.rmt,
                                       claude_3ch_slow.rmt: channels 1-3 only,
                                       claude_3ch_mono_speed_4.rmt: instrument
                                       speed 4, echo of the lead on channel 4,
                                       see ../RmtSkeleton/tools/song3ch.py)
-make SONG=music/gemx.sap              a SAP or XEX exported by RITMO / RMT (mono):
-                                      its LZSS streams, played by src/lzsplayr.s
-                                      (SUBSONG=n: another subtune)
+make SONG=music/gemx.sap              a SAP or XEX exported by RITMO / RMT (mono
+                                      or stereo): its LZSS streams, played by
+                                      src/lzsplayr.s (SUBSONG=n: another subtune)
+make SONG=../RmtSkeleton/music/claude_3ch_stereo_speed_4.rmt
+                                      RMT8 (or a stereo SAP / XEX): channels 5-8
+                                      on the VERA PSG if there is a VeraX16
+                                      card, else on a second POKEY ($D210), else
+                                      not heard (shown on row 4)
+make run EMUSTEREO=-stereo            atari800 with a second POKEY
 make ASSET_SIZES="2048 7000 16384"    generated test assets, 2048..16384 bytes
                                       (ASSET_SIZES= : none)
 your assets: copy them into assets/ (or make ASSETS_DIR=dir): DOS 8.3 names,
@@ -42,8 +48,11 @@ Keys: L = switch loader (RBL IRQ SIO / OS SIOV)
 
 Files:
 ------
-src/rmtplayr.s   RMT 1.20090108 player (Raster/C.P.U.) ported to ca65, mono,
-                 relocatable (tables in the page aligned RMTTAB segment)
+src/rmtplayr.s   RMT 1.20090108 player (Raster/C.P.U.) ported to ca65, 4
+                 tracks or 8 (RMT8, -D RMT_TRACKS=8), relocatable (tables in
+                 the page aligned RMTTAB segment)
+src/psgrmt.s     RMT8: channels 5-8 on the VERA PSG (from VERA_ATARI_PBI,
+                 tables from tools/mkpsgtab.py), src/vera.inc its registers
 src/rmt_feat.inc RMT feature switches (all enabled)
 src/lzsplayr.s   player of the LZSS streams of a SAP / XEX exported by RITMO
                  (same interface as rmtplayr.s, from ../RmtSkeleton)
@@ -102,8 +111,17 @@ Memory: song + biggest asset (the load buffer) must fit in about 28 KB
 for a bigger one drop it, e.g. ASSET_SIZES="2048 3500 5120 8000 12288"
 (pass SONG= and ASSET_SIZES= to make run too).
 
-Limits: 128 bytes sectors only (SD/ED), drive speed 19200 baud, mono RMT4
-modules. Instrument speed N > 1 (1..4): the VBI calls the player N times,
+RMT8 (stereo) songs: rmt_init looks for the VERA PSG, then a second POKEY,
+for channels 5-8 (rmt_output, see ../RmtSkeleton/README.md "RMT8 (stereo)
+songs"). Neither is used by the SIO, so channels 5-8 play on while loading;
+the left POKEY keeps only channels 1+2 as with an RMT4 song. Checked in
+atari800 (-pokeyrec -pokeyrec-stereo, claude_3ch_stereo_speed_4.rmt, the
+whole song while loading, against the SAP-R export of RITMO): with -stereo
+the right POKEY gives the song in 98.8% of the frames, channels 1+2 in 99.8%
+(the others: ticks postponed by the SIO and caught up, as with RMT4 songs);
+without a second POKEY $D210 is never written.
+
+Limits: 128 bytes sectors only (SD/ED), drive speed 19200 baud. Instrument speed N > 1 (1..4): the VBI calls the player N times,
 back to back (play_tick in src/rmtvbi.s): tempo and instruments are right,
 POKEY changes once per frame, and the player time grows N times.
 Checked in atari800 (-pokeyrec): garydenise.rmt (speed 4, from the songs of

@@ -21,7 +21,7 @@ da xasm a **ca65**, con queste differenze rispetto all'originale:
 | `PLAYER` deve stare a un indirizzo `$xx00`       | rilocabile: il linker lo mette dove vuole                |
 | ~1 KB di variabili fisse prima di `PLAYER`       | variabili in `BSS`, tabelle nel segmento `RMTTAB`        |
 | zero page fissa da 203 (`$CB`)                   | 19 byte nel segmento `ZEROPAGE` di cc65                  |
-| mono e stereo (`STEREOMODE`)                     | solo mono, 4 canali (un POKEY)                           |
+| mono e stereo (`STEREOMODE`)                     | mono (4 tracce) o, con `-D RMT_TRACKS=8`, stereo 8 tracce (vedi 1.3) |
 | il modulo `.rmt` va caricato al suo indirizzo    | il modulo viene convertito in sorgente rilocabile        |
 | suonato dal programma (sincronia su `VCOUNT`)    | suonato dal **VBI immediato**                            |
 | scrive sempre tutti i registri POKEY             | durante l'I/O non tocca canali 3/4 e AUDCTL              |
@@ -38,10 +38,12 @@ File coinvolti:
 | `tools/rmt2ca65.py`    | converte un `.rmt` in sorgente ca65 rilocabile                   |
 | `src/lzsplayr.s`       | player degli stream LZSS di un SAP / XEX di RITMO (stessa interfaccia, vedi 1.2) |
 | `tools/sap2ca65.py`    | converte un `.sap` / `.xex` di RITMO in sorgente ca65 rilocabile |
+| `src/psgrmt.s`, `src/vera.inc` | RMT8: canali 5-8 sul PSG della VERA (da VERA_ATARI_PBI)  |
+| `tools/mkpsgtab.py`    | tabelle di frequenza del PSG per `psgrmt.s` (segmento `PSGTAB`)  |
 
 ### 1.2 Moduli supportati
 
-- **RMT4** (mono, 4 tracce). I moduli **RMT8** (stereo) vengono rifiutati dal convertitore.
+- **RMT4** (mono, 4 tracce) e **RMT8** (stereo, 8 tracce: vedi 1.3).
 - **Instrument speed da 1 a 4**. Con speed N > 1 il VBI chiama il player N volte di
   seguito (`play_tick` in `src/rmtvbi.s`): il player conta le chiamate, il brano avanza
   una volta ogni N e le altre fanno avanzare solo gli strumenti, quindi tempo e velocità
@@ -51,7 +53,7 @@ File coinvolti:
   convertitore lo segnala con una nota e il programma a video.
 - Vanno bene sia i moduli "stripped" sia quelli con i nomi di brano/strumenti
   (il secondo blocco del file viene ignorato).
-- **SAP / XEX esportati da RITMO** (o da RMT 1.31+), mono: `make SONG=music/gemx.sap`
+- **SAP / XEX esportati da RITMO** (o da RMT 1.31+), mono o stereo: `make SONG=music/gemx.sap`
   (`SUBSONG=n` per un altro subtune). Non contengono il modulo ma i registri POKEY che
   RMT ha registrato frame per frame, con il driver scelto in RITMO (Patch16 di default),
   compressi LZSS: il Makefile usa `tools/sap2ca65.py` e `src/lzsplayr.s` al posto di
@@ -59,7 +61,33 @@ File coinvolti:
   `rmt_ioactive`, `rmt_audc`...), quindi `main.c` e `rmtvbi.s` non cambiano e il suono è
   quello del SAP. Durante il SIO vale la stessa regola dei canali 3+4; in più `CRITIC`
   conta come `rmt_io_begin()`. Memoria: circa come un `.rmt` (il player è più piccolo, ma
-  ha 2,3 KB di BSS). Un SAP stereo ferma il link. Dettagli in `../RmtSkeleton/README.md`.
+  ha 2,3 KB di BSS). Un SAP stereo si comporta come un RMT8 (1.3); nello stream c'è prima
+  il POKEY destro, poi il sinistro, come lo suona VU-Player. Dettagli in
+  `../RmtSkeleton/README.md`.
+
+### 1.3 Brani RMT8 (stereo): VERA o secondo POKEY
+
+Un RMT8 è scritto per due POKEY: canali 1-4 sul sinistro (`$D200`), 5-8 sul destro
+(`$D210`). Il Makefile legge il numero di tracce dal brano e compila tutto con
+`RMT_TRACKS=8`. `rmt_init` sceglie dove suonare i canali 5-8, in quest'ordine, e lo
+lascia in `rmt_output` (riga 4 dello schermo):
+
+1. **PSG della VERA** (scheda VeraX16 a `$D100`, stesso test di identità di
+   `vera_detect()` di VERA_ATARI_PBI): il POKEY suona i canali 1-4, `src/psgrmt.s`
+   traduce i canali 5-8 nelle voci PSG 4-7 dopo ogni passo del player, nello stesso VBI;
+2. **secondo POKEY**: il player scrive anche `$D210`-`$D218`. Il test: con `SKCTL = 0`
+   il POKEY sinistro si ferma e `RANDOM` non cambia più; `$D21F = 3` lo fa ripartire se
+   `$D210` è solo un'immagine di `$D200`. Se `RANDOM` resta fermo c'è un secondo POKEY;
+3. **nessuno dei due**: solo i canali 1-4, come un brano RMT4. `$D210` non viene mai
+   scritto (su un Atari normale sarebbe di nuovo il POKEY sinistro).
+
+Il SIO usa solo i canali 3+4 del POKEY sinistro: VERA e secondo POKEY continuano a
+suonare i canali 5-8 anche durante il caricamento.
+
+```sh
+make SONG=../RmtSkeleton/music/claude_3ch_stereo_speed_4.rmt
+make run SONG=../RmtSkeleton/music/claude_3ch_stereo_speed_4.rmt EMUSTEREO=-stereo
+```
 
 Per sapere se un modulo è adatto:
 
@@ -503,6 +531,6 @@ Non ancora provato su hardware reale.
 ### 3.5 Limiti
 
 - Settori da 128 byte (SD/ED), 19200 baud; drive `D1:`–`D8:` tramite `fs_unit`.
-- Moduli RMT mono (RMT4); con instrument speed N > 1 il player è chiamato N volte di
+- Moduli RMT4 e RMT8 (i canali 5-8 solo con VERA o secondo POKEY); con instrument speed N > 1 il player è chiamato N volte di
   seguito nel VBI (vedi 1.2).
 - Il loader RBL non implementa scrittura né formati ad alta velocità.
