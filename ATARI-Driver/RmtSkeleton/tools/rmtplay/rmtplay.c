@@ -4,7 +4,8 @@
  * Plays a .rmt module with the real Atari player routine: src/rmtplayr.s
  * (RMT 1.20090108, the same code linked in the Atari program) is assembled
  * by ca65 and runs here on a 6502 emulator, once per frame like on the
- * immediate VBI; its POKEY writes drive a POKEY emulation.
+ * immediate VBI (instrument speed N: N calls back to back, as src/rmtvbi.s
+ * does); its POKEY writes drive a POKEY emulation.
  *
  * Usage: rmtplay [options] file.rmt
  *   -t sec     stop after sec seconds (default: until Ctrl+C; WAV: 60)
@@ -36,6 +37,7 @@ static int frame_cycles = 312 * 114;
 static int frame_rate = 50;
 static int io_period;           /* frames between I/O mode toggles, 0 = off */
 static int dump_regs;
+static int instrspeed = 1;      /* player calls per frame */
 static uint16_t module_addr;
 
 static long frame_pos, acc;
@@ -63,10 +65,13 @@ static void set_io(int on)
 
 static void do_frame(void)
 {
+	int i;
+
 	if (io_period && frames > 0 && frames % io_period == 0)
 		set_io(!io_on);
-	if (cpu_call(&cpu, RMT_ENTRY + 3, 0, 0, 0))     /* rmt_play */
-		failed = 1;
+	for (i = 0; i < instrspeed; i++)
+		if (cpu_call(&cpu, RMT_ENTRY + 3, 0, 0, 0))     /* rmt_play */
+			failed = 1;
 	if (dump_regs)
 		printf("%6ld  %02X %02X  %02X %02X  %02X %02X  %02X %02X  %02X%s\n", frames,
 		       pokey.audf[0], pokey.audc[0], pokey.audf[1], pokey.audc[1],
@@ -241,7 +246,7 @@ int main(int argc, char **argv)
 {
 	const char *wav = NULL, *file = NULL;
 	double seconds = 0, io_sec = 0;
-	int i, instrspeed;
+	int i;
 
 	for (i = 1; i < argc; i++) {
 		if (!strcmp(argv[i], "-t") && i + 1 < argc)
@@ -277,10 +282,7 @@ int main(int argc, char **argv)
 	/* rmt_init: X/Y = module, A = starting song line; returns instr speed */
 	if (cpu_call(&cpu, RMT_ENTRY, 0, module_addr & 0xFF, module_addr >> 8))
 		return 1;
-	instrspeed = cpu.a;
-	if (instrspeed != 1)
-		fprintf(stderr, "warning: instrument speed %d: the VBI player calls it once per frame, "
-			"so it plays %dx slower (as on the Atari)\n", instrspeed, instrspeed);
+	instrspeed = cpu.a < 1 ? 1 : cpu.a > 4 ? 4 : cpu.a;    /* as rmtvbi.s */
 
 	signal(SIGINT, on_signal);
 	if (wav)

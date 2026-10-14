@@ -25,16 +25,19 @@ RmtSkeleton/
 │   ├── main.c            your program (shows basic API usage)
 │   ├── rmtskeleton.cfg   linker configuration (key: RMTTAB align=$100)
 │   ├── rmtplayr.s        RMT player (from PokeyATest) - DO NOT MODIFY
+│   ├── lzsplayr.s        player of the LZSS streams of a SAP / XEX exported by RITMO
 │   ├── rmtvbi.s          VBI handler and C interface - DO NOT MODIFY
 │   ├── rmt.h             C header with API
 │   └── rmt_feat.inc      RMT feature switches - DO NOT MODIFY
 ├── tools/
 │   ├── rmt2ca65.py       converts .rmt files to relocatable ca65 source
+│   ├── sap2ca65.py       converts the LZSS streams of a .sap / .xex to ca65 source
 │   ├── mod2rmt4.py       converts a ProTracker MOD to RMT4 (MOD_TO_RMT_WORKFLOW.md)
 │   ├── song3ch.py        writes music/claude_3ch*.rmt (original songs, channels 1-3 only)
 │   └── rmtplay/          RMT player for the PC (C, SDL2) running src/rmtplayr.s
 ├── music/
 │   ├── gemx.rmt          example RMT song (replace with your own)
+│   ├── gemx.sap          the same song exported by RITMO (SAP, driver Patch16)
 │   ├── claude_3ch.rmt    3 channel song (channel 4 silent): same on POKEY and C64 SID
 │   ├── claude_3ch_fast.rmt  faster 3 channel song (188 BPM)
 │   └── claude_3ch_slow.rmt  slower 3 channel ballad (94 BPM)
@@ -53,7 +56,9 @@ These files are copied from `../PokeyATest` and should not be modified:
 - `src/rmt_feat.inc` – feature switches (all enabled)
 - `tools/rmt2ca65.py` – converts .rmt to relocatable ca65
 
-If you update PokeyATest, re-copy these files to stay in sync. `rmtplayr.s` is
+If you update PokeyATest, re-copy these files to stay in sync, except
+`src/rmtvbi.s` and `tools/rmt2ca65.py`: here they also handle instrument speed
+> 1 (`play_tick`, see "Instrument speed" below). `rmtplayr.s` is
 also used by `../rmt_cbm64` (Commodore 64): assembled there with `-D RMT_C64` it
 writes the POKEY registers to RAM instead of `$D200`; without that define it is
 the Atari code, unchanged.
@@ -90,7 +95,74 @@ To verify a .rmt file is compatible before building:
 python3 tools/rmt2ca65.py music/your_song.rmt /dev/null
 ```
 
-This shows the file size, relocations, and instrument speed. **Instrument speed must be 1.**
+This shows the file size, relocations, and instrument speed.
+
+### Instrument speed
+
+With instrument speed N > 1 (RMT allows 1 to 4) the VBI calls the player N
+times per frame, back to back (`play_tick` in `src/rmtvbi.s`, as `rmtvbi.s` of
+VERA_ATARI_PBI). The player counts the calls: the song advances once every N
+calls, the others only step the instruments, so tempo and instrument speed
+are right. The sound changes once per frame: POKEY gets the state after the
+N-th call, not the N steps spread over the frame as in the tracker (which
+waits for `VCOUNT` with the OS VBI off, not possible under a program). The
+player time grows N times (`rmt_lines`). A postponed tick stands for N calls
+too. `tools/rmtplay` does the same.
+
+Checked in atari800 (`-pokeyrec`): `enchanted_lands.rmt` (speed 2) and
+`garydenise.rmt` (speed 4), from the songs of RITMO, give in every frame the
+POKEY registers of the last of the N frames of the SAP-R export of RITMO
+(driver Unpatched), 3520 and 3840 frames; the SAP export of
+`enchanted_lands` played with `lzsplayr.s` gives them for 50 minutes.
+
+### Play a SAP or XEX exported by RITMO
+
+```bash
+make SONG=music/gemx.sap              # LZSS streams of a SAP (type B) or XEX
+make SONG=music/other.xex SUBSONG=1   # another subtune of the file
+```
+
+The SAP and XEX exports of RITMO (and of Raster Music Tracker 1.31 and later)
+do not hold the RMT module. They hold the POKEY registers RMT recorded frame by
+frame, with the tracker driver chosen in its options (Patch16 by default,
+which tunes differently from `rmtplayr.s`, the RMT 1.28 one), compressed with
+LZSS (LZ16 by DMSC) and played by VU-Player v2. With a `.sap` or `.xex` as
+`SONG` the Makefile links `src/lzsplayr.s` instead of `src/rmtplayr.s`, and
+the program plays exactly what the SAP / XEX plays:
+
+- `tools/sap2ca65.py` takes one subtune out of the VU-Player memory of the
+  file (song index at `$1F40`, instrument speed, stereo flag) and writes its
+  intro and loop sections as relocatable source (`build/song.s`); it decodes
+  every section once to check it. `python3 tools/sap2ca65.py file.sap
+  /dev/null` shows the sections and their frames.
+- `src/lzsplayr.s` has the interface of `src/rmtplayr.s` (`rmt_init`,
+  `rmt_play`, `rmt_silence`, `rmt_ioactive`, `rmt_audc`...): `main.c`,
+  `rmtvbi.s` and `rmt.h` do not change. It plays the intro once and then the
+  loop over and over. As `rmtplayr.s`, `rmt_play` writes POKEY first and
+  then decodes the next frame.
+- Memory: 4 bytes of zero page, 2.3 KB of BSS (a 256 byte window for each of
+  the 9 POKEY registers), about 490 bytes of code; no page aligned tables.
+  The song is the compressed stream: `gemx.sap` takes 3056 bytes,
+  `gemx.rmt` 3727.
+- During disk I/O it does what the `rmtplayr.s` of VERA_ATARI_PBI does:
+  `CRITIC` <> 0 (the OS SIO) counts as `rmt_io_begin()`, and `AUDC3`/`AUDC4`
+  are kept at volume 0 while the SIO owns channels 3+4.
+- Mono only: a stereo SAP stops the link (the module states its track count,
+  `rmt_song_tracks`). Instrument speed N > 1: N calls per frame as with an
+  `.rmt` (the stream holds N frames per video frame).
+
+Checked: on a 6502 emulator `lzsplayr.s` gives the POKEY registers of VU-Player
+v2 byte for byte (22 SAP exports of 11 songs, Patch16 and Unpatched drivers,
+also stereo and instrument speed 2 on the VERA_ATARI_PBI build); in atari800
+(`-pokeyrec`) `build/rmtskeleton.com` with `gemx.sap` plays 66 minutes (35
+loops) with every frame as decoded from the file.
+
+In a SAP exported by RITMO before 2.6, VU-Player itself goes on differently
+after the second loop: its `INIT` cleared the loop counter that the export
+sets to `$FF` (endless), so at the second end of the loop it starts a fade out
+that stops after one step: from the third pass on it plays one volume step
+lower and one frame earlier. `lzsplayr.s` keeps looping at full volume, as
+the export meant and as a SAP of RITMO 2.6 plays.
 
 ### Listen on the PC: tools/rmtplay
 
@@ -247,11 +319,12 @@ would be needed.
 
 ## Supported Modules
 
+- **SAP / XEX exported by RITMO / RMT** (mono): played from their LZSS streams
+  by `src/lzsplayr.s`, see "Play a SAP or XEX exported by RITMO"
 - **RMT4 mono only** (4 channels, single POKEY)
   - RMT8 stereo modules are rejected by rmt2ca65.py
-- **Instrument speed 1 only** (player called once per frame)
-  - Speed > 1 plays slower than intended
-  - rmt2ca65.py warns about this
+- **Instrument speed 1 to 4**: the player is called that many times per frame,
+  back to back (see "Instrument speed")
 - Both "stripped" modules and modules with song/instrument names work
   (the second block of the file is ignored)
 
@@ -297,7 +370,7 @@ The key difference from a standard cc65 config:
 ```
 SEGMENTS {
     ...
-    RMTTAB:    load = MAIN, type = ro, align = $100;  ← IMPORTANT
+    RMTTAB:    load = MAIN, type = ro, align = $100, optional = yes;  ← IMPORTANT
     STARTUP:   load = MAIN, type = ro, define = yes;
     ...
 }
@@ -305,6 +378,7 @@ SEGMENTS {
 
 The `align = $100` ensures the player tables start at a page boundary. Putting
 `RMTTAB` first in `MAIN` places it at `$2000` without wasting padding.
+`optional = yes`: `lzsplayr.s` has no such tables.
 
 ## Adapting for Your Project
 
@@ -326,7 +400,7 @@ The `align = $100` ensures the player tables start at a page boundary. Putting
 
 5. **Update the Makefile** with your own C/ASM source files.
 
-6. **Keep the RMT player files unchanged**: `rmtplayr.s`, `rmtvbi.s`, `rmt.h`, `rmt_feat.inc`.
+6. **Keep the RMT player files unchanged**: `rmtplayr.s`, `lzsplayr.s`, `rmtvbi.s`, `rmt.h`, `rmt_feat.inc`.
 
 ## Troubleshooting
 
@@ -348,7 +422,6 @@ The `align = $100` ensures the player tables start at a page boundary. Putting
 ### .rmt file is rejected
 
 - Make sure it's **RMT4 mono**, not RMT8 stereo
-- Instrument speed must be 1
 - Test with: `python3 tools/rmt2ca65.py music/your.rmt /dev/null`
 
 ## Related Documentation
