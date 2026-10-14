@@ -248,7 +248,7 @@ With `-c64` the frame is the C64 one (PAL 312 lines × 63 cycles at 985248 Hz,
 NTSC with `-n` 263 × 65 at 1022727 Hz) and `sidrmt.s` finds PAL or NTSC itself
 from the raster line, as on the C64. Instrument speed N > 1: the N calls are
 made at the raster lines `sidrmt.s` computes (every 312 / N lines on PAL), as
-its raster IRQ does. With `-r` each line also shows, per SID
+its raster IRQ does, and POKEY is turned into SID after the last one. With `-r` each line also shows, per SID
 voice, the POKEY channel it plays (`1<3`: voice 1 plays channel 3), the SID
 frequency, the waveform (`P` pulse, `N` noise) and the level. `-io` is not
 available: there is no disk loading on the C64. The SID emulation (`sid.c`)

@@ -15,8 +15,9 @@
  * With -c64 it plays as the Commodore 64 player (../../../rmt_cbm64): the
  * same routine assembled with -D RMT_C64 writes the POKEY registers to RAM,
  * the POKEY -> SID code of that project (sidrmt.s) turns them into SID
- * registers once per frame (instrument speed N: N times, at the raster
- * lines sidrmt.s computes), and they drive a SID emulation.
+ * registers once per frame (instrument speed N: the N calls at the raster
+ * lines sidrmt.s computes, the SID after the last one), and they drive a SID
+ * emulation.
  *
  * Usage: rmtplay [options] file.rmt|file.sap|file.xex
  *   -t sec     stop after sec seconds (default: until Ctrl+C; WAV: 60)
@@ -149,14 +150,15 @@ static const char *lzs_where(void)
 }
 
 /* call k of the frame, at its raster line: what the raster IRQ of sidrmt.s
- * does (rmt_play, then POKEY -> SID) */
+ * does (rmt_play; after the last call of the frame POKEY -> SID) */
 static void c64_tick(int k)
 {
-	if (cpu_call(&cpu, pl->entry + 3, 0, 0, 0) ||
-	    cpu_call(&cpu, pl->pokey_to_sid, 0, 0, 0))
+	if (cpu_call(&cpu, pl->entry + 3, 0, 0, 0))
 		failed = 1;
 	if (k < instrspeed - 1)
 		return;                                 /* the frame goes on */
+	if (cpu_call(&cpu, pl->pokey_to_sid, 0, 0, 0))
+		failed = 1;
 	if (dump_regs) {
 		const uint8_t *r = mem + pl->shadow;
 		int v;

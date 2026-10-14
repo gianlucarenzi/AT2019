@@ -26,10 +26,11 @@ src/sidrmt.s, sidtab.s ───────┘
    IRQ vector `$0314`, calls the player once per frame, like the Atari VBI.
    With instrument speed N > 1 it calls it N times per frame, at evenly
    spaced raster lines (every 312 / N lines on PAL, as the `FASTPLAY` of a
-   SAP exported by RMT; 262 or 263 / N on NTSC), and the SID is updated after
-   every call: the instruments step N times per frame as on the Atari. A
-   call that runs past the line of the next one makes that one at once, so
-   no call is lost. The KERNAL CIA IRQ (keyboard, clock) keeps running. PAL
+   SAP exported by RMT; 262 or 263 / N on NTSC); the SID is updated after
+   the last call of the frame, so it changes once per frame, as POKEY does
+   on the Atari with the VBI player of RmtSkeleton and PokeyATest. A call
+   that runs past the line of the next one makes that one at once, so no
+   call is lost. The KERNAL CIA IRQ (keyboard, clock) keeps running. PAL
    (50 Hz) or NTSC (60 Hz) is detected from the number of raster lines.
 3. **POKEY → SID**, every frame:
 
@@ -191,9 +192,18 @@ With THESMOPHORIA the program is 16 KB (`$0801-$47A2`, song 7 KB).
 CPU time of the IRQ, measured in VICE (PAL) by colouring the border: player
 21–24 raster lines, POKEY→SID 18–23 lines, about 13–15% of a frame (312 lines).
 On a frame with heavy player work the player alone was measured at 37 lines.
-With instrument speed N (1 to 4, the RMT range) the IRQ runs N times per
-frame: at speed 4 about 4 x 40-47 of the 312 lines (from the figures above),
-and the visualizer still keeps up (VICE, PAL).
+With instrument speed N (1 to 4, the RMT range) the IRQ calls the player N
+times per frame and translates POKEY to SID once, after the last call.
+Counted on a 6502 emulator (`../RmtSkeleton/tools/rmtplay`, cycles of the
+instructions, 63 per PAL line, no badlines): `claude_3ch_mono_speed_4.rmt`
+takes up to 127 of the 312 lines (player 107, POKEY→SID 21),
+`mono_reference_song.rmt` of RITMO (16 bit bass at 1.79 MHz) up to 134.
+Translating after every call, as before, took up to 190 and 315 lines
+(more than a frame): POKEY→SID ran N times for a change heard once per frame
+on the Atari, and its 24 bit division (the frequency of 16 bit, 1.79 MHz and
+15 kHz channels) took 24 steps; it now takes 16, the quotient being 16 bit
+(the same results: the SID registers after every call of 6144 frames of four
+songs are unchanged by it).
 
 ## Checked in VICE 3.9
 
@@ -220,7 +230,14 @@ and the visualizer still keeps up (VICE, PAL).
   song exported by RITMO with the Unpatched driver (`lzsplayr.s`) are the
   same at every call (5275 calls at speed 4; at speed 2 all but the first 21,
   where the SAP holds the tail of the song's last note, its loop section
-  being recorded on the second pass).
+  being recorded on the second pass). With the SID updated once per frame,
+  checked again with `rmtplay -c64` and the SAP of RITMO 2.6-rc9: the 3 SID
+  voices are the same in all 10025 frames of `garydenise.rmt`, in all but
+  the first 8 of `enchanted_lands.rmt`.
+- `claude_3ch_mono_speed_4.rmt` (speed 4), the SID updated once per frame:
+  correlates 0.96 with `rmtplay -c64` (0.91 for the loudness), -0.06 or less
+  when transposed; 0.96 with the same song when the SID was updated after
+  every call.
 - Recording: `x64sc -console -sound -sounddev wav -soundarg out.wav
   -sidenginemodel 256 -limitcycles N -autostart build/rmt_cbm64.d64`, at real
   speed (with `-warp` the WAV stays empty).

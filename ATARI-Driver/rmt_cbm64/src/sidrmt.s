@@ -3,11 +3,17 @@
 ; The music is played by the Atari RMT player routine (rmtplayr.s, the same
 ; source as PokeyATest and RmtSkeleton, assembled with -D RMT_C64): it writes
 ; the POKEY registers to pokey_shadow instead of $D200. From a raster IRQ
-; chained to the KERNAL IRQ vector ($0314) this code calls the player and
-; turns the shadow registers into SID registers, once per frame or, with
-; instrument speed N > 1, N times per frame at evenly spaced raster lines
-; (every 312 / N lines on PAL, as the FASTPLAY of an RMT SAP; 262 or 263 / N
-; on NTSC), so the SID follows the instruments as POKEY does on the Atari:
+; chained to the KERNAL IRQ vector ($0314) this code calls the player once
+; per frame or, with instrument speed N > 1, N times per frame at evenly
+; spaced raster lines (every 312 / N lines on PAL, as the FASTPLAY of an RMT
+; SAP; 262 or 263 / N on NTSC). After the last call of the frame it turns the
+; shadow registers into SID registers: the SID changes once per frame, as
+; POKEY does on the Atari with the VBI player (RmtSkeleton, PokeyATest).
+; Translating after every call took N times the work for detail inside the
+; frame: with instrument speed 4 player and translation took up to 190 of
+; the 312 lines of a PAL frame (claude_3ch_mono_speed_4.rmt), 315 with the
+; 16 bit 1.79 MHz bass of mono_reference_song.rmt of RITMO; now 127 and 134.
+;
 ;
 ;   frequency  from AUDF, AUDCTL (64/15 kHz, 1.79 MHz, 16 bit) and the
 ;              distortion: SID Fn = K / n, n = POKEY divider in machine
@@ -401,8 +407,12 @@ irq:
 @tick:  lda #$01
         sta VIC_IRQ                     ; acknowledge the raster IRQ
         jsr rmt_play                    ; writes pokey_shadow, computes next frame
-        jsr pokey_to_sid
         ldx tick
+        inx
+        cpx ispeed
+        bcc @nosid                      ; not the last call of the frame
+        jsr pokey_to_sid
+@nosid: ldx tick
         bne @next                       ; frames: counted at the first call
         inc _sid_frames
         bne @next
@@ -851,16 +861,29 @@ voice_out:
         sta _sid_volume,y
         rts
 
-; dvd (24 bit) / dsr (24 bit) -> dvd quotient, rem remainder
+; dvd (24 bit) / dsr (24 bit) -> dvd quotient (16 bit, dvd+2 = 0), rem
+; remainder; dvd+2 <> 0 when the quotient does not fit 16 bits (above the SID
+; range). The quotient is below 65536 if and only if dvd >> 16 < dsr: then the
+; division starts with rem = dvd >> 16 and takes 16 steps instead of 24.
 div24:
-        lda #0
+        lda dsr+2
+        ora dsr+1
+        bne @fits               ; dsr >= 256 > dvd >> 16
+        lda dvd+2
+        cmp dsr
+        bcc @fits
+        lda #1                  ; overflow (dvd+2 <> 0)
+        sta dvd+2
+        rts
+@fits:  lda dvd+2
         sta rem
+        lda #0
         sta rem+1
         sta rem+2
-        ldx #24
+        sta dvd+2
+        ldx #16
 @l:     asl dvd
         rol dvd+1
-        rol dvd+2
         rol rem
         rol rem+1
         rol rem+2
