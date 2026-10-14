@@ -35,6 +35,7 @@ RmtSkeleton/
 │   ├── mod2rmt4.py       converts a ProTracker MOD to RMT4 (MOD_TO_RMT_WORKFLOW.md)
 │   ├── song3ch.py        writes music/claude_3ch*.rmt (original songs, channels 1-3 only)
 │   └── rmtplay/          RMT player for the PC (C, SDL2) running src/rmtplayr.s
+│                         and src/lzsplayr.s (Atari / POKEY, or -c64: rmt_cbm64 on a SID)
 ├── music/
 │   ├── gemx.rmt          example RMT song (replace with your own)
 │   ├── gemx.sap          the same song exported by RITMO (SAP, driver Patch16)
@@ -168,7 +169,12 @@ the export meant and as a SAP of RITMO 2.6 plays.
 
 `rmtplay` is an RMT player for the PC (Linux, C + SDL2). It runs the same
 player routine as the Atari build (`src/rmtplayr.s`) on a 6502 emulator, with a
-POKEY emulation, so a song sounds as it will on the Atari.
+POKEY emulation, so a song sounds as it will on the Atari. A `.sap` or `.xex`
+exported by RITMO is played by `src/lzsplayr.s`, as the Atari program does
+(see "Play a SAP or XEX exported by RITMO"). With `-c64` it plays as
+`../rmt_cbm64` does on the Commodore 64: the same routines assembled with
+`-D RMT_C64`, the POKEY → SID code of that project (`src/sidrmt.s`) and its
+SID frequency tables, on a SID emulation.
 
 **Requirements**
 
@@ -185,14 +191,26 @@ make -C tools/rmtplay clean    # removes the binary and tools/rmtplay/build/
 
 The Makefile:
 
-1. assembles `src/rmtplayr.s` (with `src/rmt_feat.inc`) with `ca65`;
-2. links it at a fixed address (`tools/rmtplay/rmtplay.cfg`, `$A000`) with `ld65`
-   into a raw 6502 binary;
-3. turns the binary and the player entry points into `build/rmtplayr_bin.h`;
-4. compiles `rmtplay.c`, `cpu6502.c` and `pokey.c` with SDL2.
+1. assembles four builds of the player with `ca65` and links each at `$A000`
+   with `ld65` into a raw 6502 binary:
+   - `atari_rmt`: `src/rmtplayr.s` (with `src/rmt_feat.inc`), `tools/rmtplay/rmtplay.cfg`;
+   - `atari_lzs`: `src/lzsplayr.s`;
+   - `c64_rmt`: `../rmt_cbm64/src/rmtplayr.s` with `-D RMT_C64`,
+     `../rmt_cbm64/src/sidrmt.s` and the tables of `../rmt_cbm64/tools/mksidtab.py`,
+     with the player zero page at `$22` as on the C64 (`tools/rmtplay/rmtplay_c64.cfg`);
+   - `c64_lzs`: the same with `../rmt_cbm64/src/lzsplayr.s`;
+2. turns each binary and its addresses (`tools/rmtplay/binhdr.awk`) into
+   `build/<build>_bin.h`;
+3. compiles `rmtplay.c`, `cpu6502.c`, `pokey.c` and `sid.c` with SDL2.
 
-A change to `src/rmtplayr.s` or `src/rmt_feat.inc` is picked up by the next
-`make`. The binary and `build/` are not in git: build again after a clone.
+It also compares the player copies (`rmtplayr.s`, `lzsplayr.s`, `rmt_feat.inc`) of
+RmtSkeleton, `../PokeyATest` and `../rmt_cbm64` and prints a warning when they
+differ (`make -C tools/rmtplay check`): the Atari mode plays `src/`, `-c64`
+plays `../rmt_cbm64/src`.
+
+A change to `src/rmtplayr.s` or `src/rmt_feat.inc` (or to the rmt_cbm64
+sources) is picked up by the next `make`. The binary and `build/` are not in
+git: build again after a clone.
 
 **Usage**
 
@@ -203,12 +221,40 @@ tools/rmtplay/rmtplay -io 4 music/your_song.rmt            # toggle "disk loadin
 tools/rmtplay/rmtplay -t 40 -w song.wav music/your_song.rmt   # render 40 s to a WAV file
 tools/rmtplay/rmtplay -r music/your_song.rmt               # POKEY registers, one line per frame
 tools/rmtplay/rmtplay -n music/your_song.rmt               # NTSC (60 Hz) instead of PAL
+tools/rmtplay/rmtplay -c64 music/your_song.rmt             # as on the Commodore 64 (SID)
+tools/rmtplay/rmtplay -c64 -r music/your_song.rmt          # POKEY registers and the 3 SID voices
+tools/rmtplay/rmtplay music/gemx.sap                       # SAP or XEX exported by RITMO
+tools/rmtplay/rmtplay -s 1 music/other.xex                 # another subtune of the file
+tools/rmtplay/rmtplay -c64 music/gemx.sap                  # the same on the C64
 ```
+
+A `.sap` (type B) or `.xex` is recognised by its contents: one subtune is
+taken out of the VU-Player memory of the file into a module at `$1000`, byte
+for byte the one `tools/sap2ca65.py` writes (checked with `gemx.sap`), and
+played by `lzsplayr.s`. Mono only, as the Atari and C64 programs. With `-r`
+the last column is the section and the frame in it (`s0:1234`).
 
 With `-io` only channels 1+2 play, as between `rmt_io_begin()` and
 `rmt_io_end()`. With `-r` the last column is AUDCTL: for a song meant to play
 during disk loading it should stay `00`. The module must not overlap the
-player at `$A000-$B7FF` (RMT files load at `$4000` as a rule).
+player at `$A000-$B7FF` (`$A000-$BFFF` with `-c64`; RMT files load at
+`$4000` as a rule). Instrument speed N > 1: N calls back to back per frame, as
+`src/rmtvbi.s`.
+
+With `-c64` the frame is the C64 one (PAL 312 lines × 63 cycles at 985248 Hz,
+NTSC with `-n` 263 × 65 at 1022727 Hz) and `sidrmt.s` finds PAL or NTSC itself
+from the raster line, as on the C64. Instrument speed N > 1: the N calls are
+made at the raster lines `sidrmt.s` computes (every 312 / N lines on PAL), as
+its raster IRQ does. With `-r` each line also shows, per SID
+voice, the POKEY channel it plays (`1<3`: voice 1 plays channel 3), the SID
+frequency, the waveform (`P` pulse, `N` noise) and the level. `-io` is not
+available: there is no disk loading on the C64. The SID emulation (`sid.c`)
+has the oscillators, pulse/noise/sawtooth/triangle and the envelope as reSID,
+not the filter (sidrmt.s does not use it). Checked against VICE 3.9 (x64sc,
+reSID, PAL) playing `../rmt_cbm64/build/rmt_cbm64.prg`, pitch content (chroma)
+on 37 s: `claude_3ch.rmt` 0.96, `gemx.rmt` 0.89, `gemx.sap` 0.95 (the Atari
+mode against the same recordings: 0.84, 0.67, 0.68), about -0.1 when
+transposed.
 
 To convert a MOD file see `MOD_TO_RMT_WORKFLOW.md`.
 

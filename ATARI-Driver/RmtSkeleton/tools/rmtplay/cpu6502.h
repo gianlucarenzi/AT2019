@@ -13,6 +13,7 @@ typedef struct {
 	uint8_t a, x, y, s, p;
 	uint8_t *mem;                                   /* 64 KB */
 	void (*write_hook)(uint16_t addr, uint8_t val); /* I/O writes $D000-$D7FF */
+	uint8_t (*read_hook)(uint16_t addr);            /* I/O reads $D000-$D7FF, NULL = RAM */
 } cpu6502_t;
 
 /* Run a subroutine (JSR addr) with the given registers until it returns.

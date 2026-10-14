@@ -2,7 +2,8 @@
  * cpu6502.c - minimal NMOS 6502 core (documented opcodes only)
  *
  * Runs the real RMT player routine (src/rmtplayr.s assembled by ca65) on the
- * PC. No cycle timing and no interrupts: the player is called once per frame
+ * PC (and, for the C64 build, ../../../rmt_cbm64/src/sidrmt.s). No cycle
+ * timing and no interrupts: the player is called once per frame
  * and its POKEY writes are applied at the start of the frame.
  */
 #include <stdio.h>
@@ -20,7 +21,12 @@
 #define RETURN_TRAP 0x0203      /* JSR stub at $0200, returns here */
 #define MAX_STEPS   200000      /* the player takes a few thousand at most */
 
-static uint8_t rd(cpu6502_t *c, uint16_t a) { return c->mem[a]; }
+static uint8_t rd(cpu6502_t *c, uint16_t a)
+{
+	if (c->read_hook && (a & 0xF800) == 0xD000)
+		return c->read_hook(a);
+	return c->mem[a];
+}
 
 static void wr(cpu6502_t *c, uint16_t a, uint8_t v)
 {
