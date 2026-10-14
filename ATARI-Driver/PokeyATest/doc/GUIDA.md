@@ -36,15 +36,30 @@ File coinvolti:
 | `src/rmt.h`            | prototipi C                                                      |
 | `src/pokeyatest.cfg`   | config del linker = `atari.cfg` + segmento `RMTTAB` (`align = $100`) |
 | `tools/rmt2ca65.py`    | converte un `.rmt` in sorgente ca65 rilocabile                   |
+| `src/lzsplayr.s`       | player degli stream LZSS di un SAP / XEX di RITMO (stessa interfaccia, vedi 1.2) |
+| `tools/sap2ca65.py`    | converte un `.sap` / `.xex` di RITMO in sorgente ca65 rilocabile |
 
 ### 1.2 Moduli supportati
 
 - **RMT4** (mono, 4 tracce). I moduli **RMT8** (stereo) vengono rifiutati dal convertitore.
-- **Instrument speed 1**, cioè il player viene chiamato una volta per frame. Con valori
-  maggiori il brano funziona ma va più lento: il convertitore stampa un warning e il
-  programma lo segnala a video.
+- **Instrument speed da 1 a 4**. Con speed N > 1 il VBI chiama il player N volte di
+  seguito (`play_tick` in `src/rmtvbi.s`): il player conta le chiamate, il brano avanza
+  una volta ogni N e le altre fanno avanzare solo gli strumenti, quindi tempo e velocità
+  degli strumenti sono giusti; il POKEY però cambia una volta per frame (lo stato dopo
+  l'N-esima chiamata, non gli N passi distribuiti nel frame come nel tracker). Il tempo
+  del player nel VBI cresce di N volte, un tick rimandato vale N chiamate. Il
+  convertitore lo segnala con una nota e il programma a video.
 - Vanno bene sia i moduli "stripped" sia quelli con i nomi di brano/strumenti
   (il secondo blocco del file viene ignorato).
+- **SAP / XEX esportati da RITMO** (o da RMT 1.31+), mono: `make SONG=music/gemx.sap`
+  (`SUBSONG=n` per un altro subtune). Non contengono il modulo ma i registri POKEY che
+  RMT ha registrato frame per frame, con il driver scelto in RITMO (Patch16 di default),
+  compressi LZSS: il Makefile usa `tools/sap2ca65.py` e `src/lzsplayr.s` al posto di
+  `rmt2ca65.py` e `rmtplayr.s`, con la stessa interfaccia (`rmt_init`, `rmt_play`,
+  `rmt_ioactive`, `rmt_audc`...), quindi `main.c` e `rmtvbi.s` non cambiano e il suono è
+  quello del SAP. Durante il SIO vale la stessa regola dei canali 3+4; in più `CRITIC`
+  conta come `rmt_io_begin()`. Memoria: circa come un `.rmt` (il player è più piccolo, ma
+  ha 2,3 KB di BSS). Un SAP stereo ferma il link. Dettagli in `../RmtSkeleton/README.md`.
 
 Per sapere se un modulo è adatto:
 
@@ -437,6 +452,11 @@ Il target lancia atari800 con **`-nopatchall`**. È indispensabile perché
 seriale di POKEY e il caricamento diventa istantaneo, quindi il test non vale niente.
 La prova che la patch è spenta sono i ~900 byte/s misurati.
 
+Il programma viene avviato direttamente (`-run build/disk/PKATEST.COM`, come in
+`../RmtSkeleton`), con l'ATR in `D1:` per i file di prova: in atari800 l'autorun di
+MyPicoDos non lo fa partire (verificato anche sulla versione precedente: dopo 30 s
+nessuna musica). L'ATR resta avviabile per l'hardware reale.
+
 ### 3.2 Schermo
 
 ```
@@ -475,5 +495,6 @@ Non ancora provato su hardware reale.
 ### 3.5 Limiti
 
 - Settori da 128 byte (SD/ED), 19200 baud; drive `D1:`–`D8:` tramite `fs_unit`.
-- Moduli RMT mono (RMT4), player chiamato una volta per frame.
+- Moduli RMT mono (RMT4); con instrument speed N > 1 il player è chiamato N volte di
+  seguito nel VBI (vedi 1.2).
 - Il loader RBL non implementa scrittura né formati ad alta velocità.

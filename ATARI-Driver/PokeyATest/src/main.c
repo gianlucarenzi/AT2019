@@ -210,7 +210,7 @@ int main(void)
 	speed = rmt_init(rmt_song);
 	if (speed != 1) {
 		gotoxy(0, ROW_MSG);
-		cprintf("Warn: instr speed %u, VBI plays 1x", speed);
+		cprintf("Instr speed %u: %u player calls/VBI", speed, speed);
 	}
 #ifndef TEST_NOMUSIC
 	rmt_vbi_on();

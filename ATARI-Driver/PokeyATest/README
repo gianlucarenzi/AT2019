@@ -12,12 +12,19 @@ Compile / Launch:
 -----------------
 make            -> build/pokeyatest.atr (MyPicoDos406N, autorun PKATEST.COM)
 make run        -> atari800 -xl -pal -nopatchall (NO SIO patch: real POKEY
-                   serial timing; ~/.atari800.cfg has ENABLE_SIO_PATCH=1)
+                   serial timing; ~/.atari800.cfg has ENABLE_SIO_PATCH=1),
+                   -run build/disk/PKATEST.COM (started directly, as
+                   ../RmtSkeleton: in atari800 the MyPicoDos autorun does not
+                   start it), the ATR in D1: for the test files
 
-make SONG=music/xxx.rmt               any mono RMT4 module, instr. speed 1
+make SONG=music/xxx.rmt               any mono RMT4 module (instr. speed N:
+                                      N player calls per VBI, back to back)
                                       (music/claude_3ch.rmt, claude_3ch_fast.rmt,
                                       claude_3ch_slow.rmt: channels 1-3 only,
                                       see ../RmtSkeleton/tools/song3ch.py)
+make SONG=music/gemx.sap              a SAP or XEX exported by RITMO / RMT (mono):
+                                      its LZSS streams, played by src/lzsplayr.s
+                                      (SUBSONG=n: another subtune)
 make ASSET_SIZES="2048 7000 16384"    generated test assets, 2048..16384 bytes
                                       (ASSET_SIZES= : none)
 your assets: copy them into assets/ (or make ASSETS_DIR=dir): DOS 8.3 names,
@@ -36,12 +43,15 @@ Files:
 src/rmtplayr.s   RMT 1.20090108 player (Raster/C.P.U.) ported to ca65, mono,
                  relocatable (tables in the page aligned RMTTAB segment)
 src/rmt_feat.inc RMT feature switches (all enabled)
+src/lzsplayr.s   player of the LZSS streams of a SAP / XEX exported by RITMO
+                 (same interface as rmtplayr.s, from ../RmtSkeleton)
 src/rmtvbi.s     player on the immediate VBI + C interface (rmt.h)
 src/sio.s        sector read: own IRQ driven SIO driver + OS SIOV version
 src/dos2fs.c     read only DOS 2.x/MyDOS filesystem on raw sectors (no DOS)
 src/main.c       test program
 src/pokeyatest.cfg  atari.cfg + RMTTAB segment
 tools/rmt2ca65.py   .rmt -> relocatable ca65 source (pointers rewritten)
+tools/sap2ca65.py   .sap / .xex -> relocatable ca65 source (from ../RmtSkeleton)
 tools/mkassets.py   test assets + your assets/ -> disk dir + assets.h (sizes, checksums)
 tools/atrcheck.py   fails if the ATR has more sectors than the loader supports
 tools/atrorder.py   moves PKATEST.COM to the first directory entry (MyPicoDos
@@ -86,4 +96,15 @@ for a bigger one drop it, e.g. ASSET_SIZES="2048 3500 5120 8000 12288"
 (pass SONG= and ASSET_SIZES= to make run too).
 
 Limits: 128 bytes sectors only (SD/ED), drive speed 19200 baud, mono RMT4
-modules, the VBI calls the player once per frame (instrument speed 1).
+modules. Instrument speed N > 1 (1..4): the VBI calls the player N times,
+back to back (play_tick in src/rmtvbi.s): tempo and instruments are right,
+POKEY changes once per frame, and the player time grows N times.
+Checked in atari800 (-pokeyrec): garydenise.rmt (speed 4, from the songs of
+RITMO) plays 219 minutes while the test loads files, still in step at the
+end (no tick lost); 0.7% of the frames are one frame late (ticks postponed
+while the VBI hit an IRQ, caught up), 0.15% are sampled in the middle of the
+4 calls. The same song exported by RITMO as SAP (driver Unpatched),
+played by lzsplayr.s: 223 minutes (174 loops) while loading, in step, with
+the same two kinds of difference only (1.0% late, 0.2% mid-tick).
+SAP and RMT need about the same memory (gemx: the program ends at $940D
+with the SAP, $93F4 with the .rmt).

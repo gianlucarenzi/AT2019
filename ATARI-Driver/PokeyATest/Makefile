@@ -1,8 +1,12 @@
 # Makefile - PokeyATest: RMT player on VBI + SIO asset loader
 #
 # make            build build/pokeyatest.atr (bootable, MyPicoDos autorun)
-# make run        launch atari800 with the SIO patch OFF (real serial timing)
+# make run        launch atari800 with the SIO patch OFF (real serial timing):
+#                 the program is run directly (-run, as ../RmtSkeleton), the
+#                 disk is in D1: for the test assets
 # make SONG=music/other.rmt
+# make SONG=music/gemx.sap  a SAP or XEX exported by RITMO / RMT: its LZSS
+#                           streams with src/lzsplayr.s (SUBSONG=n: subtune)
 # make ASSET_SIZES="2048 4096 16384"   generated test assets (empty = none)
 # make ASSETS_DIR=path/to/files        your assets (default: assets/, see doc/GUIDA.md)
 # make clean all DEFS=-DTEST_NOMUSIC    baseline: loader without the music player
@@ -21,6 +25,19 @@ VIDEO ?= -pal
 DEFS ?=
 
 SONG ?= music/gemx.rmt
+SUBSONG ?= 0
+
+# A .sap or .xex exported by RITMO / RMT (VU-Player LZSS streams) is played by
+# src/lzsplayr.s, the same interface as src/rmtplayr.s
+ifneq ($(filter .sap .SAP .xex .XEX,$(suffix $(SONG))),)
+PLAYER  = src/lzsplayr.s
+SONG_S  = $(PYTHON) tools/sap2ca65.py $(SONG) $@ --subsong $(SUBSONG)
+SONG_PY = tools/sap2ca65.py
+else
+PLAYER  = src/rmtplayr.s
+SONG_S  = $(PYTHON) tools/rmt2ca65.py $(SONG) $@
+SONG_PY = tools/rmt2ca65.py
+endif
 # generated test assets, sizes in bytes: 2K..16K, also not multiple of a sector
 ASSET_SIZES ?= 2048 3500 5120 8000 12288 16384
 # your assets: every file of this directory goes on the disk and in the test
@@ -49,6 +66,7 @@ EMUSWITCHES = \
 	$(VIDEO) \
 	-nobasic \
 	-nopatchall \
+	-run $(TARGET) \
 	$(ATR)
 
 C_SOURCES = \
@@ -56,7 +74,7 @@ C_SOURCES = \
 	src/dos2fs.c \
 
 ASM_SOURCES = \
-	src/rmtplayr.s \
+	$(PLAYER) \
 	src/rmtvbi.s \
 	src/sio.s \
 	$(BUILD)/song.s \
@@ -65,9 +83,15 @@ SONGNAME = $(basename $(notdir $(SONG)))
 
 all: $(ATR)
 
-$(BUILD)/song.s: $(SONG) tools/rmt2ca65.py
+# build/song.cfg changes when SONG or SUBSONG does, so "make SONG=x" then
+# "make" rebuilds even when the new song file is older than build/song.s
+$(BUILD)/song.cfg: FORCE
 	@mkdir -p $(BUILD)
-	$(PYTHON) tools/rmt2ca65.py $(SONG) $@
+	@echo '$(SONG) $(SUBSONG)' | cmp -s - $@ || echo '$(SONG) $(SUBSONG)' > $@
+
+$(BUILD)/song.s: $(SONG) $(SONG_PY) $(BUILD)/song.cfg
+	@mkdir -p $(BUILD)
+	$(SONG_S)
 
 # the asset list and sizes are kept in a stamp file, so adding/removing a
 # file or changing ASSET_SIZES on the command line rebuilds the disk

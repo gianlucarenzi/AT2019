@@ -23,6 +23,13 @@
 ; the IRQ work is done and CLI is safe) or at the next VBI (two calls in
 ; the same frame), so the song tempo is unchanged.
 ;
+; Instrument speed N > 1: every frame the player is called N times, back to
+; back (play_tick). The player counts the calls itself: the song advances once
+; every N calls, the other calls only step the instruments, so tempo and
+; instrument speed are right; the sound still changes once per frame (the
+; tracker spreads the calls over the frame). A postponed tick stands for N
+; calls too.
+;
 ; Stack at VBI entry: $101,X = Y  $102,X = X  $103,X = A  $104,X = P
 ;
 ; C interface (see rmt.h)
@@ -53,6 +60,8 @@ vbion:          .res 1
 pending:        .res 1          ; player ticks postponed (VBI inside an IRQ)
 _rmt_deferred:  .res 2          ; statistics: how many ticks were postponed
 _rmt_dropped:   .res 2          ; statistics: ticks lost (tempo error)
+ispeed:         .res 1          ; player calls per frame = instrument speed (1..4)
+ticks:          .res 1          ; calls left in the current play_tick
 
         .segment "CODE"
 
@@ -66,6 +75,15 @@ _rmt_init:
         tax
         lda #0                  ; start from song line 0
         jsr rmt_init
+        pha                     ; A = instrument speed of the module
+        cmp #1                  ; clamp to 1..4 (RMT format range)
+        bcs @lo
+        lda #1
+@lo:    cmp #5
+        bcc @hi
+        lda #4
+@hi:    sta ispeed
+        pla
         ldx #0
         rts
 
@@ -121,6 +139,18 @@ _rmt_io_end:
         rts
 
 ; ---------------------------------------------------------------------------
+; play_tick: one frame of music = ispeed calls of rmt_play, back to back
+play_tick:
+        lda ispeed
+        bne @n
+        lda #1                  ; not initialised yet: one call
+@n:     sta ticks
+@l:     jsr rmt_play
+        dec ticks
+        bne @l
+        rts
+
+; ---------------------------------------------------------------------------
 ; rmt_irqtick: run a postponed player tick from the tail of an IRQ handler.
 ; Call with I=1 once the IRQ has been fully served. Preserves X and Y.
 rmt_irqtick:
@@ -135,7 +165,7 @@ rmt_irqtick:
         tya
         pha
         cli                     ; the IRQ is done: nesting is safe now
-        jsr rmt_play
+        jsr play_tick
         sei
         pla
         tay
@@ -163,11 +193,11 @@ vbi:
         lda VCOUNT
         sta vstart
         cli                     ; let SIO serial IRQs in while we play
-        jsr rmt_play
+        jsr play_tick
         lda pending             ; catch up one postponed tick
         beq @nocatch
         dec pending
-        jsr rmt_play
+        jsr play_tick
 @nocatch:
         sei
         lda VCOUNT
