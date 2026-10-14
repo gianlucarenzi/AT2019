@@ -167,15 +167,19 @@ static void put_hex(unsigned char x, unsigned char y, unsigned char v)
     p[1] = hexscr[v & 15];
 }
 
-static void put_dec(unsigned char x, unsigned char y, unsigned int v, unsigned char digits)
+/* two decimal digits of v (0..99): tens by subtraction, no division (the
+ * cc65 runtime division takes hundreds of cycles) */
+static void put_dec2(unsigned char x, unsigned char y, unsigned char v)
 {
-    unsigned char i = digits;
+    unsigned char *p = SCREEN + row_ofs[y] + x;
+    unsigned char t = '0';
 
-    while (i--) {
-        line_buf[i] = screen_code('0' + v % 10);
-        v /= 10;
+    while (v >= 10) {
+        v -= 10;
+        ++t;
     }
-    put_codes(x, y, line_buf, digits);
+    p[0] = t;               /* digits: screen code = PETSCII */
+    p[1] = '0' + v;
 }
 
 /* ---- static parts of the screen ---------------------------------------- */
@@ -187,6 +191,8 @@ static void put_dec(unsigned char x, unsigned char y, unsigned int v, unsigned c
 static const char *const info_text[3] = { RMT_INFO_NAME, RMT_INFO_AUTHOR, RMT_INFO_DATE };
 static unsigned char info_len[3];
 static unsigned char info_shown[3];         /* scroll offset drawn */
+static unsigned int info_wait;              /* frames of play before the long lines scroll */
+static unsigned char info_sub;              /* frames since the last scroll step */
 /* screen codes of a long line and its SCROLL_GAP blanks (rmtinfo.py keeps
  * at most 200 characters) */
 static unsigned char info_codes[3][200 + SCROLL_GAP];
@@ -256,21 +262,48 @@ static void draw_static(void)
 
 /* ---- dynamic parts ----------------------------------------------------- */
 
-/* coarse scroll of the info lines longer than 40 characters; the offset comes
- * from the play time, so it stops in pause and starts again on restart */
-static void draw_info(unsigned long frames, unsigned char fps)
+/* coarse scroll of the info lines longer than 40 characters: SCROLL_WAIT
+ * seconds of play, then one character every 2^SCROLL_SHIFT frames. It follows
+ * the frames played (it stops in pause), kept step by step: the offset from
+ * the total of the frames took a 32 bit shift and a 16 bit modulo per line at
+ * every call, the slowest part of a pass of the main loop */
+static void info_reset(unsigned char fps)
 {
-    unsigned int wait = fps * SCROLL_WAIT;
-    unsigned int step;
-    unsigned char i, k;
+    unsigned char i;
 
-    step = frames < wait ? 0 : (unsigned int)((frames - wait) >> SCROLL_SHIFT);
+    info_wait = fps * SCROLL_WAIT;
+    info_sub = 0;
+    for (i = 0; i < 3; i++)
+        if (info_len[i] > 40 && info_shown[i]) {
+            info_shown[i] = 0;
+            info_render(i, 0);
+        }
+}
+
+static void draw_info(unsigned char adv)    /* frames played since the last call */
+{
+    unsigned char i, k, n, period;
+
+    if (info_wait) {
+        if (info_wait > adv) {
+            info_wait -= adv;
+            return;
+        }
+        adv -= (unsigned char)info_wait;
+        info_wait = 0;
+    }
+    info_sub += adv;
+    n = info_sub >> SCROLL_SHIFT;
+    if (!n)
+        return;
+    info_sub &= (1 << SCROLL_SHIFT) - 1;
     for (i = 0; i < 3; i++) {
         if (info_len[i] <= 40)
             continue;
-        k = (unsigned char)(step % (unsigned char)(info_len[i] + SCROLL_GAP));
-        if (k == info_shown[i])
-            continue;
+        period = info_len[i] + SCROLL_GAP;
+        k = info_shown[i] + n;
+        while (k >= period)
+            k -= period;
         info_shown[i] = k;
         info_render(i, k);
     }
@@ -308,23 +341,26 @@ static void draw_bars(unsigned char paused)
             g = h > g ? h - g : 0;
             if (g > 8)
                 g = 8;
-            memset(p, block[g], BAR_W);
+            g = block[g];
+            /* BAR_W cells, without the call of memset() */
+            p[0] = g;
+            p[1] = g;
+            p[2] = g;
+            p[3] = g;
+            p[4] = g;
+            p[5] = g;
             p -= 40;
         }
     }
 }
 
 /* hex fields: register -> screen position (2 cells); reg_old[] holds the
- * value drawn, so a field is written only when it changes */
+ * value drawn, so a field is written only when it changes. reg_val[] gets
+ * the registers first (reg_load: one load and store each), so an unchanged
+ * field costs a compare: with instrument speed 4 the pointer table of the
+ * sources, read for all 18 fields every other frame, took about 45 raster
+ * lines and the pass of the main loop did not fit in the frame */
 #define AT(x, y)    (SCREEN + (y) * 40 + (x))
-static volatile unsigned char *const reg_src[] = {
-    &sid_pokey[0], &sid_pokey[2], &sid_pokey[4], &sid_pokey[6],     /* AUDF */
-    &sid_pokey[1], &sid_pokey[3], &sid_pokey[5], &sid_pokey[7],     /* AUDC */
-    &sid_pokey[8],                                                  /* AUDCTL */
-    &sid_freq_hi[0], &sid_freq_lo[0], &sid_freq_hi[1], &sid_freq_lo[1],
-    &sid_freq_hi[2], &sid_freq_lo[2],
-    &sid_wave[0], &sid_wave[1], &sid_wave[2]
-};
 static unsigned char *const reg_dst[] = {
     AT(5, ROW_AUDF), AT(8, ROW_AUDF), AT(11, ROW_AUDF), AT(14, ROW_AUDF),
     AT(5, ROW_AUDC), AT(8, ROW_AUDC), AT(11, ROW_AUDC), AT(14, ROW_AUDC),
@@ -334,16 +370,41 @@ static unsigned char *const reg_dst[] = {
     AT(9, ROW_WAVE), AT(14, ROW_WAVE), AT(19, ROW_WAVE)
 };
 #define REGS        (sizeof reg_dst / sizeof reg_dst[0])
+static unsigned char reg_val[REGS];
 static unsigned char reg_old[REGS];
 static unsigned char src_old[3];
+
+/* the registers of the fields, in the order of reg_dst[] */
+static void reg_load(void)
+{
+    reg_val[0] = sid_pokey[0];      /* AUDF */
+    reg_val[1] = sid_pokey[2];
+    reg_val[2] = sid_pokey[4];
+    reg_val[3] = sid_pokey[6];
+    reg_val[4] = sid_pokey[1];      /* AUDC */
+    reg_val[5] = sid_pokey[3];
+    reg_val[6] = sid_pokey[5];
+    reg_val[7] = sid_pokey[7];
+    reg_val[8] = sid_pokey[8];      /* AUDCTL */
+    reg_val[9] = sid_freq_hi[0];
+    reg_val[10] = sid_freq_lo[0];
+    reg_val[11] = sid_freq_hi[1];
+    reg_val[12] = sid_freq_lo[1];
+    reg_val[13] = sid_freq_hi[2];
+    reg_val[14] = sid_freq_lo[2];
+    reg_val[15] = sid_wave[0];
+    reg_val[16] = sid_wave[1];
+    reg_val[17] = sid_wave[2];
+}
 
 static void draw_regs(void)
 {
     unsigned char i, v;
     unsigned char *p;
 
+    reg_load();
     for (i = 0; i < REGS; i++) {
-        v = *reg_src[i];
+        v = reg_val[i];
         if (v == reg_old[i])
             continue;
         reg_old[i] = v;
@@ -365,8 +426,9 @@ static void regs_reset(void)
 {
     unsigned char i;
 
+    reg_load();
     for (i = 0; i < REGS; i++)
-        reg_old[i] = *reg_src[i] ^ 0xFF;
+        reg_old[i] = reg_val[i] ^ 0xFF;
     for (i = 0; i < 3; i++)
         src_old[i] = sid_src[i] ^ 0xFF;
 }
@@ -444,11 +506,11 @@ static void draw_position(void)
 }
 #endif
 
-static void draw_state(unsigned int s, unsigned char paused)
+static void draw_state(unsigned char min, unsigned char sec, unsigned char paused)
 {
-    if (changed(F_SEC, s)) {
-        put_dec(5, ROW_STATE, s / 60, 2);
-        put_dec(8, ROW_STATE, s % 60, 2);
+    if (changed(F_SEC, ((unsigned int)min << 8) | sec)) {
+        put_dec2(5, ROW_STATE, min);
+        put_dec2(8, ROW_STATE, sec);
     }
     if (changed(F_PAUSE, paused))
         put_text(33, ROW_STATE, paused ? "PAUSED" : "      ", 0x80 * paused);
@@ -490,10 +552,9 @@ int main(void)
 {
     unsigned char paused = 0;
     unsigned char fps, k, now, last = 0, sub = 0, pass = 0;
-    unsigned int secs = 0;
+    unsigned char min = 0, sec = 0, adv = 0;
     unsigned char old_border = VIC.bordercolor, old_bg = VIC.bgcolor0;
     unsigned char old_addr = VIC.addr, old_lock = SHFLAG_LOCK;
-    unsigned long frames = 0;
 
 #ifndef RMT_LZSS
     song_start = (const unsigned char *)(rmt_song_data[14] | (rmt_song_data[15] << 8));
@@ -510,6 +571,7 @@ int main(void)
     memset(shown, 0xFF, sizeof shown);
     regs_reset();
     draw_static();
+    info_reset(fps);
 #ifdef RMT_LZSS
     put_hex(8, ROW_POS, RMT_INFO_SECTIONS - 1);
 #else
@@ -525,11 +587,15 @@ int main(void)
             now = FRAME_LO;
             k = now - last;
             last = now;
-            frames += k;
+            adv += k;               /* for draw_info, every other pass */
             sub += k;
             while (sub >= fps) {
                 sub -= fps;
-                ++secs;
+                if (++sec == 60) {
+                    sec = 0;
+                    if (++min == 100)
+                        min = 0;
+                }
             }
         }
 
@@ -542,8 +608,9 @@ int main(void)
         }
         else {
             draw_position();
-            draw_state(secs, paused);
-            draw_info(frames, fps);
+            draw_state(min, sec, paused);
+            draw_info(adv);
+            adv = 0;
         }
 
         if (!kbhit())
@@ -563,8 +630,8 @@ int main(void)
         else if (k == 'r' || k == 'R') {
             sid_play_off();
             sid_init(rmt_song_data);
-            frames = 0;
-            secs = sub = last = 0;
+            min = sec = sub = last = adv = 0;
+            info_reset(fps);
             paused = 0;
             sid_play_on();
         }

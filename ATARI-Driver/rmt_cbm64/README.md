@@ -149,6 +149,19 @@ field written only when it changes) fits in the time the player IRQ leaves
 in a frame, PAL and NTSC: checked in VICE by colouring the border, about 150
 raster lines in the heaviest frame with the IRQ.
 
+With instrument speed 4 the IRQ takes more of the frame (about 113 raster
+lines on average, up to 147, with `claude_3ch_mono_speed_4.rmt`), so the
+screen work was made lighter: the registers are copied to a buffer before
+the fields are compared (an unchanged field is a compare, not two pointer
+table reads), the bars are written without `memset()`, the scroll of the
+long info lines advances step by step (it took a 32 bit shift and a 16 bit
+modulo per line every other frame) and the play time keeps minutes and
+seconds (no division). Measured in VICE (PAL, counters in a test build,
+4400 frames of that song): a pass of the main loop fits in one frame 99.9%
+of the time (5 passes in two frames), against 92% before and 39% when the
+SID was also updated after every player call; a pass takes 111-117 lines on
+average, IRQ included, at most 276.
+
 ## C interface (`src/sid.h`)
 
 ```c
