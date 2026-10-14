@@ -110,7 +110,7 @@ make clean
 checks it and shows its instrument speed). Songs in `music/`: `gemx.rmt` (default),
 `PROJECT-X_LOADER_pokey.rmt`, `PROJECT-X_THESMOPHORIA_pokey.rmt`,
 `ProjectX-End-Lynne_pokey.rmt` (15 KB; the D64 loads in about a minute on a
-real-speed 1541), `claude_3ch.rmt`, `claude_3ch_fast.rmt` and `claude_3ch_slow.rmt` (channels 1-3 only, see below). `D64=build/other.d64` writes the disk under another name.
+real-speed 1541), `claude_3ch.rmt`, `claude_3ch_fast.rmt` and `claude_3ch_slow.rmt` (channels 1-3 only, see below), `claude_3ch_mono_speed_4.rmt` (instrument speed 4: the player called 4 times per frame at evenly spaced raster lines; an echo of the lead on channel 4, heard on SID voice 3 when channel 3 is quieter). `D64=build/other.d64` writes the disk under another name.
 The song in use is kept in `build/song.cfg`: changing `SONG` rebuilds.
 
 On the disk the program is `RMT PLAYER`: `LOAD"*",8,1` and `RUN`, or

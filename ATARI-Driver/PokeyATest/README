@@ -21,6 +21,8 @@ make SONG=music/xxx.rmt               any mono RMT4 module (instr. speed N:
                                       N player calls per VBI, back to back)
                                       (music/claude_3ch.rmt, claude_3ch_fast.rmt,
                                       claude_3ch_slow.rmt: channels 1-3 only,
+                                      claude_3ch_mono_speed_4.rmt: instrument
+                                      speed 4, echo of the lead on channel 4,
                                       see ../RmtSkeleton/tools/song3ch.py)
 make SONG=music/gemx.sap              a SAP or XEX exported by RITMO / RMT (mono):
                                       its LZSS streams, played by src/lzsplayr.s

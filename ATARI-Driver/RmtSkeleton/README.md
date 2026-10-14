@@ -33,7 +33,8 @@ RmtSkeleton/
 │   ├── rmt2ca65.py       converts .rmt files to relocatable ca65 source
 │   ├── sap2ca65.py       converts the LZSS streams of a .sap / .xex to ca65 source
 │   ├── mod2rmt4.py       converts a ProTracker MOD to RMT4 (MOD_TO_RMT_WORKFLOW.md)
-│   ├── song3ch.py        writes music/claude_3ch*.rmt (original songs, channels 1-3 only)
+│   ├── song3ch.py        writes music/claude_3ch*.rmt (original songs, channels 1-3 only;
+│   │                     the *_speed_4 ones at instrument speed 4, mono and stereo)
 │   └── rmtplay/          RMT player for the PC (C, SDL2) running src/rmtplayr.s
 │                         and src/lzsplayr.s (Atari / POKEY, or -c64: rmt_cbm64 on a SID)
 ├── music/
@@ -41,7 +42,9 @@ RmtSkeleton/
 │   ├── gemx.sap          the same song exported by RITMO (SAP, driver Patch16)
 │   ├── claude_3ch.rmt    3 channel song (channel 4 silent): same on POKEY and C64 SID
 │   ├── claude_3ch_fast.rmt  faster 3 channel song (188 BPM)
-│   └── claude_3ch_slow.rmt  slower 3 channel ballad (94 BPM)
+│   ├── claude_3ch_slow.rmt  slower 3 channel ballad (94 BPM)
+│   ├── claude_3ch_mono_speed_4.rmt    claude_3ch at instrument speed 4, echo of the lead on channel 4
+│   └── claude_3ch_stereo_speed_4.rmt  the same in stereo (RMT8): the echo on the right POKEY
 └── build/                generated files (ignored by git)
     ├── rmtskeleton.com   the final executable
     ├── rmtskeleton.map   linker map
@@ -266,6 +269,8 @@ To convert a MOD file see `MOD_TO_RMT_WORKFLOW.md`.
 python3 tools/song3ch.py music/claude_3ch.rmt                               # A minor, speed 6 (125 BPM), ~61 s
 python3 tools/song3ch.py --song claude_3ch_fast music/claude_3ch_fast.rmt   # E minor, speed 4 (188 BPM), ~41 s
 python3 tools/song3ch.py --song claude_3ch_slow music/claude_3ch_slow.rmt   # D minor, speed 8 (94 BPM), ~82 s
+python3 tools/song3ch.py --song claude_3ch_mono_speed_4 music/claude_3ch_mono_speed_4.rmt       # instrument speed 4, RMT4
+python3 tools/song3ch.py --song claude_3ch_stereo_speed_4 music/claude_3ch_stereo_speed_4.rmt   # instrument speed 4, RMT8
 ```
 
 All have 8 song lines and loop to line 2. Channel 1 lead (pure tone,
@@ -282,6 +287,21 @@ files of the RMT editor, they carry a song text (name, author) and the
 instrument names in a second block; name and author are longer than 40
 characters, so they scroll in the players that show them. How they
 were made (the prompts, the choices, the checks): `CLAUDE_3CH_SONG.md`.
+
+`claude_3ch_mono_speed_4.rmt` and `claude_3ch_stereo_speed_4.rmt` are
+`claude_3ch` at **instrument speed 4**, made in the manner of the reference
+songs of RITMO 2.6 (`rmt/songs/rmt128/others/mono_reference_song.rmt` and
+`stereo_reference_song.rmt`): instruments with 4 envelope steps per frame,
+AUDF table vibrato, chord stabs that decay by volume slide, and an echo of the
+lead 3 rows later. The stereo song (RMT8) has the right POKEY repeat the left
+one (channels 5-7 = 1-3) with the echo on channel 8. The mono song has the
+echo on channel 4: `mono_reference_song.rmt` puts it in the melody channel
+where the melody rests, but the lead of `claude_3ch` is legato and no echo
+note would fit (`--echo-in-rests` shows it: 0 of 131). So the mono song uses
+4 channels; on the C64 SID voice 3 plays the louder of channels 3 and 4.
+The stereo one plays in RITMO (and its XEX with the RMT player, two POKEYs),
+not in the mono players of this tree. Both checked in RITMO 2.6-rc9 (open, WAV,
+SAP, SAP-R, XEX with the RMT player): see `CLAUDE_3CH_SONG.md`.
 
 ## API Overview (C Interface)
 

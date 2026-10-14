@@ -1,4 +1,4 @@
-# claude_3ch.rmt, claude_3ch_fast.rmt, claude_3ch_slow.rmt – how the 3 channel songs were made
+# claude_3ch.rmt, claude_3ch_fast.rmt, claude_3ch_slow.rmt, claude_3ch_*_speed_4.rmt – how the songs were made
 
 `music/claude_3ch.rmt`, `music/claude_3ch_fast.rmt` and `music/claude_3ch_slow.rmt` were composed and
 written by Claude (Claude Code, model Opus 5.5) from requests in a chat
@@ -103,6 +103,66 @@ Same generator, instruments and channel layout; what changes is in its
   and 4)
 - pitch error: at most 23 cents (bass), 27 cents (lead and stabs)
 
+## Instrument speed 4: claude_3ch_mono_speed_4, claude_3ch_stereo_speed_4
+
+The request (verbatim):
+
+> partendo da claude_3ch.rmt crea sulla falsariga di mono.rmt con speed fino a
+> 4 un demo claude_3ch_mono_speed_4.rmt ed anche stereo.
+
+("starting from claude_3ch.rmt, in the manner of mono.rmt, with speed up to
+4, create a demo claude_3ch_mono_speed_4.rmt and a stereo one too"). The
+model is the pair of reference songs of RITMO 2.6,
+`rmt/songs/rmt128/others/mono_reference_song.rmt` and
+`stereo_reference_song.rmt`: instrument speed 4, the stereo song with the
+right POKEY repeating the left one but for an echo of the melody, the mono
+song the same on one POKEY.
+
+- same notes, chords, tempo (speed 6) and song lines as `claude_3ch`;
+  header instrument speed 4: the player is called 4 times per frame, the song
+  advances every 4th call, the instruments at every call
+- instruments drawn again for 4 calls per frame (`INSTR4` in
+  `tools/song3ch.py`): the envelopes of the speed 1 set with 4 steps per frame
+  (volume and kick pitch interpolated); the lead vibrato is an AUDF table
+  (+1 +1 0 0 -1 -1 0 0, table speed 3: one step per frame) after 10 frames of
+  0, as the vibrato tables of the reference songs; chord stabs: a constant
+  envelope and a volume slide (`$33`, one step every 5 calls, about 13
+  frames to silence), arpeggio one note per frame; a new `lead echo`
+  instrument (the lead envelope, softer, fading by volume slide `$20`)
+- what changes is kept at one step per frame or slower, so the song sounds
+  the same whether the 4 calls are back to back (Atari VBI, `src/rmtvbi.s`),
+  spread over the frame (RITMO, the SAP of RITMO) or at 4 raster lines (C64,
+  `../rmt_cbm64/src/sidrmt.s`)
+- echo: the lead notes 3 rows (18 frames) later at volume 8; stereo (RMT8):
+  channels 5-7 repeat 1-3, the echo is on channel 8 (the right POKEY,
+  `$D210`), channel 4 silent; mono (RMT4): the echo is on channel 4. The
+  reference mono song puts the echo in the melody channel where the melody
+  rests; here not one echo note would fit, the `claude_3ch` lead being
+  legato (`--echo-in-rests`: 0 of 131), so the mono song uses channel 4
+
+Checked:
+
+- RITMO 2.6-rc9 (the x86_64 AppImage of the GitHub release, script mode,
+  `QT_QPA_PLATFORM=offscreen`): both open and export WAV, SAP, SAP-R and XEX
+  with the RMT player, 61.4 s, as `claude_3ch`
+- SAP-R of the stereo song: in all 12288 records the right channels 1-3
+  equal the left ones, left channel 4 is silent, the AUDF of channel 8
+  matches channel 1 best 72 records (18 frames, FASTPLAY 78) later; the mono
+  SAP-R has the same echo on channel 4
+- pitch content (chroma) against `claude_3ch`: 0.95 (RITMO WAV), 0.95
+  (`tools/rmtplay`); RITMO against `tools/rmtplay` 0.82, as for `claude_3ch`
+  itself (0.83): the difference is between the two renderers, not the song
+- `tools/rmtplay` (Atari and `-c64`) plays the mono `.rmt` and the SAP RITMO
+  exported from it; the stereo SAP is refused (the players are mono)
+- the mono song builds in RmtSkeleton, PokeyATest and rmt_cbm64
+- `claude_3ch`, `claude_3ch_fast`, `claude_3ch_slow`: the module block
+  regenerates byte for byte
+- fixed then in `tools/song3ch.py`: the note name table (now `NOTES`) had the
+  name `NAMES` of the instrument name list and replaced it, so the text block
+  of the three songs listed C, C#, D ... instead of the instrument names; the
+  three files were written again (module block unchanged, text block with
+  lead, bass (table 1) ...) and copied to PokeyATest and rmt_cbm64
+
 ## Song text (metadata)
 
 Like the files saved by the RMT editor, both modules have a second block
@@ -160,6 +220,10 @@ new song. Then:
 python3 tools/song3ch.py music/claude_3ch.rmt
 python3 tools/song3ch.py --song claude_3ch_fast music/claude_3ch_fast.rmt
 python3 tools/song3ch.py --song claude_3ch_slow music/claude_3ch_slow.rmt
-cp music/claude_3ch*.rmt ../PokeyATest/music/
-cp music/claude_3ch*.rmt ../rmt_cbm64/music/
+python3 tools/song3ch.py --song claude_3ch_mono_speed_4 music/claude_3ch_mono_speed_4.rmt
+python3 tools/song3ch.py --song claude_3ch_stereo_speed_4 music/claude_3ch_stereo_speed_4.rmt
+cp music/claude_3ch.rmt music/claude_3ch_fast.rmt music/claude_3ch_slow.rmt \
+   music/claude_3ch_mono_speed_4.rmt ../PokeyATest/music/
+cp music/claude_3ch.rmt music/claude_3ch_fast.rmt music/claude_3ch_slow.rmt \
+   music/claude_3ch_mono_speed_4.rmt ../rmt_cbm64/music/
 ```
