@@ -15,9 +15,11 @@
 ; shadows when the program changes them, and the attract mode of the OS. The display registers and the 3
 ; palette entries are saved and put back by vmirror_off.
 ;
-; vmirror_step (from the VBI, after the player): one row of the screen per
-; call (rmtvbi.s calls it up to twice per frame, while the frame has time
-; left), a full pass every 12 frames or more. Each cell is compared with
+; vmirror_step (from the VBI, after the player, once per frame when the
+; frame has time left): the next row of a pass over the screen (a full pass
+; every 24 frames), plus one "hot" row: the rows that had changed cells the
+; last time they were compared (VU meters, counters) are taken in turn, so
+; they come again every few frames instead of every 24. Each cell is compared with
 ; a shadow copy of what the VERA shows and only the changed ones are
 ; written: one byte (the tile; the colour byte never changes, the address
 ; steps by 2, downwards), a new address only when the changed cells are not
@@ -53,7 +55,9 @@ VERA_INC2       = $20           ; ADDR_H: steps of 2
         .segment "BSS"
 saved:          .res 4 + 7      ; DC_VIDEO HSCALE VSCALE BORDER, L1 x 7
 shadow:         .res 24 * 40    ; screen codes shown on the VERA
-mrow:           .res 1          ; next screen row to compare
+mrow:           .res 1          ; next screen row of the pass
+hrow:           .res 1          ; last hot row done
+hot:            .res 24         ; <> 0: the row changed when last compared
 ctmp:           .res 1
 vrl:            .res 1          ; VERA map address of the row: low (0 / $80)
 vrm:            .res 1          ;                              middle
@@ -250,6 +254,11 @@ vmirror_init:
         dex
         bne @sh
         sta mrow
+        sta hrow
+        ldx #23
+@ht:    sta hot,x
+        dex
+        bpl @ht
 
         ; layer 1: 1bpp text, map 64x32 at VMAP, 8x8 tiles at VFONT, no scroll
         lda #$10
@@ -360,8 +369,8 @@ pc_r:   lda pal_r_pal,x
         rts
 
 ; ---------------------------------------------------------------------------
-; vmirror_step - one screen row to the VERA (changed cells only), and the
-; colours when the OS shadows changed
+; vmirror_step - the next row of the pass and one hot row to the VERA
+; (changed cells only), and the colours when the OS shadows changed
 vmirror_step:
         lda VERA_CTRL
         sta s_ctrl
@@ -374,7 +383,44 @@ vmirror_step:
         lda VERA_ADDR_H
         sta s_h
         jsr colours
-        ldx mrow
+        ldx mrow                ; the pass
+        jsr do_row
+        ldy #24                 ; the next hot row after hrow, not mrow
+        ldx hrow
+@find:  inx
+        cpx #24
+        bcc @in
+        ldx #0
+@in:    lda hot,x
+        beq @not
+        cpx mrow
+        bne @hot
+@not:   dey
+        bne @find
+        beq @pass               ; no hot row
+@hot:   stx hrow
+        jsr do_row
+@pass:  inc mrow
+        lda mrow
+        cmp #24
+        bcc @more
+        lda #0
+        sta mrow
+@more:  lda s_l
+        sta VERA_ADDR_L
+        lda s_m
+        sta VERA_ADDR_M
+        lda s_h
+        sta VERA_ADDR_H
+        lda s_ctrl
+        sta VERA_CTRL
+        rts
+
+; do_row - screen row X to the VERA, changed cells only; hot,X = changed
+do_row:
+        lda #0
+        sta hot,x
+        stx ctmp
         lda rowlo,x             ; screen row and its shadow row
         clc
         adc SAVMSC
@@ -423,21 +469,14 @@ vmirror_step:
         dey
         sty next
         bpl @cell
-        bmi @done
+        ldx ctmp                ; something changed: a hot row
+        inc hot,x
+        rts
 @same:  dey
         bpl @cell
-@done:  inc mrow
-        lda mrow
-        cmp #24
-        bcc @more
-        lda #0
-        sta mrow
-@more:  lda s_l
-        sta VERA_ADDR_L
-        lda s_m
-        sta VERA_ADDR_M
-        lda s_h
-        sta VERA_ADDR_H
-        lda s_ctrl
-        sta VERA_CTRL
-        rts
+        lda next                ; still $FF: nothing written (a write to
+        cmp #$FF                ; cell 0 ends the loop above, not here)
+        beq @cold
+        ldx ctmp
+        inc hot,x
+@cold:  rts

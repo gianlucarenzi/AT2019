@@ -32,13 +32,15 @@ extern volatile unsigned char rmt_audc[RMT_TRACKS]; /* AUDC values computed by t
 /* Where the channels are played: rmt_init chooses it (rmtvbi.s). With 8
  * tracks channels 5-8 (the right POKEY of the song) go to a second POKEY at
  * $D210 if there is one, else to the VERA PSG if there is a VeraX16 card,
- * else nowhere. With the VERA it also shows a copy of the text screen */
+ * else nowhere. */
 #define RMT_OUT_POKEY   0       /* 4 tracks: one POKEY */
-#define RMT_OUT_VERA    1       /* POKEY plays channels 1-4, VERA PSG 5-8, and
-                                   the VERA mirrors the screen */
+#define RMT_OUT_VERA    1       /* POKEY plays channels 1-4, VERA PSG 5-8 */
 #define RMT_OUT_POKEY2  2       /* two POKEYs */
 #define RMT_OUT_LEFT    3       /* one POKEY: only channels 1-4 are heard */
-#define RMT_OUT_POKEY2_VERA 4   /* two POKEYs, the VERA mirrors the screen */
+#define RMT_OUT_POKEY2_VERA 4   /* two POKEYs, and a VERA */
 extern unsigned char rmt_output;
+/* With a VERA (RMT_OUT_VERA, RMT_OUT_POKEY2_VERA) and instrument speed 1-3
+ * the VERA shows a copy of the text screen (vmirror.s): rmt_mirror <> 0 */
+extern unsigned char rmt_mirror;
 
 #endif

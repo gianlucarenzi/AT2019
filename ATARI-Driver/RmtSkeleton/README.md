@@ -203,19 +203,26 @@ everything with `RMT_TRACKS=8` (`-D RMT_TRACKS=8` for ca65 and cc65):
      the VERA only shows the screen (below).
   2. **VERA only** (`RMT_OUT_VERA`): POKEY plays channels 1-4,
      `src/psgrmt.s` turns channels 5-8 into PSG voices 4-7 after every
-     player tick, in the same VBI; the VERA shows the screen too.
+     player tick, in the same VBI; the VERA shows the screen too (below).
   3. **second POKEY only** (`RMT_OUT_POKEY2`): the player writes
      `$D210`-`$D218` too.
   4. **neither** (`RMT_OUT_LEFT`): channels 1-4 only, the song plays as an
      RMT4 one would. `$D210` is never written: on a stock Atari it would be
      the left POKEY again.
-- Screen mirror (`src/vmirror.s`, cases 1 and 2): the VERA shows a copy of
+- Screen mirror (`src/vmirror.s`, cases 1 and 2, `rmt_mirror`), only for
+  songs at instrument speed 1-3: at speed 4 the 8 track player alone takes
+  about half of the frame, and the copy, which has to find the changed
+  cells by comparing, lagged visibly behind the Atari screen; the VERA
+  display is then left as it is. The VERA shows a copy of
   the OS text screen (40x24 at `SAVMSC`, what conio writes): the OS font
   (`CHBAS`) with inverse copies, colours from `COLOR1` / `COLOR2` / `COLOR4`
   (and the attract mode) turned into VERA colours with the PAL / NTSC
-  palettes of atari800. After the player, up to 2 rows per frame, each only
-  while the frame has time left (`MIRROR_PAL` 220 / `MIRROR_NTSC` 180
-  scanlines used so far); only the cells that changed since the last pass
+  palettes of atari800. After the player, once per frame while the frame
+  has time left (`MIRROR_PAL` 220 / `MIRROR_NTSC` 180 scanlines used so
+  far): the next row of a pass over the screen (a full pass every 24
+  frames) and one "hot" row, taken in turn among the rows that had changed
+  the last time they were compared (VU meters, counters: they come again
+  every few frames instead of every 24); only the cells that changed since the last pass
   are written. The VERA display and the 3 palette entries it uses are put
   back by `rmt_vbi_off`.
 - `main.c` shows the choice and the volumes of the 8 channels.

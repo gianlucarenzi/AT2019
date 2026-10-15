@@ -53,7 +53,10 @@
 ;  2. VERA only: on the VERA PSG, voices 4-7 (psgrmt.s, after the player in
 ;     the same VBI); POKEY plays channels 1-4
 ; With the VERA (1 and 2) the VERA also shows a copy of the Atari text
-; screen (vmirror.s, up to MIRROR_ROWS rows per frame after the player)
+; screen (vmirror.s, after the player), but only for songs at instrument
+; speed 1-3 (rmt_mirror): at speed 4 the 8 track player alone takes about
+; half of the frame and the copy, which has to find the changed cells by
+; comparing, would lag behind the Atari screen
 ;  3. second POKEY only: on the second POKEY, the player writes it
 ;  4. none: only channels 1-4 are heard, as an RMT4 song
 ; The second POKEY: SKCTL = 0 stops the poly counters of a POKEY, so RANDOM
@@ -68,7 +71,7 @@
         .export _rmt_init, _rmt_vbi_on, _rmt_vbi_off
         .export _rmt_io_begin, _rmt_io_end
         .export _rmt_frames, _rmt_lines, _rmt_maxlines, _rmt_deferred, _rmt_dropped
-        .export _rmt_output, _rmt_avglines
+        .export _rmt_output, _rmt_avglines, _rmt_mirror
 
         .export rmt_irqtick
         .import rmt_init, rmt_play, rmt_silence
@@ -91,8 +94,9 @@ OUT_POKEY       = 0             ; RMT4 song: one POKEY
 OUT_VERA        = 1             ; RMT8: POKEY channels 1-4, VERA PSG 5-8
 OUT_POKEY2      = 2             ; RMT8: two POKEYs
 OUT_LEFT        = 3             ; RMT8: no output for channels 5-8
-OUT_POKEY2_VERA = 4             ; RMT8: two POKEYs, the VERA mirrors the screen
-MIRROR_ROWS     = 2             ; screen rows copied per frame, at most
+OUT_POKEY2_VERA = 4             ; RMT8: two POKEYs and a VERA
+MIRROR_SPEED    = 4             ; no screen copy from this instrument speed on
+MIRROR_ROWS     = 1             ; screen rows copied per frame, at most
 MIRROR_PAL      = 220           ; the screen copy (about 14 lines) runs only
 MIRROR_NTSC     = 180           ; when the player of this frame took less
                                 ; (scanlines): the frame never fills up
@@ -133,7 +137,8 @@ vera:           .res 1          ; find_output: <> 0 = VERA found
 mrows:          .res 1          ; screen rows left to copy in this frame
 lsum:           .res 2          ; _rmt_avglines * 64
 ltmp:           .res 2
-_rmt_avglines:  .res 1          ; player time, average over about 64 frames
+_rmt_avglines:  .res 1
+_rmt_mirror:    .res 1          ; <> 0: the VERA shows a copy of the screen          ; player time, average over about 64 frames
 
         .segment "CODE"
 
@@ -166,6 +171,18 @@ _rmt_init:
         bcc @hi
         lda #4
 @hi:    sta ispeed
+.if STEREO
+        lda _rmt_mirror         ; the screen copy on the VERA, if there is
+        bne @nm                 ; one and the song is not too heavy
+        lda vera
+        beq @nm
+        lda ispeed
+        cmp #MIRROR_SPEED
+        bcs @nm
+        jsr vmirror_init
+        inc _rmt_mirror
+@nm:
+.endif
         pla
         ldx #0
         rts
@@ -218,12 +235,14 @@ _rmt_vbi_off:
         jsr rmt_silence
 .if STEREO
         lda _rmt_output
-        cmp #OUT_POKEY2_VERA
-        beq @mir
         cmp #OUT_VERA
-        bne @done
+        bne @nopsg
         jsr psg_silence
-@mir:   jsr vmirror_off         ; the VERA display as before
+@nopsg: lda _rmt_mirror
+        beq @done
+        jsr vmirror_off         ; the VERA display as before
+        lda #0
+        sta _rmt_mirror
 .endif
 @done:  rts
 
@@ -276,11 +295,9 @@ find_output:
         lda #1                  ; (PAL / NTSC, voices silent)
         sta _psg_hybrid         ; voices of channels 1-4 silent: POKEY
         sta _psg_enable
-        jsr vmirror_init        ; and the screen on the VERA
         lda #OUT_VERA
         bne @set
-@both:  jsr vmirror_init        ; two POKEYs: the VERA shows the screen
-        lda #OUT_POKEY2_VERA
+@both:  lda #OUT_POKEY2_VERA    ; two POKEYs: the VERA has no sound to play
 @set:   sta _rmt_output
         rts
 .endif
@@ -428,10 +445,8 @@ play_ticks:
         cmp #OUT_VERA
         bne @nopsg
         jsr psg_update
-        jmp @mirror
-@nopsg: cmp #OUT_POKEY2_VERA    ; the screen on the VERA: up to
-        bne @nomir              ; MIRROR_ROWS rows, each one only while
-@mirror:
+@nopsg: lda _rmt_mirror         ; the screen on the VERA: up to
+        beq @nomir              ; MIRROR_ROWS calls, each one only while
         lda #MIRROR_ROWS        ; the frame has time left
         sta mrows
 @mrow:  jsr elapsed

@@ -85,10 +85,16 @@ lascia in `rmt_output` (riga 4 dello schermo):
 4. **nessuno dei due**: solo i canali 1-4, come un brano RMT4. `$D210` non viene mai
    scritto (su un Atari normale sarebbe di nuovo il POKEY sinistro).
 
-La copia dello schermo (`src/vmirror.s`) mostra sulla VERA lo schermo testo dell'OS
+Solo per i brani a instrument speed 1-3 (`rmt_mirror`; a speed 4 il player a 8 tracce
+occupa da solo circa metà del frame e la copia, che deve trovare le celle cambiate
+confrontando, restava visibilmente indietro): la copia dello schermo (`src/vmirror.s`)
+mostra sulla VERA lo schermo testo dell'OS
 (40x24 a `SAVMSC`) con il font dell'OS e i colori di `COLOR1`/`COLOR2`/`COLOR4` (anche in
-modalità attract), convertiti con le palette PAL / NTSC di atari800. Dopo il player, fino
-a 2 righe per frame, ognuna solo se il frame ha ancora tempo (220 righe PAL, 180 NTSC);
+modalità attract), convertiti con le palette PAL / NTSC di atari800. Dopo il player, una volta per
+frame se il frame ha ancora tempo (220 righe PAL, 180 NTSC): la riga successiva di un
+giro dello schermo (tutto lo schermo ogni 24 frame) e una riga "calda", a turno fra quelle
+che erano cambiate l'ultima volta (VU, contatori: tornano ogni pochi frame invece che ogni
+24);
 scrive solo le celle cambiate. Tempi del VBI con ogni uscita: tabella nel `README`.
 
 Il SIO usa solo i canali 3+4 del POKEY sinistro: VERA e secondo POKEY continuano a

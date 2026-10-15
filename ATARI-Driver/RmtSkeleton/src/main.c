@@ -23,10 +23,10 @@ int main(void)
 {
 	static const char * const output[] = {
 		"POKEY",
-		"POKEY + VERA PSG, VERA screen",
-		"POKEY 1-4, 2nd POKEY 5-8",
-		"POKEY 1-4, no 5-8",
-		"2 POKEYs, VERA screen"
+		"POKEY + VERA PSG",
+		"POKEY + 2nd POKEY",
+		"POKEY 1-4 only",
+		"2 POKEYs"
 	};
 	unsigned char speed, i, vol;
 
@@ -37,7 +37,8 @@ int main(void)
 	// Initialize the player with the song module
 	speed = rmt_init(rmt_song);
 	cprintf("Song loaded, instrument speed: %u\r\n", speed);
-	cprintf("%u tracks: %s\r\n", RMT_TRACKS, output[rmt_output]);
+	cprintf("%u tracks: %s%s\r\n", RMT_TRACKS, output[rmt_output],
+	        rmt_mirror ? ", VERA mirror" : "");
 
 	// Attach the player to the immediate VBI
 	rmt_vbi_on();
