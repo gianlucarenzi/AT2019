@@ -13,7 +13,8 @@
 ;*    stereo mode of the original (STEREOMODE 1: L1 L2 L3 L4 R1 R2 R3 R4,
 ;*    filters and bass16 of the right POKEY included) for RMT8 modules. The
 ;*    right POKEY ($D210) is written only when _rmt_pokey2 is set: on a stock
-;*    Atari $D210 is an image of $D200. Channels 5-8 are always computed in
+;*    Atari $D210 is an image of $D200. With RMT_C64 it is pokey_shadow2,
+;*    always written: the C64 code plays it on a second SID when there is one. Channels 5-8 are always computed in
 ;*    trackn_audf/audc+4 and v_audctl2, so another output (the VERA PSG,
 ;*    psgrmt.s) can play them; rmtvbi.s chooses the output.
 ;*  - SetPokey honours rmt_ioactive: while a SIO transfer is running POKEY
@@ -58,14 +59,14 @@ TRACKS          = 4
 .if TRACKS <> 4 && TRACKS <> 8
 .error "RMT_TRACKS must be 4 (RMT4, mono) or 8 (RMT8, stereo)"
 .endif
-.if TRACKS > 4 && .defined(RMT_C64)
-.error "RMT_C64: 8 tracks are not supported"
-.endif
 INSTRPAR        = 12
 
 .ifdef RMT_C64
         .import pokey_shadow
 POKEY           = pokey_shadow
+.if TRACKS > 4
+        .import pokey_shadow2
+.endif
 .else
 POKEY           = $D200
 .endif
@@ -79,7 +80,13 @@ AUDF4           = POKEY+$06
 AUDC4           = POKEY+$07
 AUDCTL          = POKEY+$08
 SKCTL           = POKEY+$0F
+.ifdef RMT_C64
+.if TRACKS > 4
+POKEY2          = pokey_shadow2 ;* right POKEY: RAM, played by a second SID
+.endif
+.else
 POKEY2          = $D210         ;* right POKEY (8 tracks, _rmt_pokey2 <> 0)
+.endif
 
 FEAT_EFFECTS    = FEAT_EFFECTVIBRATO || FEAT_EFFECTFSHIFT
 
@@ -264,8 +271,13 @@ vibtabnext:
 ;* != 0 while SIO is active: channels 3/4 and AUDCTL belong to the serial port
 rmt_ioactive:   .byte 0
 .if TRACKS > 4
-;* != 0: a second POKEY at $D210 plays channels 5-8 (rmtvbi.s detects it)
+;* != 0: a second POKEY at $D210 plays channels 5-8 (rmtvbi.s detects it);
+;* on the C64 the right POKEY is RAM (pokey_shadow2), always written
+.ifdef RMT_C64
+_rmt_pokey2:    .byte 1
+.else
 _rmt_pokey2:    .byte 0
+.endif
 ;* AUDCTL of the right POKEY
 v_audctl2:      .byte 0
 .endif

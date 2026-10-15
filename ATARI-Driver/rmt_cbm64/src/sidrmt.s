@@ -31,10 +31,20 @@
 ;
 ; Not reproduced: volume only mode (AUDC bit 4, sample playback) and the
 ; high pass filters (AUDCTL bits 2, 1).
+;
+; RMT8 (stereo, -D RMT_TRACKS=8): the right POKEY (channels 5-8, the player
+; writes it to pokey_shadow2) plays on a second SID at SID2 ($D420 unless
+; -D SID2=...; any address VICE offers: $D420-$D7E0, $DE00-$DFE0), with the
+; same rules: 6 voices, voices 4-6 from channels 5-8. Without a second SID
+; (on a C64 $D420 is an image of $D400, detect_sid2) the right POKEY is not
+; heard, as on an Atari without a second POKEY.
 
         .export _sid_init, _sid_play_on, _sid_play_off
         .export _sid_frames, _sid_status, _sid_volume, _sid_ntsc
-        .export pokey_shadow
+        .export pokey_shadow, pokey_shadow2
+        .export _sid_voices, _sid_sid2
+        .export _sid_ispeed := ispeed
+        .export _sid_pokey2 := pokey_shadow2
         ; state shown by src/rmtplay.c
         .export _sid_mute, _sid_src
         .export _sid_pokey := pokey_shadow
@@ -52,6 +62,15 @@ rmt_silence = RASTERMUSICTRACKER+9
 
 SID         = $D400
 SID_VOLUME  = $D418
+.ifdef RMT_TRACKS
+TRACKS      = RMT_TRACKS
+.else
+TRACKS      = 4
+.endif
+.ifndef SID2
+SID2        = $D420                     ; second SID, for the right POKEY of RMT8
+.endif
+STEREO      = TRACKS > 4 && SID2 <> 0
 VIC_CTRL1   = $D011
 VIC_RASTER  = $D012
 VIC_IRQ     = $D019
@@ -66,12 +85,14 @@ GATE        = $01
         .segment "BSS"
 
 pokey_shadow:   .res 16         ; AUDF1 AUDC1 ... AUDF4 AUDC4 AUDCTL, SKCTL at +15
+pokey_shadow2:  .res 16         ; the right POKEY of an RMT8 song (channels 5-8)
+_sid_voices:    .res 1          ; SID voices played: 3, or 6 with a second SID
 _sid_frames:    .res 2          ; frames played
 _sid_status:    .res 1          ; 1 = playing
-_sid_volume:    .res 3          ; volume of the 3 SID voices (0..15)
+_sid_volume:    .res 6          ; volume of the SID voices (0..15), 4-6 on SID2
 _sid_ntsc:      .res 1          ; 1 = NTSC machine (60 Hz), 0 = PAL
-_sid_mute:      .res 1          ; bit 0..2 set: SID voice 1..3 kept silent
-_sid_src:       .res 3          ; POKEY channel (0..3) of each SID voice
+_sid_mute:      .res 1          ; bit 0..5 set: SID voice 1..6 kept silent
+_sid_src:       .res 6          ; POKEY channel (0..7) of each SID voice
 
 old_irq:        .res 2
 ispeed:         .res 1          ; player calls per frame (instrument speed, 1..4)
@@ -82,7 +103,10 @@ lines:          .res 2          ; raster lines per frame
 ktab_ofs:       .res 1          ; 0 = PAL constants, 21 = NTSC
 tab_ntsc:       .res 1          ; 1 = sidtab already scaled for NTSC
 
-; per POKEY channel, computed every frame
+pw:             .res 9          ; the POKEY being translated: copy of a shadow
+vbase:          .res 1          ; its first SID voice: 0, or 3 (right POKEY)
+
+; per POKEY channel, computed every frame (one POKEY at a time)
 c_vol:          .res 4
 c_wave:         .res 4          ; WAVE_PULSE / WAVE_NOISE
 c_pw:           .res 4          ; pulse width high nibble ($08 = 50%, $04 = 25%)
@@ -94,15 +118,15 @@ c_n0:           .res 4          ; divider in machine cycles (24 bit)
 c_n1:           .res 4
 c_n2:           .res 4
 
-; per SID voice
-v_level:        .res 3          ; level the SID envelope is at (0..15)
-v_wave:         .res 3
-v_key0:         .res 3          ; divider and constant of the last frequency
-v_key1:         .res 3
-v_key2:         .res 3
-v_keyk:         .res 3
-v_flo:          .res 3
-v_fhi:          .res 3
+; per SID voice (4-6: the second SID)
+v_level:        .res 6          ; level the SID envelope is at (0..15)
+v_wave:         .res 6
+v_key0:         .res 6          ; divider and constant of the last frequency
+v_key1:         .res 6
+v_key2:         .res 6
+v_keyk:         .res 6
+v_flo:          .res 6
+v_fhi:          .res 6
 
 ; scratch
 ch:             .res 1
@@ -135,10 +159,17 @@ ktab:
 distc_k:
         .byte $FF, 3, 3, 2, 3, 1, 2, 3, 3, 2, 1, 3, 2, 3, 3
 
-sid_ofs:
-        .byte 0, 7, 14
+sid_ofs:                                ; register offset of each voice in its SID
+        .byte 0, 7, 14, 0, 7, 14
 voice_bit:
-        .byte $01, $02, $04
+        .byte $01, $02, $04, $08, $10, $20
+; the address of the second SID, 0 when the build has none (for a display)
+_sid_sid2:
+.if STEREO
+        .word SID2
+.else
+        .word 0
+.endif
 
         .segment "CODE"
 
@@ -177,6 +208,11 @@ _sid_init:
         pha
         jsr detect_video
         jsr ntsc_table
+        lda #3
+        sta _sid_voices
+.if STEREO
+        jsr detect_sid2
+.endif
         jsr sid_clear
         pla
         tax
@@ -335,7 +371,20 @@ sid_clear:
         bpl @l
         lda #$0F
         sta SID_VOLUME
-        ldx #2
+.if STEREO
+        ldx _sid_voices
+        cpx #6
+        bne @one
+        lda #0
+        ldx #$17
+@l2:    sta SID2,x
+        dex
+        bpl @l2
+        lda #$0F
+        sta SID2+$18
+@one:
+.endif
+        ldx #5
 @v:     lda #0
         sta v_level,x
         sta v_wave,x
@@ -345,6 +394,33 @@ sid_clear:
         dex
         bpl @v
         rts
+
+.if STEREO
+; Is there a second SID at SID2? On a C64 with one SID the addresses
+; $D420-$D7FF are images of $D400: voice 3 of the SID is held at 0 by its
+; TEST bit, voice 3 of SID2 is started (sawtooth, high frequency); when SID2
+; is an image of the SID, its voice 3 runs and OSC3 ($D41B) moves. A free
+; I/O area ($DE00, $DF00) holding no chip cannot be told from a second SID.
+detect_sid2:
+        lda #$08                        ; TEST: the oscillator stays at 0
+        sta SID+$12
+        lda #$FF
+        sta SID2+$0E                    ; voice 3 of SID2: frequency $FFFF
+        sta SID2+$0F
+        lda #$20                        ; sawtooth, TEST off
+        sta SID2+$12
+        ldx #0
+@l:     lda SID+$1B                     ; OSC3 of the SID
+        bne @image                      ; it runs: SID2 is the SID itself
+        dex
+        bne @l
+        lda #6
+        sta _sid_voices
+@image: lda #$08
+        sta SID2+$12
+        sta SID+$12
+        rts
+.endif
 
 ; ---------------------------------------------------------------------------
 ; void sid_play_on(void): raster IRQ at line 0 (and at the lines of the other
@@ -396,6 +472,12 @@ _sid_play_off:
         jsr sid_clear
         lda #0
         sta SID_VOLUME
+.if STEREO
+        ldx _sid_voices
+        cpx #6
+        bne @done
+        sta SID2+$18
+.endif
 @done:  plp
         rts
 
@@ -450,8 +532,35 @@ irq:
         jmp (old_irq)                   ; CIA timer: keyboard, clock
 
 ; ---------------------------------------------------------------------------
-; POKEY shadow registers -> SID
+; POKEY shadow registers -> SID: the left POKEY on the SID, the right one (an
+; RMT8 song with a second SID) on SID2, one at a time through pw
 pokey_to_sid:
+        ldx #8
+@c1:    lda pokey_shadow,x
+        sta pw,x
+        dex
+        bpl @c1
+        lda #0
+        sta vbase
+        jsr side
+.if STEREO
+        lda _sid_voices
+        cmp #6
+        bne @x
+        ldx #8
+@c2:    lda pokey_shadow2,x
+        sta pw,x
+        dex
+        bpl @c2
+        lda #3
+        sta vbase
+        jsr side
+@x:
+.endif
+        rts
+
+; the POKEY in pw -> the 3 voices from vbase
+side:
         lda #0
         sta ch
 @c:     jsr channel
@@ -461,25 +570,33 @@ pokey_to_sid:
         bne @c
 
         ; voice 1 <- POKEY 1 (3 when 1+2 are joined), voice 2 <- 2,
-        ; voice 3 <- the louder of 3 and 4 (4 when 1+2 are joined)
-        lda pokey_shadow+8
+        ; voice 3 <- the louder of 3 and 4 (4 when 1+2 are joined); voices
+        ; counted from vbase
+        lda pw+8
         and #$10
         beq @nj
+        ldx vbase
         lda #2
-        ldx #0
         jsr voice_out
+        ldx vbase
+        inx
         lda #1
-        ldx #1
         jsr voice_out
+        ldx vbase
+        inx
+        inx
         lda #3
-        ldx #2
         jmp voice_out
-@nj:    lda #0
-        ldx #0
+@nj:    ldx vbase
+        lda #0
         jsr voice_out
+        ldx vbase
+        inx
         lda #1
-        ldx #1
         jsr voice_out
+        ldx vbase
+        inx
+        inx
         lda c_vol+3
         cmp c_vol+2
         beq @three
@@ -487,7 +604,6 @@ pokey_to_sid:
 @three: lda #2
         .byte $2C                       ; BIT abs: skip the next LDA
 @four:  lda #3
-        ldx #2
         jmp voice_out
 
 ; channel ch: volume, waveform, constant, divider (in machine cycles)
@@ -496,24 +612,24 @@ channel:
         asl a
         tay                             ; Y = 2*ch: AUDF at shadow+Y
         ldx ch
-        lda pokey_shadow+1,y            ; AUDC
+        lda pw+1,y            ; AUDC
         and #$0F
         sta c_vol,x
-        lda pokey_shadow+1,y
+        lda pw+1,y
         and #$10                        ; volume only: not reproduced
         beq @nvo
         lda #0
         sta c_vol,x
 @nvo:
         ; 64 kHz clock, not joined, not 1.79 MHz: Fn from sidtab
-        lda pokey_shadow+8
+        lda pw+8
         and simple_mask,x
         bne @full
         lda #1
         sta c_simple,x
-        lda pokey_shadow,y
+        lda pw,y
         sta c_audf,x
-        lda pokey_shadow+1,y
+        lda pw+1,y
         lsr a
         lsr a
         lsr a
@@ -534,9 +650,9 @@ channel:
         sta dvd+1
         sta dvd+2
         sta tmp                         ; tmp = 1.79 MHz clock
-        lda pokey_shadow,y
+        lda pw,y
         sta dvd
-        lda pokey_shadow+8              ; AUDCTL
+        lda pw+8              ; AUDCTL
         cpx #0
         bne @n1
         and #$10                        ; channel 1: low byte of 1+2?
@@ -544,7 +660,7 @@ channel:
         lda #0
         sta c_vol,x
         rts
-@f1:    lda pokey_shadow+8
+@f1:    lda pw+8
         and #$40
         sta tmp
         jmp @div
@@ -552,11 +668,11 @@ channel:
         bne @n2
         and #$10                        ; channel 2: 16 bit 1+2
         beq @div
-        lda pokey_shadow+0
+        lda pw+0
         sta dvd
-        lda pokey_shadow+2
+        lda pw+2
         sta dvd+1
-        lda pokey_shadow+8
+        lda pw+8
         and #$40
         sta tmp
         jmp @div16
@@ -567,17 +683,17 @@ channel:
         lda #0
         sta c_vol,x
         rts
-@f3:    lda pokey_shadow+8
+@f3:    lda pw+8
         and #$20
         sta tmp
         jmp @div
 @n3:    and #$08                        ; channel 4: 16 bit 3+4
         beq @div
-        lda pokey_shadow+4
+        lda pw+4
         sta dvd
-        lda pokey_shadow+6
+        lda pw+6
         sta dvd+1
-        lda pokey_shadow+8
+        lda pw+8
         and #$20
         sta tmp
 @div16: lda tmp
@@ -602,7 +718,7 @@ channel:
         inc dvd+1
         bne @nc
         inc dvd+2
-@nc:    lda pokey_shadow+8
+@nc:    lda pw+8
         and #$01
         beq @b64
         lda #114
@@ -636,7 +752,7 @@ channel:
         lda ch
         asl a
         tay
-        lda pokey_shadow+1,y
+        lda pw+1,y
         lsr a
         lsr a
         lsr a
@@ -710,12 +826,17 @@ dist_sk:                                ; sidtab kind (tools/mksidtab.py)
 simple_mask:
         .byte $51, $11, $29, $09
 
-; SID voice X from POKEY channel A
-voice_out:
+; SID voice X (0..5) from POKEY channel A (0..3) of the POKEY in pw: the
+; register writes of one SID chip, instantiated for the SID and for SID2
+.macro VOICE_OUT sidbase
         stx voice
         sta src
-        sta _sid_src,x
-        tay                             ; Y = channel
+        ldy vbase
+        beq @left
+        clc
+        adc #4                          ; the right POKEY: channels 5-8
+@left:  sta _sid_src,x
+        ldy src                         ; Y = channel
         lda voice_bit,x
         and _sid_mute
         bne @off                        ; voice muted by the program
@@ -725,7 +846,7 @@ voice_out:
 @off:   lda sid_ofs,x
         tax
         lda #0
-        sta SID+6,x
+        sta sidbase+6,x
         ldx voice
         sta v_level,x
         sta _sid_volume,x
@@ -801,22 +922,22 @@ voice_out:
         tax                             ; X = SID register offset
         ldy voice
         lda v_flo,y
-        sta SID+0,x
+        sta sidbase+0,x
         lda v_fhi,y
-        sta SID+1,x
+        sta sidbase+1,x
         ldy src
         lda #0
-        sta SID+2,x                     ; pulse width low
+        sta sidbase+2,x                 ; pulse width low
         lda c_pw,y
-        sta SID+3,x
+        sta sidbase+3,x
         lda #$00
-        sta SID+5,x                     ; attack 0, decay 0
+        sta sidbase+5,x                 ; attack 0, decay 0
         lda c_vol,y
         asl a
         asl a
         asl a
         asl a
-        sta SID+6,x                     ; sustain = volume, release 0
+        sta sidbase+6,x                 ; sustain = volume, release 0
 
         ; a louder step, a new waveform or a note after silence restarts
         ; the envelope
@@ -844,22 +965,36 @@ voice_out:
         sta _sid_volume,y
         lda v_wave,y
         ora #GATE
-        sta SID+4,x
+        sta sidbase+4,x
         rts
 @restart:
         ldy src
         lda c_wave,y
         ldy voice
         sta v_wave,y
-        sta SID+4,x                     ; gate off
+        sta sidbase+4,x                 ; gate off
         ora #GATE
-        sta SID+4,x                     ; gate on: attack from the current level
+        sta sidbase+4,x                 ; gate on: attack from the current level
         ldy src
         lda c_vol,y
         ldy voice
         sta v_level,y
         sta _sid_volume,y
         rts
+.endmacro
+
+voice_out:
+.if STEREO
+        cpx #3
+        bcc voice_out1
+        jmp voice_out2
+.endif
+voice_out1:
+        VOICE_OUT SID
+.if STEREO
+voice_out2:
+        VOICE_OUT SID2
+.endif
 
 ; dvd (24 bit) / dsr (24 bit) -> dvd quotient (16 bit, dvd+2 = 0), rem
 ; remainder; dvd+2 <> 0 when the quotient does not fit 16 bits (above the SID

@@ -17,6 +17,16 @@ tradotti in registri SID (src/sidrmt.s):
 Il SID ha 3 voci: quando suonano sia il canale 3 sia il 4, il piu' debole
 non si sente. Un formato RMT "generico a 3 canali" non esiste.
 
+Brani stereo (RMT8, o SAP/XEX stereo di RITMO): con un secondo SID il POKEY
+destro (canali 5-8) suona su quello, voci 4-6. Il secondo SID e' a $D420
+(make SID2=D500 per un altro indirizzo, SID2=0 per nessuno); all'avvio il
+programma controlla che ci sia davvero (su un C64 con un solo SID $D420 e'
+un'immagine di $D400): se non c'e', il POKEY destro non si sente.
+In VICE: x64sc -sidextra 1 -sid2address 0xd420 -soundoutput 2 (rmtplay.sh
+lo fa da solo per un brano stereo). A velocita' strumento 4 il player a 8
+tracce non sta in un frame del C64: il brano suona piu' lento e il
+visualizzatore non mostra le barre.
+
 Compilare
 ---------
 Servono cc65, python3, c1541 e x64sc (VICE).
@@ -27,6 +37,8 @@ Servono cc65, python3, c1541 e x64sc (VICE).
                                                   voce persa sul SID
   make SONG=music/claude_3ch_fast.rmt             idem, piu' veloce (188 BPM)
   make SONG=music/claude_3ch_slow.rmt             idem, piu' lento (94 BPM)
+  make SONG=brano_stereo.rmt                      RMT8: il POKEY destro sul
+                                                  secondo SID ($D420)
   make run                                        VICE con il D64
   make clean
 
@@ -40,7 +52,8 @@ Player con visualizzatore (come rmtplay.sh di VERA_ATARI_PBI)
   VICE_OPTS="-ntsc" ./rmtplay.sh brano.rmt
 
 Nome, autore e data del brano, barre di volume delle 3 voci SID centrate
-(numerate 1 2 3, OFF se spenta), registri, posizione e tempo. Tasti: SPAZIO pausa, R ricomincia,
-1 2 3 voce SID on/off, RUN/STOP o <- esce. Disco: build/rmtplay.d64.
+(numerate 1 2 3, OFF se spenta; 6 con due SID), registri, posizione e tempo.
+Tasti: SPAZIO pausa, R ricomincia, 1 2 3 (1-6 con due SID) voce SID on/off,
+RUN/STOP o <- esce. Disco: build/rmtplay.d64.
 
 Dettagli, API C, memoria, tempi misurati e verifiche: README.md

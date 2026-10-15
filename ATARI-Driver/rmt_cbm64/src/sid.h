@@ -22,19 +22,28 @@ void sid_play_off(void);
 
 extern volatile unsigned int  sid_frames;     /* frames played */
 extern volatile unsigned char sid_status;     /* 1 = playing */
-extern volatile unsigned char sid_volume[3];  /* level of the 3 SID voices, 0..15 */
+extern volatile unsigned char sid_volume[6];  /* level of the SID voices, 0..15 (4-6: SID2) */
 extern unsigned char          sid_ntsc;       /* 1 = NTSC machine, set by sid_init */
 
-/* bit 0..2 set: SID voice 1..3 kept silent (the player goes on) */
+/* RMT8 (stereo) build: the right POKEY plays on a second SID at sid_sid2
+ * (0 in a mono build or with make SID2=0); sid_voices is 6 when sid_init
+ * found it there, 3 otherwise (on a C64 with one SID, $D420 is an image of
+ * $D400) */
+extern unsigned char          sid_voices;
+extern const unsigned int     sid_sid2;
+extern unsigned char          sid_ispeed;     /* player calls per frame (instrument speed) */
+
+/* bit 0..5 set: SID voice 1..6 kept silent (the player goes on) */
 extern volatile unsigned char sid_mute;
 
 /* state of the last frame, for a display (src/rmtplay.c) */
 extern volatile unsigned char sid_pokey[16];   /* POKEY registers written by the
                                                 * player: AUDF1 AUDC1 .. AUDC4 AUDCTL */
-extern volatile unsigned char sid_src[3];      /* POKEY channel (0..3) of each voice */
-extern volatile unsigned char sid_freq_lo[3];  /* SID frequency of each voice */
-extern volatile unsigned char sid_freq_hi[3];
-extern volatile unsigned char sid_wave[3];     /* SID waveform ($40 pulse, $80 noise) */
+extern volatile unsigned char sid_pokey2[16];  /* the right POKEY (RMT8) */
+extern volatile unsigned char sid_src[6];      /* POKEY channel (0..7) of each voice */
+extern volatile unsigned char sid_freq_lo[6];  /* SID frequency of each voice */
+extern volatile unsigned char sid_freq_hi[6];
+extern volatile unsigned char sid_wave[6];     /* SID waveform ($40 pulse, $80 noise) */
 
 /* RMT player (src/rmtplayr.s): song position */
 extern volatile unsigned char *rmt_p_song;     /* next song line */

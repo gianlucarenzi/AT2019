@@ -2,7 +2,10 @@
 #
 #   make                          build/rmt_cbm64.prg and build/rmt_cbm64.d64
 #   make run                      autostart the D64 in VICE (x64sc)
-#   make SONG=music/other.rmt     another RMT4 module
+#   make SONG=music/other.rmt     another RMT4 module, or an RMT8 (stereo) one:
+#                                 the right POKEY on a second SID
+#   make SID2=D500                the second SID at $D500 (default $D420; any
+#                                 address VICE offers), SID2=0: no second SID
 #   make SONG=music/gemx.sap      a SAP or XEX exported by RITMO / RMT: its
 #                                 LZSS streams played by src/lzsplayr.s
 #   make SONG=x.sap SUBSONG=1     another subtune of the file
@@ -28,6 +31,8 @@ CFG    = src/rmt_cbm64.cfg
 
 SONG ?= music/gemx.rmt
 SUBSONG ?= 0
+# the second SID of an RMT8 song, hex digits (D420, D500, DE00...; 0: none)
+SID2 ?= D420
 
 # a .sap or .xex exported by RITMO / RMT: the VU-Player LZSS streams
 ifneq ($(filter .sap .SAP .xex .XEX,$(suffix $(SONG))),)
@@ -36,6 +41,15 @@ PLAYER = src/lzsplayr.s
 else
 PLAYER = src/rmtplayr.s
 endif
+
+# 4 tracks (RMT4) or 8 (RMT8: channels 5-8 are the right POKEY, played on the
+# second SID): the player and src/sidrmt.s are built for it
+ifdef LZSS
+TRACKS := $(shell $(PYTHON) tools/sap2ca65.py $(SONG) --tracks)
+else
+TRACKS := $(shell $(PYTHON) -c "d=open('$(SONG)','rb').read(10); print(8 if d[6:10]==b'RMT8' else 4)")
+endif
+ASMDEFS = --asm-define RMT_TRACKS=$(TRACKS) --asm-define 'SID2=$$$(SID2)'
 # directory entry on the disk, max 16 characters (c1541 turns lowercase
 # ASCII into uppercase PETSCII)
 DISKNAME ?= rmt player
@@ -56,7 +70,7 @@ rmtplay: $(RMTPLAY) $(RMTPLAY_D64)
 # "make" rebuilds; the player and rmtplay.c follow it too (RMT or LZSS)
 $(BUILD)/song.cfg: FORCE
 	@mkdir -p $(BUILD)
-	@echo '$(SONG) $(SUBSONG)' | cmp -s - $@ || echo '$(SONG) $(SUBSONG)' > $@
+	@echo '$(SONG) $(SUBSONG) $(TRACKS) $(SID2)' | cmp -s - $@ || echo '$(SONG) $(SUBSONG) $(TRACKS) $(SID2)' > $@
 
 $(BUILD)/song.s: $(SONG) $(BUILD)/song.cfg tools/rmt2ca65.py tools/sap2ca65.py
 ifdef LZSS
@@ -78,11 +92,11 @@ $(BUILD)/main.o: src/main.c src/sid.h
 
 $(BUILD)/rmtplayr.o: $(PLAYER) src/rmt_feat.inc $(BUILD)/song.cfg
 	@mkdir -p $(BUILD)
-	$(CL) -t c64 -c --asm-define RMT_C64 --asm-include-dir src -o $@ $(PLAYER)
+	$(CL) -t c64 -c --asm-define RMT_C64 $(ASMDEFS) --asm-include-dir src -o $@ $(PLAYER)
 
-$(BUILD)/sidrmt.o: src/sidrmt.s
+$(BUILD)/sidrmt.o: src/sidrmt.s $(BUILD)/song.cfg
 	@mkdir -p $(BUILD)
-	$(CL) -t c64 -c -o $@ src/sidrmt.s
+	$(CL) -t c64 -c $(ASMDEFS) -o $@ src/sidrmt.s
 
 $(BUILD)/song.o: $(BUILD)/song.s
 	$(CL) -t c64 -c -o $@ $<
@@ -111,7 +125,7 @@ else
 endif
 
 $(BUILD)/rmtplay.o: src/rmtplay.c src/sid.h $(BUILD)/songinfo.h $(BUILD)/song.cfg
-	$(CL) -t c64 -Osir -I $(BUILD) $(if $(LZSS),-DRMT_LZSS) -c -o $@ src/rmtplay.c
+	$(CL) -t c64 -Osir -I $(BUILD) $(if $(LZSS),-DRMT_LZSS) $(if $(filter 8,$(TRACKS)),-DRMT_STEREO) -c -o $@ src/rmtplay.c
 
 RMTPLAY_OBJS = $(BUILD)/rmtplay.o $(BUILD)/sidrmt.o $(BUILD)/rmtplayr.o $(BUILD)/sidtab.o $(BUILD)/song.o
 

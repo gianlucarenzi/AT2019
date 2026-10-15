@@ -7,7 +7,9 @@
  *   .rmt file, or NAME= AUTHOR= DATE= on the make line); a line longer than
  *   40 characters scrolls left, one character at a time, after 5 seconds
  *   one volume bar per SID voice (1, 2, 3), centred, red at the top, green
- *   at the bottom
+ *   at the bottom; an RMT8 song (RMT_STEREO) with a second SID has 6, the
+ *   voices 4-6 of SID 2, and none at instrument speed 4, where the 8 track
+ *   player takes more than a frame of the C64 (the song plays slower)
  *   AUDF / AUDC of every channel and AUDCTL; SID frequency, waveform and
  *   POKEY channel of every voice, in hex
  *   song line, row in the track, speed, play time; for a .sap/.xex song
@@ -16,6 +18,7 @@
  *
  *   SPACE  pause / play       R  restart the song
  *   1 2 3  SID voice on/off   RUN/STOP or <-  stop and exit
+ *          (1-6 with a second SID)
  *
  * Text screen at $0400 in the upper/lower case character set; the bars use
  * the block characters of the ROM font (1/8 to 8/8 of a cell).
@@ -44,17 +47,38 @@
 #define BAR_TOP     7       /* 8 rows of bars: 64 pixels, 4 per volume step */
 #define BAR_ROWS    8
 #define ROW_LABELS  (BAR_TOP + BAR_ROWS)
+#ifdef RMT_STEREO
+/* the two POKEYs side by side, left from column 5, right from 21 */
+#define ROW_AUDF    16
+#define ROW_AUDC    17
+#define ROW_CTL     18
+#define ROW_FREQ    19
+#define ROW_WAVE    20
+#define ROW_FROM    21
+#else
 #define ROW_AUDF    17
 #define ROW_AUDC    18
 #define ROW_FREQ    19
 #define ROW_WAVE    20
+#endif
 #define ROW_POS     22
 #define ROW_STATE   23
 #define ROW_KEYS    24
 
-#define BARS        3       /* SID voices 1-3 */
-#define BAR_W       6       /* 6 wide, 4 apart: columns 7-12, 17-22, 27-32 */
-static const unsigned char bar_x[BARS] = { 7, 17, 27 };
+#ifdef RMT_STEREO
+#define MAXBARS     6       /* SID voices 1-6 */
+#else
+#define MAXBARS     3       /* SID voices 1-3 */
+#endif
+/* 3 bars 6 wide, 4 apart: columns 7-12, 17-22, 27-32 */
+static const unsigned char bar_x3[3] = { 7, 17, 27 };
+#ifdef RMT_STEREO
+/* 6 bars 4 wide: SID 1 in columns 2-17, SID 2 in 22-37 */
+static const unsigned char bar_x6[6] = { 2, 8, 14, 22, 28, 34 };
+#endif
+static const unsigned char *bar_x = bar_x3;
+static unsigned char bars = 3;              /* bars shown: the voices, 0 = VU meters off */
+static unsigned char bar_w = 6;
 
 /* block characters of the ROM font: the bottom 1..8 pixel rows of a cell */
 static const unsigned char block[9] = {
@@ -85,8 +109,8 @@ static const unsigned int row_ofs[25] = {
 };
 #undef R
 
-static unsigned char bar_px[BARS];          /* height shown, with fall-off */
-static unsigned char bar_shown[BARS];       /* height drawn on screen */
+static unsigned char bar_px[MAXBARS];       /* height shown, with fall-off */
+static unsigned char bar_shown[MAXBARS];    /* height drawn on screen */
 static unsigned char line_buf[40];
 
 /* value shown in each field: a field is written again only when it changes
@@ -221,7 +245,11 @@ static void draw_static(void)
     memset(title, ' ', 40);
     title[40] = 0;
     memcpy(title + 1, "RMT PLAYER  COMMODORE 64 SID", 28);
+#ifdef RMT_STEREO
+    memcpy(title + 31, "RMT8", 4);
+#else
     memcpy(title + 31, "RMT4", 4);
+#endif
     memcpy(title + 36, sid_ntsc ? "NTSC" : "PAL ", 4);
     put_text(0, ROW_TITLE, title, 0x80);
     put_color(0, ROW_TITLE, COL_HEAD, 40);
@@ -239,24 +267,45 @@ static void draw_static(void)
     }
     put_color(0, ROW_NAME, COLOR_WHITE, 40);
 
+#ifdef RMT_STEREO
+    if (!bars)
+        put_center(ROW_GROUPS, "VU meters off: instrument speed 4");
+    else if (bars == 6) {
+        put_text(6, ROW_GROUPS, "SID 1", 0);
+        put_text(26, ROW_GROUPS, "SID 2", 0);
+    }
+    else
+        put_center(ROW_GROUPS, "SID voices (no second SID)");
+#else
     put_center(ROW_GROUPS, "SID voices");
+#endif
     put_color(0, ROW_GROUPS, COL_HEAD, 40);
     for (y = 0; y < BAR_ROWS; y++)
         put_color(0, BAR_TOP + y, bar_color[y], 40);
 
+#ifdef RMT_STEREO
+    put_text(0, ROW_AUDF, "AUDF", 0);
+    put_text(0, ROW_AUDC, "AUDC", 0);
+    put_text(0, ROW_CTL, "CTL", 0);
+    put_text(0, ROW_FREQ, "FREQ", 0);
+    put_text(0, ROW_WAVE, "WAVE", 0);
+    put_text(0, ROW_FROM, "FROM", 0);
+#else
     put_text(0, ROW_AUDF, "AUDF", 0);
     put_text(0, ROW_AUDC, "AUDC", 0);
     put_text(18, ROW_AUDF, "AUDCTL", 0);
     put_text(0, ROW_FREQ, "SID FREQ", 0);
     put_text(0, ROW_WAVE, "SID WAVE", 0);
     put_text(26, ROW_WAVE, "FROM", 0);
+#endif
 #ifdef RMT_LZSS
     put_text(0, ROW_POS, "SECT   /     FRAME       /", 0);
 #else
     put_text(0, ROW_POS, "LINE   /      ROW   /     SPEED", 0);
 #endif
     put_text(0, ROW_STATE, "TIME   :", 0);
-    put_text(0, ROW_KEYS, "SPC PAUSE  R RESTART  123 SID  STOP EXIT", 0);
+    put_text(0, ROW_KEYS, sid_voices == 6 ? "SPC PAUSE  R RESTART  1-6 SID  STOP EXIT"
+                                          : "SPC PAUSE  R RESTART  123 SID  STOP EXIT", 0);
     put_color(0, ROW_KEYS, COL_DIM, 40);
 }
 
@@ -314,7 +363,7 @@ static void draw_bars(unsigned char paused)
     unsigned char i, r, h, g, last, target;
     unsigned char *p;
 
-    for (i = 0; i < BARS; i++) {
+    for (i = 0; i < bars; i++) {
         target = paused ? 0 : sid_volume[i] << 2;
         if (target >= bar_px[i])
             bar_px[i] = target;
@@ -342,13 +391,15 @@ static void draw_bars(unsigned char paused)
             if (g > 8)
                 g = 8;
             g = block[g];
-            /* BAR_W cells, without the call of memset() */
+            /* bar_w cells (6, or 4 with 6 bars), without the call of memset() */
             p[0] = g;
             p[1] = g;
             p[2] = g;
             p[3] = g;
-            p[4] = g;
-            p[5] = g;
+            if (bar_w == 6) {
+                p[4] = g;
+                p[5] = g;
+            }
             p -= 40;
         }
     }
@@ -361,6 +412,90 @@ static void draw_bars(unsigned char paused)
  * sources, read for all 18 fields every other frame, took about 45 raster
  * lines and the pass of the main loop did not fit in the frame */
 #define AT(x, y)    (SCREEN + (y) * 40 + (x))
+#ifdef RMT_STEREO
+/* the two POKEYs (AUDF, AUDC, AUDCTL of the left one from column 5, of the
+ * right one from 21), then FREQ (hi, lo) and WAVE of each SID voice; the
+ * fields of the voices are drawn for the voices played (3 or 6) */
+static unsigned char *const reg_dst[] = {
+    AT(5, ROW_AUDF), AT(8, ROW_AUDF), AT(11, ROW_AUDF), AT(14, ROW_AUDF),
+    AT(21, ROW_AUDF), AT(24, ROW_AUDF), AT(27, ROW_AUDF), AT(30, ROW_AUDF),
+    AT(5, ROW_AUDC), AT(8, ROW_AUDC), AT(11, ROW_AUDC), AT(14, ROW_AUDC),
+    AT(21, ROW_AUDC), AT(24, ROW_AUDC), AT(27, ROW_AUDC), AT(30, ROW_AUDC),
+    AT(5, ROW_CTL), AT(21, ROW_CTL),
+    AT(5, ROW_FREQ), AT(7, ROW_FREQ), AT(5, ROW_WAVE),
+    AT(10, ROW_FREQ), AT(12, ROW_FREQ), AT(10, ROW_WAVE),
+    AT(15, ROW_FREQ), AT(17, ROW_FREQ), AT(15, ROW_WAVE),
+    AT(21, ROW_FREQ), AT(23, ROW_FREQ), AT(21, ROW_WAVE),
+    AT(26, ROW_FREQ), AT(28, ROW_FREQ), AT(26, ROW_WAVE),
+    AT(31, ROW_FREQ), AT(33, ROW_FREQ), AT(31, ROW_WAVE)
+};
+#define POKEY_REGS  18
+#define REGS        (sizeof reg_dst / sizeof reg_dst[0])
+static unsigned char regs;                  /* fields drawn: 18 + 3 per voice */
+static unsigned char reg_val[REGS];
+static unsigned char reg_old[REGS];
+static unsigned char src_old[MAXBARS];
+/* column of the FROM digit of each voice */
+static const unsigned char from_x[MAXBARS] = { 6, 11, 16, 22, 27, 32 };
+
+static void reg_load(void)
+{
+    unsigned char i, *v;
+
+    for (i = 0; i < 4; i++) {
+        reg_val[i] = sid_pokey[i << 1];             /* AUDF */
+        reg_val[i + 4] = sid_pokey2[i << 1];
+        reg_val[i + 8] = sid_pokey[(i << 1) + 1];   /* AUDC */
+        reg_val[i + 12] = sid_pokey2[(i << 1) + 1];
+    }
+    reg_val[16] = sid_pokey[8];                     /* AUDCTL */
+    reg_val[17] = sid_pokey2[8];
+    v = reg_val + POKEY_REGS;
+    for (i = 0; i < sid_voices; i++) {
+        v[0] = sid_freq_hi[i];
+        v[1] = sid_freq_lo[i];
+        v[2] = sid_wave[i];
+        v += 3;
+    }
+}
+
+static void draw_regs(void)
+{
+    unsigned char i, v;
+    unsigned char *p;
+
+    reg_load();
+    for (i = 0; i < regs; i++) {
+        v = reg_val[i];
+        if (v == reg_old[i])
+            continue;
+        reg_old[i] = v;
+        p = reg_dst[i];
+        p[0] = hexscr[v >> 4];
+        p[1] = hexscr[v & 15];
+    }
+    for (i = 0; i < sid_voices; i++) {
+        v = sid_src[i];
+        if (v == src_old[i])
+            continue;
+        src_old[i] = v;
+        AT(0, ROW_FROM)[from_x[i]] = 0x31 + v;     /* screen code of '1' + v */
+    }
+}
+
+/* the first draw_regs() writes every field */
+static void regs_reset(void)
+{
+    unsigned char i;
+
+    regs = POKEY_REGS + 3 * sid_voices;
+    reg_load();
+    for (i = 0; i < REGS; i++)
+        reg_old[i] = reg_val[i] ^ 0xFF;
+    for (i = 0; i < MAXBARS; i++)
+        src_old[i] = sid_src[i] ^ 0xFF;
+}
+#else
 static unsigned char *const reg_dst[] = {
     AT(5, ROW_AUDF), AT(8, ROW_AUDF), AT(11, ROW_AUDF), AT(14, ROW_AUDF),
     AT(5, ROW_AUDC), AT(8, ROW_AUDC), AT(11, ROW_AUDC), AT(14, ROW_AUDC),
@@ -432,6 +567,7 @@ static void regs_reset(void)
     for (i = 0; i < 3; i++)
         src_old[i] = sid_src[i] ^ 0xFF;
 }
+#endif
 
 static void draw_mute(void)
 {
@@ -439,14 +575,14 @@ static void draw_mute(void)
 
     if (!changed(F_MUTE, sid_mute))
         return;
-    for (i = 0; i < 3; i++) {
+    for (i = 0; i < bars; i++) {
         m = sid_mute & (1 << i);
-        /* voice number under the middle of the bar (column 3 of 0..5), OFF
-         * when muted */
-        put_text(bar_x[i] + 2, ROW_LABELS, m ? "OFF" : "   ", m ? 0x80 : 0);
+        /* voice number under the middle of the bar (column 3 of 0..5, 2 of
+         * 0..3 with 6 bars), OFF when muted */
+        put_text(bar_x[i] + (bar_w >> 1) - 1, ROW_LABELS, m ? "OFF" : "   ", m ? 0x80 : 0);
         if (!m) {
             line_buf[0] = screen_code('1' + i);
-            put_codes(bar_x[i] + 3, ROW_LABELS, line_buf, 1);
+            put_codes(bar_x[i] + (bar_w >> 1), ROW_LABELS, line_buf, 1);
         }
     }
 }
@@ -490,7 +626,11 @@ static void draw_position(void)
         a = (const unsigned char *)rmt_p_song;
         b = (const unsigned char *)rmt_p_song;
     } while (a != b);
+#ifdef RMT_STEREO
+    line = (unsigned int)(a - song_start) >> 3;     /* 8 bytes a line in RMT8 */
+#else
     line = (unsigned int)(a - song_start) >> 2;
+#endif
     line = line ? line - 1 : 0;     /* p_song already points to the next line */
     if (line >= RMT_INFO_LINES)
         line = RMT_INFO_LINES - 1;
@@ -561,6 +701,18 @@ int main(void)
 #endif
     sid_init(rmt_song_data);
     fps = sid_ntsc ? 60 : 50;
+#ifdef RMT_STEREO
+    /* 6 narrow bars with a second SID; none at instrument speed 4: the 8 track
+     * player then takes more than a frame and the song plays slower, the
+     * bars would only take time from the rest */
+    if (sid_voices == 6) {
+        bars = 6;
+        bar_w = 4;
+        bar_x = bar_x6;
+    }
+    if (sid_ispeed >= 4)
+        bars = 0;
+#endif
 
     VIC.bordercolor = COLOR_BLACK;
     VIC.bgcolor0 = COLOR_BLACK;
@@ -635,7 +787,7 @@ int main(void)
             paused = 0;
             sid_play_on();
         }
-        else if (k >= '1' && k <= '3')
+        else if (k >= '1' && k < '1' + sid_voices)
             sid_mute ^= 1 << (k - '1');
     }
 

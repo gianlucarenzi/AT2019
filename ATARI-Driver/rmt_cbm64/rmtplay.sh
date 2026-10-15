@@ -4,9 +4,13 @@
 #
 #   ./rmtplay.sh SONG.rmt|SONG.sap|SONG.xex
 #
-#   SONG.rmt   RMT4 module (any path)
-#   SONG.sap   SAP or XEX exported by RITMO / RMT (mono): its LZSS streams,
-#   SONG.xex   played by src/lzsplayr.s (RMT_SUBSONG=n: another subtune)
+#   SONG.rmt   RMT4 module, or RMT8 (stereo) module (any path)
+#   SONG.sap   SAP or XEX exported by RITMO / RMT, mono or stereo: its LZSS
+#   SONG.xex   streams, played by src/lzsplayr.s (RMT_SUBSONG=n: another subtune)
+#
+# A stereo song plays the right POKEY on a second SID: VICE is started with
+# one ("-sidextra 1 -sid2address", stereo sound output), at $D420 unless
+# RMT_SID2 says otherwise.
 #
 # Environment (optional):
 #   X64SC      emulator to run (default: x64sc from PATH)
@@ -20,15 +24,17 @@
 #              of the text stored in the .rmt (see tools/rmtinfo.py) or of
 #              the SAP tags (tools/sap2ca65.py)
 #   RMT_SUBSONG  subtune of a .sap / .xex (default 0)
+#   RMT_SID2   address of the second SID of a stereo song, hex digits
+#              (default D420; D500, DE00... any address VICE offers)
 #
-# Keys in the player: SPACE pause, R restart, 1/2/3 SID voice on/off,
+# Keys in the player: SPACE pause, R restart, 1/2/3 (1-6 with two SIDs) SID voice on/off,
 # RUN/STOP or <- exit. The program is also written to build/rmtplay.d64
 # for a real C64.
 
 set -euo pipefail
 
 usage() {
-    sed -n '2,26p' "$0" | sed 's/^# \{0,1\}//' >&2
+    sed -n '2,32p' "$0" | sed 's/^# \{0,1\}//' >&2
     exit 2
 }
 
@@ -75,10 +81,21 @@ case $song_abs in
 esac
 
 echo "rmtplay.sh: building build/rmtplay.prg for $(basename "$song")"
-make -C "$dir" --no-print-directory rmtplay SONG="$song_abs" SUBSONG="${RMT_SUBSONG:-0}" \
+sid2=${RMT_SID2:-D420}
+make -C "$dir" --no-print-directory rmtplay SONG="$song_abs" SUBSONG="${RMT_SUBSONG:-0}" SID2="$sid2" \
      NAME="${RMT_NAME:-}" AUTHOR="${RMT_AUTHOR:-}" DATE="${RMT_DATE:-}"
 
-echo "rmtplay.sh: starting $emu"
+# a stereo song (RMT8, or a stereo SAP / XEX): VICE with the second SID
+stereo=""
+case $song_abs in
+    *.sap|*.SAP|*.xex|*.XEX) tracks=$(python3 "$dir/tools/sap2ca65.py" "$song_abs" --tracks) ;;
+    *) [ "$(head -c 10 "$song_abs" | tail -c 4)" = "RMT8" ] && tracks=8 || tracks=4 ;;
+esac
+if [ "$tracks" = 8 ]; then
+    stereo="-sidextra 1 -sid2address 0x$sid2 -soundoutput 2"
+fi
+
+echo "rmtplay.sh: starting $emu${stereo:+ with a second SID at \$$sid2}"
 # -autostartprgmode 1: the program goes straight into RAM (no disk loading)
 # shellcheck disable=SC2086 # VICE_OPTS is a list of options
-exec "$emu" -pal -VICIIfilter 0 -residsamp 0 ${VICE_OPTS:-} -autostartprgmode 1 -autostart "$dir/build/rmtplay.prg"
+exec "$emu" -pal -VICIIfilter 0 -residsamp 0 $stereo ${VICE_OPTS:-} -autostartprgmode 1 -autostart "$dir/build/rmtplay.prg"

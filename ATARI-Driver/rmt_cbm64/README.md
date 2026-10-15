@@ -1,6 +1,7 @@
 # RMT CBM64 – RMT modules on the Commodore 64 SID
 
-Plays **RMT4** modules (Raster Music Tracker, Atari POKEY) on a Commodore 64.
+Plays **RMT4** modules (Raster Music Tracker, Atari POKEY) on a Commodore 64,
+and **RMT8** (stereo) modules on a C64 with a second SID.
 
 There is no "generic" RMT format: RMT modules are written for POKEY (RMT4 mono,
 RMT8 stereo). This project does not convert the module. It runs the **Atari RMT
@@ -52,6 +53,38 @@ Not reproduced: volume only mode (AUDC bit 4, sample playback), the high pass
 filters (AUDCTL bits 2 and 1). The timbre is the SID one: square, pulse and
 noise waves stand for POKEY's.
 
+## Dual SID: RMT8 (stereo) songs
+
+An RMT8 module, or a stereo SAP / XEX of RITMO, has two POKEYs: channels 1-4
+on the left one, 5-8 on the right one. The build follows the song (`make`
+reads `RMT8` in the module, `sap2ca65.py --tracks` for a SAP / XEX) and then:
+
+- the player (`-D RMT_TRACKS=8`) writes the right POKEY to `pokey_shadow2`,
+  RAM, as it writes the left one to `pokey_shadow`;
+- `src/sidrmt.s` translates each POKEY with the same rules as above: the left
+  one to the SID at `$D400`, the right one to a second SID at `SID2` (voices
+  4-6). `make SID2=D500` (hex digits) puts it elsewhere: any address of a
+  dual SID board or of VICE (`$D420`-`$D7E0`, `$DE00`-`$DFE0`); the default
+  is `$D420`. `SID2=0` builds without it.
+- at start-up `detect_sid2` checks that `SID2` is a chip of its own: on a C64
+  with one SID, `$D420`-`$D7FF` are images of `$D400`. Voice 3 of the SID is
+  held at 0 (TEST bit) while voice 3 of `SID2` runs; if `SID2` is an image,
+  OSC3 of the SID moves. Without a second SID the right POKEY is not heard,
+  as on an Atari without a second POKEY. A free I/O area (`$DE00`, `$DF00`)
+  cannot be told from a chip: there the writes are lost.
+
+In VICE: `x64sc -sidextra 1 -sid2address 0xd420 -soundoutput 2`, the SID on
+the left and the second SID on the right; `rmtplay.sh` adds these options by
+itself for a stereo song (`RMT_SID2=D500` for another address).
+
+**Instrument speed 4.** The 8 track player called 4 times per frame takes more
+than a frame of the 6510 (0.985 MHz, against the 1.77 MHz of the Atari, where
+it takes about half of one): the song plays slower. Measured in VICE (PAL,
+frames played in the same 20 million cycles): a stereo song at instrument
+speed 1, 2 or 3 with two SIDs plays 850-852 frames, as a mono one (855); at
+speed 4, 586 with two SIDs and 720 with one. `rmtplay.c` then shows no volume
+bars, which would only take time from the rest.
+
 ## SAP / XEX exported by RITMO: lzsplayr.s
 
 A `.sap` or `.xex` exported by RITMO (or Raster Music Tracker 1.31 and later)
@@ -86,8 +119,8 @@ src/sidrmt.s, sidtab.s ──────────────┘
 - The visualizer shows `SECT` (section of the stream: 0 intro, 1 loop, or 0
   when the song loops to its start) and `FRAME` (frame in the section / last
   frame) in place of song line, row and speed.
-- Only mono files (a stereo one stops the build: there is no second POKEY).
-  Instrument speed N > 1: N calls per frame as with an `.rmt` (the stream
+- Mono or stereo files: a stereo one plays its right POKEY on the second SID,
+  as an RMT8 module (see "Dual SID"). Instrument speed N > 1: N calls per frame as with an `.rmt` (the stream
   holds N frames per video frame).
 
 Checked in VICE 3.9 (PAL): `gemx.rmt` with `rmtplayr.s` and the same song
@@ -179,14 +212,18 @@ sid_play_off();            /* IRQ off, SID silent (also done at exit) */
 
 sid_frames      /* frames played */
 sid_status      /* 1 = playing */
-sid_volume[3]   /* level of the 3 SID voices, 0..15 */
+sid_volume[6]   /* level of the SID voices, 0..15 (4-6: second SID) */
 sid_ntsc        /* 1 = NTSC machine */
-sid_mute        /* bit 0..2: SID voice 1..3 kept silent */
+sid_mute        /* bit 0..5: SID voice 1..6 kept silent */
+sid_voices      /* 3, or 6 with a second SID (RMT8 build, detected) */
+sid_sid2        /* address of the second SID, 0 in a mono build */
+sid_ispeed      /* player calls per frame (instrument speed) */
 
 /* last frame, for a display (src/rmtplay.c) */
 sid_pokey[16]   /* POKEY registers written by the player */
-sid_src[3]      /* POKEY channel of each SID voice */
-sid_freq_lo[3], sid_freq_hi[3], sid_wave[3]
+sid_pokey2[16]  /* the right POKEY (RMT8) */
+sid_src[6]      /* POKEY channel (0..7) of each SID voice */
+sid_freq_lo[6], sid_freq_hi[6], sid_wave[6]
 rmt_p_song, rmt_abeat, rmt_maxtracklen, rmt_speed   /* song position (rmtplayr.s) */
 lzs_section, lzs_pos[3]   /* stream position (lzsplayr.s): section, frame in it */
 ```
@@ -261,6 +298,16 @@ songs are unchanged by it).
   speed (with `-warp` the WAV stays empty).
 - Exit: after a key, `PEEK(44)` in BASIC gives 8 again (zero page back) and
   the keyboard works (IRQ vector back).
+- Dual SID (`-sounddev fs`, raw samples at real speed: with `-warp` the file
+  stays empty): `turrican2_rev2s.rmt` (RMT8, from the songs of RITMO) built
+  with `SID2=DE00` gives an RMS of 1920 with a SID at `$DE00` in VICE and 1238
+  without (the same as a build without the second SID): the right POKEY is
+  heard only from the second chip. With `$D420` and one SID, `detect_sid2`
+  finds the image and the right POKEY is not translated. The same song
+  exported by RITMO as a stereo SAP (`lzsplayr.s`): 1926 and 1238. A mono song
+  gives the same sequence of SID writes as before the dual SID code
+  (`-sounddev dump`, `gemx.rmt`), and the Atari builds of RmtSkeleton and
+  PokeyATest are byte for byte the same.
 
 ## Files
 

@@ -78,9 +78,6 @@ TRACKS          = 4
 .if TRACKS <> 4 && TRACKS <> 8
 .error "RMT_TRACKS must be 4 (mono) or 8 (stereo)"
 .endif
-.if TRACKS > 4 && .defined(RMT_C64)
-.error "RMT_C64: 8 tracks are not supported"
-.endif
 ;* 8 tracks without RMT_VERA (RmtSkeleton / PokeyATest): channels 5-8 for
 ;* psgrmt.s (VERA PSG) or a second POKEY at $D210 (_rmt_pokey2), see rmtvbi.s
 .if TRACKS > 4 && .not .defined(RMT_VERA)
@@ -92,6 +89,9 @@ TRACKS          = 4
 .ifdef RMT_C64
         .import pokey_shadow
 POKEY           = pokey_shadow
+.if TRACKS > 4
+        .import pokey_shadow2
+.endif
 .else
 POKEY           = $D200
 .endif
@@ -105,7 +105,13 @@ AUDF4           = POKEY+$06
 AUDC4           = POKEY+$07
 AUDCTL          = POKEY+$08
 SKCTL           = POKEY+$0F
+.ifdef RMT_C64
+.if TRACKS > 4
+POKEY2          = pokey_shadow2 ;* right POKEY: RAM, played by a second SID
+.endif
+.else
 POKEY2          = $D210         ;* right POKEY (8 tracks, _rmt_pokey2 <> 0)
+.endif
 CRITIC          = $42           ;* OS: <> 0 during SIO
 
 ;* ---------------------------------------------------------------------------
@@ -159,8 +165,17 @@ _rmt_pokey_mute: .byte 0
 ;* tracks the player was built for (4 or 8)
 _rmt_tracks:    .byte TRACKS
 .elseif TRACKS > 4
+.ifdef RMT_C64
+;* the right POKEY is RAM (pokey_shadow2) on the C64: always written, the C64
+;* code plays it on a second SID when there is one
+        .pushseg
+        .segment "DATA"
+_rmt_pokey2:    .byte 1
+        .popseg
+.else
 ;* != 0: a second POKEY at $D210 plays channels 5-8 (rmtvbi.s detects it)
 _rmt_pokey2:    .byte 0
+.endif
 .endif
 
 ;*
