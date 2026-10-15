@@ -72,14 +72,24 @@ Un RMT8 è scritto per due POKEY: canali 1-4 sul sinistro (`$D200`), 5-8 sul des
 `RMT_TRACKS=8`. `rmt_init` sceglie dove suonare i canali 5-8, in quest'ordine, e lo
 lascia in `rmt_output` (riga 4 dello schermo):
 
-1. **PSG della VERA** (scheda VeraX16 a `$D100`, stesso test di identità di
-   `vera_detect()` di VERA_ATARI_PBI): il POKEY suona i canali 1-4, `src/psgrmt.s`
-   traduce i canali 5-8 nelle voci PSG 4-7 dopo ogni passo del player, nello stesso VBI;
-2. **secondo POKEY**: il player scrive anche `$D210`-`$D218`. Il test: con `SKCTL = 0`
-   il POKEY sinistro si ferma e `RANDOM` non cambia più; `$D21F = 3` lo fa ripartire se
-   `$D210` è solo un'immagine di `$D200`. Se `RANDOM` resta fermo c'è un secondo POKEY;
-3. **nessuno dei due**: solo i canali 1-4, come un brano RMT4. `$D210` non viene mai
+1. **secondo POKEY e VERA**: i due POKEY suonano gli 8 canali, la VERA mostra solo una
+   copia dello schermo;
+2. **solo VERA** (scheda VeraX16 a `$D100`, stesso test di identità di `vera_detect()`
+   di VERA_ATARI_PBI): il POKEY suona i canali 1-4, `src/psgrmt.s` traduce i canali 5-8
+   nelle voci PSG 4-7 dopo ogni passo del player, nello stesso VBI; la VERA mostra anche
+   la copia dello schermo;
+3. **solo secondo POKEY**: il player scrive anche `$D210`-`$D218`. Il test: con
+   `SKCTL = 0` il POKEY sinistro si ferma e `RANDOM` non cambia più; `$D21F = 3` lo fa
+   ripartire se `$D210` è solo un'immagine di `$D200`. Se `RANDOM` resta fermo c'è un
+   secondo POKEY;
+4. **nessuno dei due**: solo i canali 1-4, come un brano RMT4. `$D210` non viene mai
    scritto (su un Atari normale sarebbe di nuovo il POKEY sinistro).
+
+La copia dello schermo (`src/vmirror.s`) mostra sulla VERA lo schermo testo dell'OS
+(40x24 a `SAVMSC`) con il font dell'OS e i colori di `COLOR1`/`COLOR2`/`COLOR4` (anche in
+modalità attract), convertiti con le palette PAL / NTSC di atari800. Dopo il player, fino
+a 2 righe per frame, ognuna solo se il frame ha ancora tempo (220 righe PAL, 180 NTSC);
+scrive solo le celle cambiate. Tempi del VBI con ogni uscita: tabella nel `README`.
 
 Il SIO usa solo i canali 3+4 del POKEY sinistro: VERA e secondo POKEY continuano a
 suonare i canali 5-8 anche durante il caricamento.

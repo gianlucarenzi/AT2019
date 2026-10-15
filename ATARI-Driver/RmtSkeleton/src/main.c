@@ -23,9 +23,10 @@ int main(void)
 {
 	static const char * const output[] = {
 		"POKEY",
-		"POKEY 1-4, VERA PSG 5-8",
+		"POKEY + VERA PSG, VERA screen",
 		"POKEY 1-4, 2nd POKEY 5-8",
-		"POKEY 1-4, no 5-8"
+		"POKEY 1-4, no 5-8",
+		"2 POKEYs, VERA screen"
 	};
 	unsigned char speed, i, vol;
 
@@ -50,9 +51,8 @@ int main(void)
 	// Main loop: just display diagnostics while music plays
 	for (;;) {
 		gotoxy(0, 9);
-		cprintf("Frames: %5u  ", rmt_frames);
-		cprintf("Last:  %3u  ", rmt_lines);
-		cprintf("Max: %3u\r\n", rmt_maxlines);
+		cprintf("Frames:%5u Last:%3u ", rmt_frames, rmt_lines);
+		cprintf("Avg:%3u Max:%3u\r\n", rmt_avglines, rmt_maxlines);
 		cprintf("Deferred: %5u  ", rmt_deferred);
 		cprintf("Dropped: %5u", rmt_dropped);
 

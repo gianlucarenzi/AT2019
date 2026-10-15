@@ -193,23 +193,37 @@ everything with `RMT_TRACKS=8` (`-D RMT_TRACKS=8` for ca65 and cc65):
   the high nibble of the envelope, filters and bass16 of the right POKEY
   (`FEAT_*R` in `rmt_feat.inc`). Built with 4 tracks it is the same code as
   before, byte for byte.
-- `rmt_init` (`src/rmtvbi.s`) chooses where channels 5-8 go, in this order,
-  and leaves it in `rmt_output` (`rmt.h`):
-  1. **VERA PSG** (`RMT_OUT_VERA`), when there is a VeraX16 card at `$D100`
-     (the identity test of VERA_ATARI_PBI's `vera_detect()`): POKEY plays
-     channels 1-4, `src/psgrmt.s` turns channels 5-8 into PSG voices 4-7
-     after every player tick, in the same VBI.
-  2. **second POKEY** (`RMT_OUT_POKEY2`): the player writes `$D210`-`$D218`
-     too. The test: `SKCTL = 0` stops the left POKEY, so `RANDOM` stops
-     moving; `$D21F = 3` starts it again when `$D210` is only an image of
-     `$D200`. If `RANDOM` stays frozen there is a second POKEY.
-  3. **neither** (`RMT_OUT_LEFT`): channels 1-4 only, the song plays as an
+- `rmt_init` (`src/rmtvbi.s`) looks for a VeraX16 card at `$D100` (the
+  identity test of VERA_ATARI_PBI's `vera_detect()`) and for a second POKEY
+  (`SKCTL = 0` stops the left POKEY, so `RANDOM` stops moving; `$D21F = 3`
+  starts it again when `$D210` is only an image of `$D200`: if `RANDOM`
+  stays frozen there is a second POKEY), and leaves the choice in
+  `rmt_output` (`rmt.h`):
+  1. **both** (`RMT_OUT_POKEY2_VERA`): the two POKEYs play the 8 channels,
+     the VERA only shows the screen (below).
+  2. **VERA only** (`RMT_OUT_VERA`): POKEY plays channels 1-4,
+     `src/psgrmt.s` turns channels 5-8 into PSG voices 4-7 after every
+     player tick, in the same VBI; the VERA shows the screen too.
+  3. **second POKEY only** (`RMT_OUT_POKEY2`): the player writes
+     `$D210`-`$D218` too.
+  4. **neither** (`RMT_OUT_LEFT`): channels 1-4 only, the song plays as an
      RMT4 one would. `$D210` is never written: on a stock Atari it would be
      the left POKEY again.
+- Screen mirror (`src/vmirror.s`, cases 1 and 2): the VERA shows a copy of
+  the OS text screen (40x24 at `SAVMSC`, what conio writes): the OS font
+  (`CHBAS`) with inverse copies, colours from `COLOR1` / `COLOR2` / `COLOR4`
+  (and the attract mode) turned into VERA colours with the PAL / NTSC
+  palettes of atari800. After the player, up to 2 rows per frame, each only
+  while the frame has time left (`MIRROR_PAL` 220 / `MIRROR_NTSC` 180
+  scanlines used so far); only the cells that changed since the last pass
+  are written. The VERA display and the 3 palette entries it uses are put
+  back by `rmt_vbi_off`.
 - `main.c` shows the choice and the volumes of the 8 channels.
 - Cost: `psgrmt.s` with its tables (5 KB, page aligned, `PSGTAB` segment in
-  `src/rmtskeleton.cfg`) and the 8 track player variables; the player takes
-  longer with 8 tracks (`rmt_lines` / `rmt_maxlines` show it).
+  `src/rmtskeleton.cfg`), `vmirror.s` (1.2 KB of BSS for the screen copy,
+  512 bytes of colour tables) and the 8 track player variables; the player
+  takes longer with 8 tracks (`rmt_lines`, `rmt_avglines`, `rmt_maxlines`
+  show it; the CPU time of every output is measured in `../PokeyATest`).
 
 The SIO (PokeyATest) still takes the left channels 3+4 while loading; the
 VERA PSG and a second POKEY are not touched by it, so channels 5-8 go on.

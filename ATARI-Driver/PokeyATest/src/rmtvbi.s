@@ -46,13 +46,16 @@
 ; player runs in the immediate VBI (or is postponed) as before, so the music
 ; goes on while loading.
 ;
-; RMT8 (stereo) songs, built with -D RMT_TRACKS=8: rmt_init first looks for
-; an output for channels 5-8 (the right POKEY of the module), in this order:
-;  1. the VERA PSG (VeraX16 PBI card, $D100): POKEY plays channels 1-4, the
-;     VERA PSG voices 4-7 play channels 5-8 (psgrmt.s, after the player in
-;     the same VBI)
-;  2. a second POKEY at $D210 (stereo upgrade): the player writes it
-;  3. none: only channels 1-4 are heard, as an RMT4 song
+; RMT8 (stereo) songs, built with -D RMT_TRACKS=8: rmt_init looks for the
+; VERA (VeraX16 PBI card, $D100) and for a second POKEY at $D210 (stereo
+; upgrade), and plays channels 5-8 (the right POKEY of the module):
+;  1. both: on the second POKEY
+;  2. VERA only: on the VERA PSG, voices 4-7 (psgrmt.s, after the player in
+;     the same VBI); POKEY plays channels 1-4
+; With the VERA (1 and 2) the VERA also shows a copy of the Atari text
+; screen (vmirror.s, up to MIRROR_ROWS rows per frame after the player)
+;  3. second POKEY only: on the second POKEY, the player writes it
+;  4. none: only channels 1-4 are heard, as an RMT4 song
 ; The second POKEY: SKCTL = 0 stops the poly counters of a POKEY, so RANDOM
 ; stops changing. With the left POKEY stopped, $D21F = 3 starts it again
 ; when $D210 is an image of $D200 (stock Atari): RANDOM moves again. With a
@@ -65,7 +68,7 @@
         .export _rmt_init, _rmt_vbi_on, _rmt_vbi_off
         .export _rmt_io_begin, _rmt_io_end
         .export _rmt_frames, _rmt_lines, _rmt_maxlines, _rmt_deferred, _rmt_dropped
-        .export _rmt_output
+        .export _rmt_output, _rmt_avglines
 
         .export rmt_irqtick
         .import rmt_init, rmt_play, rmt_silence
@@ -80,6 +83,7 @@ STEREO  = 0
         .import _rmt_pokey2
         .import psg_update, psg_silence         ; psgrmt.s: VERA PSG output
         .import _psg_init, _psg_enable, _psg_hybrid
+        .import vmirror_init, vmirror_step, vmirror_off ; vmirror.s
 .endif
 
 ; _rmt_output (rmt.h RMT_OUT_*)
@@ -87,6 +91,11 @@ OUT_POKEY       = 0             ; RMT4 song: one POKEY
 OUT_VERA        = 1             ; RMT8: POKEY channels 1-4, VERA PSG 5-8
 OUT_POKEY2      = 2             ; RMT8: two POKEYs
 OUT_LEFT        = 3             ; RMT8: no output for channels 5-8
+OUT_POKEY2_VERA = 4             ; RMT8: two POKEYs, the VERA mirrors the screen
+MIRROR_ROWS     = 2             ; screen rows copied per frame, at most
+MIRROR_PAL      = 220           ; the screen copy (about 14 lines) runs only
+MIRROR_NTSC     = 180           ; when the player of this frame took less
+                                ; (scanlines): the frame never fills up
 
 SETVBV  = $E45C
 SYSVBV  = $E45F
@@ -100,6 +109,7 @@ RANDOM  = $D20A
 SKCTL   = $D20F
 SKCTL2  = $D21F                 ; second POKEY, or SKCTL again
 SSKCTL  = $0232                 ; OS shadow of SKCTL
+PALNTS  = $62                   ; XL/XE OS: 0 = NTSC, 1 = PAL
 VERA_ADDR_L = $D100
 VERA_CTRL   = $D105
 
@@ -119,6 +129,11 @@ _rmt_dropped:   .res 2          ; statistics: ticks lost (tempo error)
 ispeed:         .res 1          ; player calls per frame = instrument speed (1..4)
 ticks:          .res 1          ; calls left in the current play_tick
 _rmt_output:    .res 1          ; OUT_*: where the channels are played
+vera:           .res 1          ; find_output: <> 0 = VERA found
+mrows:          .res 1          ; screen rows left to copy in this frame
+lsum:           .res 2          ; _rmt_avglines * 64
+ltmp:           .res 2
+_rmt_avglines:  .res 1          ; player time, average over about 64 frames
 
         .segment "CODE"
 
@@ -203,9 +218,12 @@ _rmt_vbi_off:
         jsr rmt_silence
 .if STEREO
         lda _rmt_output
+        cmp #OUT_POKEY2_VERA
+        beq @mir
         cmp #OUT_VERA
         bne @done
         jsr psg_silence
+@mir:   jsr vmirror_off         ; the VERA display as before
 .endif
 @done:  rts
 
@@ -222,6 +240,7 @@ find_output:
         ldy VERA_CTRL+5
         lda #0
         sta VERA_CTRL
+        sta vera
         cpx #'V'
         bne @pokey
         cpy #47
@@ -229,12 +248,7 @@ find_output:
         sta VERA_ADDR_L         ; A = 0: VRAM address 0
         sta VERA_ADDR_L+1
         sta VERA_ADDR_L+2
-        jsr _psg_init           ; PAL / NTSC, voices silent
-        lda #1
-        sta _psg_hybrid         ; voices of channels 1-4 silent: POKEY
-        sta _psg_enable
-        lda #OUT_VERA
-        bne @set
+        inc vera
 @pokey: php
         sei
         lda #0
@@ -254,6 +268,19 @@ find_output:
 @two:   ldx SSKCTL              ; the OS value (keyboard, serial port)
         stx SKCTL
         plp
+        ldx vera
+        beq @set                ; no VERA: OUT_POKEY2 or OUT_LEFT
+        cmp #OUT_POKEY2
+        beq @both
+        jsr _psg_init           ; VERA only: channels 5-8 on the PSG
+        lda #1                  ; (PAL / NTSC, voices silent)
+        sta _psg_hybrid         ; voices of channels 1-4 silent: POKEY
+        sta _psg_enable
+        jsr vmirror_init        ; and the screen on the VERA
+        lda #OUT_VERA
+        bne @set
+@both:  jsr vmirror_init        ; two POKEYs: the VERA shows the screen
+        lda #OUT_POKEY2_VERA
 @set:   sta _rmt_output
         rts
 .endif
@@ -401,20 +428,77 @@ play_ticks:
         cmp #OUT_VERA
         bne @nopsg
         jsr psg_update
-@nopsg:
+        jmp @mirror
+@nopsg: cmp #OUT_POKEY2_VERA    ; the screen on the VERA: up to
+        bne @nomir              ; MIRROR_ROWS rows, each one only while
+@mirror:
+        lda #MIRROR_ROWS        ; the frame has time left
+        sta mrows
+@mrow:  jsr elapsed
+        ldx PALNTS
+        beq @mn
+        cmp #MIRROR_PAL / 2
+        bcs @nomir
+        bcc @mir
+@mn:    cmp #MIRROR_NTSC / 2
+        bcs @nomir
+@mir:   jsr vmirror_step
+        dec mrows
+        bne @mrow
+@nomir:
 .endif
-        lda VCOUNT
-        sec
-        sbc vstart
-        bcs @nowrap             ; VCOUNT wrapped around the frame end
-        adc #156                ; (PAL value, only a diagnostic)
-@nowrap:
+        jsr elapsed
         asl a                   ; VCOUNT counts line pairs
         sta _rmt_lines
         cmp _rmt_maxlines
         bcc @nomax
         sta _rmt_maxlines
-@nomax: rts
+@nomax: lda lsum                ; average: lsum = lsum - lsum / 64 + lines
+        sta ltmp
+        lda lsum+1
+        ldx #6
+@sh:    lsr a
+        ror ltmp
+        dex
+        bne @sh
+        sta ltmp+1              ; ltmp = lsum / 64
+        lda lsum
+        sec
+        sbc ltmp
+        sta lsum
+        lda lsum+1
+        sbc ltmp+1
+        sta lsum+1
+        lda _rmt_lines
+        clc
+        adc lsum
+        sta lsum
+        bcc @nc
+        inc lsum+1
+@nc:    lda lsum                ; rmt_avglines = lsum / 64
+        sta ltmp
+        lda lsum+1
+        ldx #6
+@sh2:   lsr a
+        ror ltmp
+        dex
+        bne @sh2
+        lda ltmp
+        sta _rmt_avglines
+        rts
+
+; elapsed: A = line pairs since vstart (VCOUNT wraps at the frame end)
+elapsed:
+        lda VCOUNT
+        sec
+        sbc vstart
+        bcs @ok
+        ldx PALNTS
+        beq @ntsc
+        adc #156                ; PAL: 312 lines
+        rts
+@ntsc:  adc #131                ; NTSC: 262 lines
+@ok:    rts
 
 ; Exit to the previous deferred VBI. A plain JMP whose operand is set by
 ; _rmt_vbi_on, not JMP (oldvbd): an indirect jump through a vector at $xxFF

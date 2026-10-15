@@ -46,9 +46,9 @@ SONG_PY = tools/rmt2ca65.py
 TRACKS := $(shell $(PYTHON) -c "d=open('$(SONG)','rb').read(10); print(8 if d[6:10]==b'RMT8' else 4)")
 endif
 # 4 tracks (RMT4, mono SAP) or 8 (RMT8, stereo SAP): an 8 track song also
-# links the VERA PSG output (src/psgrmt.s and its frequency tables)
+# links the VERA outputs (src/psgrmt.s with its frequency tables, src/vmirror.s)
 ifeq ($(TRACKS),8)
-PSG_SOURCES = src/psgrmt.s $(BUILD)/psgtab.s
+PSG_SOURCES = src/psgrmt.s src/vmirror.s $(BUILD)/psgtab.s
 endif
 # generated test assets, sizes in bytes: 2K..16K, also not multiple of a sector
 ASSET_SIZES ?= 2048 3500 5120 8000 12288 16384

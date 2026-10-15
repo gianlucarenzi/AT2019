@@ -111,10 +111,31 @@ Memory: song + biggest asset (the load buffer) must fit in about 28 KB
 for a bigger one drop it, e.g. ASSET_SIZES="2048 3500 5120 8000 12288"
 (pass SONG= and ASSET_SIZES= to make run too).
 
-RMT8 (stereo) songs: rmt_init looks for the VERA PSG, then a second POKEY,
-for channels 5-8 (rmt_output, see ../RmtSkeleton/README.md "RMT8 (stereo)
-songs"). Neither is used by the SIO, so channels 5-8 play on while loading;
-the left POKEY keeps only channels 1+2 as with an RMT4 song. Checked in
+RMT8 (stereo) songs: rmt_init looks for a second POKEY and the VERA (row 4,
+rmt_output, see ../RmtSkeleton/README.md "RMT8 (stereo) songs"): channels
+5-8 on the second POKEY if there is one, else on the VERA PSG; with the
+VERA, in both cases, the VERA also shows a copy of this screen (vmirror.s).
+Neither is used by the SIO, so channels 5-8 play on while loading; the left
+POKEY keeps only channels 1+2 as with an RMT4 song. With an RMT8 song the
+16 KB test asset does not fit: ASSET_SIZES="2048 3500 5120 8000".
+
+CPU time of the VBI (row 7: VBI = last frame, avg = about 64 frames, max;
+scanlines), stereo_reference_song.rmt of RITMO (RMT8, instrument speed 4)
+while the test loads files, atari800, 15 s turbo per case, 0 ticks lost in
+every case:
+
+  output                          PAL (312)          NTSC (262)
+                                  avg   max          avg   max
+  one POKEY, channels 1-4         121   218          151   250
+  two POKEYs                      125   228          160   252
+  VERA PSG + screen mirror        174   252          190   252
+  two POKEYs + screen mirror      159   250          185   252
+
+The max includes the frames that also catch up a tick postponed by the SIO
+(two player frames in one VBI); rmt_lines is a byte, so values above 254 are
+not shown right. The mirror costs about 25-35 lines a frame on average here
+(the VU rows change all the time), the PSG about 15 more; the 8 track player
+alone at instrument speed 4 takes 40-60% of a frame. Checked in
 atari800 (-pokeyrec -pokeyrec-stereo, claude_3ch_stereo_speed_4.rmt, the
 whole song while loading, against the SAP-R export of RITMO): with -stereo
 the right POKEY gives the song in 98.8% of the frames, channels 1+2 in 99.8%

@@ -48,10 +48,10 @@ TRACKS := $(shell $(PYTHON) -c "d=open('$(SONG)','rb').read(10); print(8 if d[6:
 endif
 
 # 4 tracks (RMT4, mono SAP) or 8 (RMT8, stereo SAP): an 8 track song also
-# links the VERA PSG output (src/psgrmt.s and its frequency tables)
+# links the VERA outputs (src/psgrmt.s with its frequency tables, src/vmirror.s)
 ASFLAGS = --asm-define RMT_TRACKS=$(TRACKS) --asm-include-dir src
 ifeq ($(TRACKS),8)
-PSG_SOURCES = src/psgrmt.s $(BUILD)/psgtab.s
+PSG_SOURCES = src/psgrmt.s src/vmirror.s $(BUILD)/psgtab.s
 endif
 
 # Source files

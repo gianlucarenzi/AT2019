@@ -11,9 +11,10 @@
 // SIOV, which can lose the first data byte of a sector when the VBI player
 // runs right after the drive "Complete" byte (see sio.s).
 //
-// An RMT8 (stereo) song plays channels 5-8 on the VERA PSG or on a second
-// POKEY when there is one (rmt_output, chosen by rmt_init): neither is used
-// by SIO, so channels 5-8 keep playing while loading.
+// An RMT8 (stereo) song plays channels 5-8 on a second POKEY or on the VERA
+// PSG when there is one (rmt_output, chosen by rmt_init; with both the VERA
+// shows a copy of this screen): neither is used by SIO, so channels 5-8 keep
+// playing while loading.
 //
 // Keys: L = toggle loader   S = toggle OS SIO noise (SOUNDR)   ESC = quit
 //
@@ -110,9 +111,10 @@ static void show_output(void)
 {
 	static const char * const output[] = {
 		"POKEY",
-		"POKEY 1-4, VERA PSG 5-8",
+		"POKEY + VERA PSG, VERA screen",
 		"POKEY 1-4, 2nd POKEY 5-8",
-		"POKEY 1-4, no 5-8"
+		"POKEY 1-4, no 5-8",
+		"2 POKEYs, VERA screen"
 	};
 
 	gotoxy(0, ROW_OUTPUT);
@@ -135,7 +137,7 @@ static void show_vu(void)
 		cputc(' ');
 	}
 	gotoxy(0, ROW_PLAYER);
-	cprintf("Player:%3u ln (max%3u) late%5u lost%u", rmt_lines, rmt_maxlines, rmt_deferred, rmt_dropped);
+	cprintf("VBI%3u avg%3u max%3u late%5u lost%u", rmt_lines, rmt_avglines, rmt_maxlines, rmt_deferred, rmt_dropped);
 }
 
 static void progress(unsigned int bytes)
