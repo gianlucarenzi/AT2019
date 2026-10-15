@@ -160,6 +160,8 @@ XEX/SAP export of Raster Music Tracker:
 ./rmtplay.sh music/claude_3ch_fast.rmt       # build for that song, run it in x64sc
 RMT_NAME="My song" RMT_AUTHOR="Me" RMT_DATE=2026 ./rmtplay.sh song.rmt
 VICE_OPTS="-ntsc" ./rmtplay.sh song.rmt      # extra x64sc options (default -pal -VICIIfilter 0 -residsamp 0)
+VICE_CONFIG=~/vicerc ./rmtplay.sh song.rmt   # a VICE configuration file (-config); by default
+                                             # ~/.config/vice/vicerc-<version of x64sc> if it exists
 make rmtplay SONG=song.rmt [NAME=.. AUTHOR=.. DATE=..]   # build only
 ```
 

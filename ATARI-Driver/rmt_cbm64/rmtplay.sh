@@ -24,6 +24,10 @@
 #              of the text stored in the .rmt (see tools/rmtinfo.py) or of
 #              the SAP tags (tools/sap2ca65.py)
 #   RMT_SUBSONG  subtune of a .sap / .xex (default 0)
+#   VICE_CONFIG  configuration file of VICE (-config); by default
+#              ~/.config/vice/vicerc-<version> when there is one for the
+#              version of the emulator: VICE versions disagree on a shared
+#              vicerc (VICE 3.10 crashes in -console on a 3.9 one)
 #   RMT_SID2   address of the second SID of a stereo song, hex digits
 #              (default D420; D500, DE00... any address VICE offers)
 #
@@ -34,7 +38,7 @@
 set -euo pipefail
 
 usage() {
-    sed -n '2,32p' "$0" | sed 's/^# \{0,1\}//' >&2
+    sed -n '2,36p' "$0" | sed 's/^# \{0,1\}//' >&2
     exit 2
 }
 
@@ -85,6 +89,13 @@ sid2=${RMT_SID2:-D420}
 make -C "$dir" --no-print-directory rmtplay SONG="$song_abs" SUBSONG="${RMT_SUBSONG:-0}" SID2="$sid2" \
      NAME="${RMT_NAME:-}" AUTHOR="${RMT_AUTHOR:-}" DATE="${RMT_DATE:-}"
 
+# the configuration file of this version of VICE, when there is one
+config=${VICE_CONFIG:-}
+if [ -z "$config" ]; then
+    version=$("$emu" -version 2>&1 | sed -n 's/.*VICE \([0-9.]*\)).*/\1/p' | head -1)
+    [ -n "$version" ] && [ -f "$HOME/.config/vice/vicerc-$version" ] && config="$HOME/.config/vice/vicerc-$version"
+fi
+
 # a stereo song (RMT8, or a stereo SAP / XEX): VICE with the second SID
 stereo=""
 case $song_abs in
@@ -98,4 +109,4 @@ fi
 echo "rmtplay.sh: starting $emu${stereo:+ with a second SID at \$$sid2}"
 # -autostartprgmode 1: the program goes straight into RAM (no disk loading)
 # shellcheck disable=SC2086 # VICE_OPTS is a list of options
-exec "$emu" -pal -VICIIfilter 0 -residsamp 0 $stereo ${VICE_OPTS:-} -autostartprgmode 1 -autostart "$dir/build/rmtplay.prg"
+exec "$emu" ${config:+-config "$config"} -pal -VICIIfilter 0 -residsamp 0 $stereo ${VICE_OPTS:-} -autostartprgmode 1 -autostart "$dir/build/rmtplay.prg"
