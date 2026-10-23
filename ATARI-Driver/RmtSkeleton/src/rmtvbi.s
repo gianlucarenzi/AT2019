@@ -52,6 +52,11 @@
 ;  1. both: on the second POKEY
 ;  2. VERA only: on the VERA PSG, voices 4-7 (psgrmt.s, after the player in
 ;     the same VBI); POKEY plays channels 1-4
+; The VERA card is a PBI device: its registers answer only while its bit
+; ($80) is set in $D1FF (Atari PBI rule).  find_output selects it (and takes
+; it out of PDVMSK, so the OS does not deselect it in SIO, CIO and IRQ)
+; before looking for it, and gives it back to the OS when there is no VERA
+; or at rmt_vbi_off: its ROM replaces the Math Pack meanwhile.
 ; With the VERA (1 and 2) the VERA also shows a copy of the Atari text
 ; screen (vmirror.s, after the player), but only for songs at instrument
 ; speed 1-3 (rmt_mirror): at speed 4 the 8 track player alone takes about
@@ -116,6 +121,10 @@ SSKCTL  = $0232                 ; OS shadow of SKCTL
 PALNTS  = $62                   ; XL/XE OS: 0 = NTSC, 1 = PAL
 VERA_ADDR_L = $D100
 VERA_CTRL   = $D105
+PDVMSK  = $0247                 ; OS: PBI devices it calls
+SHPDVS  = $0248                 ; OS shadow of $D1FF
+PDVS    = $D1FF                 ; PBI device select
+VERA_PBI_BIT = $80              ; the card's PBI device bit
 
         .segment "BSS"
 _rmt_frames:    .res 2          ; frame counter incremented by the VBI
@@ -134,6 +143,8 @@ ispeed:         .res 1          ; player calls per frame = instrument speed (1..
 ticks:          .res 1          ; calls left in the current play_tick
 _rmt_output:    .res 1          ; OUT_*: where the channels are played
 vera:           .res 1          ; find_output: <> 0 = VERA found
+cardsel:        .res 1          ; <> 0: the card selected by card_select
+pdvmsk_saved:   .res 1          ; PDVMSK before card_select
 mrows:          .res 1          ; screen rows left to copy in this frame
 lsum:           .res 2          ; _rmt_avglines * 64
 ltmp:           .res 2
@@ -239,10 +250,11 @@ _rmt_vbi_off:
         bne @nopsg
         jsr psg_silence
 @nopsg: lda _rmt_mirror
-        beq @done
+        beq @rel
         jsr vmirror_off         ; the VERA display as before
         lda #0
         sta _rmt_mirror
+@rel:   jsr card_release        ; the card back to the OS, Math Pack back
 .endif
 @done:  rts
 
@@ -253,6 +265,7 @@ find_output:
         lda #0
         sta _rmt_pokey2
         sta _psg_enable
+        jsr card_select         ; the VERA answers only while selected
         lda #$7E                ; VERA: DCSEL 63 shows the identity, 'V'
         sta VERA_CTRL           ; and the version (47 or later), which an
         ldx VERA_CTRL+4         ; empty bus cannot echo ($7E <> 'V')
@@ -268,7 +281,10 @@ find_output:
         sta VERA_ADDR_L+1
         sta VERA_ADDR_L+2
         inc vera
-@pokey: php
+@pokey: lda vera
+        bne @keep
+        jsr card_release        ; no VERA: nothing selected for the OS
+@keep:  php
         sei
         lda #0
         sta SKCTL               ; left POKEY stopped: RANDOM frozen
@@ -300,6 +316,33 @@ find_output:
 @both:  lda #OUT_POKEY2_VERA    ; two POKEYs: the VERA has no sound to play
 @set:   sta _rmt_output
         rts
+
+; card_select: the VERA card selected ($D1FF and SHPDVS), out of PDVMSK
+card_select:
+        lda cardsel
+        bne @done
+        inc cardsel
+        lda PDVMSK
+        sta pdvmsk_saved
+        and #<~VERA_PBI_BIT
+        sta PDVMSK
+        lda #VERA_PBI_BIT
+        sta SHPDVS
+        sta PDVS
+@done:  rts
+
+; card_release: PDVMSK as before, the card deselected
+card_release:
+        lda cardsel
+        beq @done
+        lda #0
+        sta cardsel
+        lda pdvmsk_saved
+        sta PDVMSK
+        lda #0
+        sta SHPDVS
+        sta PDVS
+@done:  rts
 .endif
 
 ; void rmt_io_begin(void)
